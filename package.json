@@ -1,0 +1,21 @@
+{
+  "name": "publishing-connector",
+  "source": "./src/index.ts",
+  "version": "0.0.1",
+  "description": "A connector to automate publishing in Ocean Protocol ecosystems",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node ./dist/index.js"
+  },
+  "author": "Fabian Gast",
+  "license": "",
+  "dependencies": {
+    "@deltadao/nautilus": "^0.2.2",
+    "dotenv": "^16.3.1",
+    "web3": "^1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
+}
