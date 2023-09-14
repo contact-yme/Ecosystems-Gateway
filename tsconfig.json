@@ -16,5 +16,5 @@
     "outDir": "./dist/",
     "declarationDir": "./dist/"
   },
-  "include": ["index.ts"]
+  "include": ["./src/**/*", "test/**/*"]
 }
