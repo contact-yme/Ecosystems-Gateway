@@ -1,8 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { PontusxService } from './pontusx/pontusx.service';
+import { XfscService } from './xfsc/xfsc.service';
+import { CredentialEventServiceService } from './credential-event-service/credential-event-service.service';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  private readonly logger = new Logger(CredentialEventServiceService.name);
+
+  @Inject(PontusxService)
+  private readonly pontusxService: PontusxService;
+
+  @Inject(XfscService)
+  private readonly xfscService: XfscService;
+
+  @Inject(CredentialEventServiceService)
+  private readonly credentialEventService: CredentialEventServiceService;
+
+  async publishEverything(vc: any): Promise<string> {
+    const pontusxResult = await this.pontusxService.publish(vc);
+    this.logger.debug('result from pontusx', pontusxResult);
+
+    const xfscResult = await this.xfscService.publish(vc);
+    this.logger.debug('result from xfsc catalog', xfscResult);
+
+    const credentialEventResult = await this.credentialEventService.publish(vc);
+    this.logger.debug(
+      'result from credential event service',
+      credentialEventResult,
+    );
+
+    return Promise.resolve('All done');
   }
 }
