@@ -21,7 +21,7 @@ export class CredentialEventServiceService {
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
       id: randomUUID(),
-      subject: 'should.this.be.something.from.the.vc?', // FIXME: clarifiy what this field should be
+      subject: null, // FIXME: clarifiy what this field should be
       time: new Date().toUTCString(),
       data: vc,
     };
