@@ -26,7 +26,7 @@ export class CredentialEventServiceService {
       data: vc,
     };
 
-    this.logger.debug(`sendig data to ${cesUrl}`, payload);
+    this.logger.debug(`posting to ${cesUrl}:`, payload);
 
     const { data } = await firstValueFrom(
       this.httpService.post(cesUrl, payload).pipe(
@@ -37,7 +37,7 @@ export class CredentialEventServiceService {
         }),
       ),
     );
-
+    this.logger.debug('got', data);
     return data;
   }
 }
