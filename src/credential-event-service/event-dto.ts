@@ -11,6 +11,8 @@ export class ComplianceCloudEventDTO {
 
   time: string;
 
+  datacontenttype: string;
+
   data: object;
 }
 
@@ -20,5 +22,6 @@ export const defaultComplianceCloudEventDTO: ComplianceCloudEventDTO = {
   source: 'Konnektor',
   id: '',
   time: '',
+  datacontenttype: 'application/json',
   data: undefined,
 };
