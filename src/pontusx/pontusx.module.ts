@@ -3,7 +3,7 @@ import { PontusxService } from './pontusx.service';
 
 @Module({
   imports: [],
-  providers: [],
+  providers: [PontusxService],
   exports: [PontusxService],
 })
 export class PontusxModule {}
