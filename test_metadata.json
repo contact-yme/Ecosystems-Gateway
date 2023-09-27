@@ -37,7 +37,7 @@
                 }
             ],
             "serviceSD": {
-                "url": "http://example.com/serviceSelfDescriptionUrl",
+                "url": "https://ptw.tu-darmstadt.euprogigant.io/sd/serviceOffering/gxservice_2210_test.json",
                 "isVerified": true
             }
         }

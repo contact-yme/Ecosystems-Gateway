@@ -8,7 +8,7 @@ export class metadata {
 
 export class MainMetadata {
   type: Metadata['type'];
-  files: UrlFile[];
+  files: {url: string, index?: number, method: string}[];
   name: string;
   author: string;
   description: string;

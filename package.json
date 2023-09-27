@@ -5,11 +5,11 @@
   "description": "A connector to automate publishing in Ocean Protocol ecosystems",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc || exit 0",
     "cleanWin": "rmdir dist /s /q",
     "clean": "rm -rf ./dist/",
-    "start": "npm run clean && tsc && node ./dist/index.js",
-    "pretest": "npm run build || exit 0",
+    "start": "npm run cleanWin && npm run build && node ./dist/src/index.js",
+    "pretest": "npm run build",
     "test": "npx mocha -- ./dist/test/**/*.test.js"
   },
   "author": "Fabian Gast",

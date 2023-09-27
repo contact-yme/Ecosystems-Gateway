@@ -77,7 +77,7 @@ export const PRICING_CONFIGS: PricingConfig = {
         baseTokenAddress: "0xe974c4894996E012399dEDbda0bE7314a73BBff1",
         baseTokenDecimals: 6, // adapted for EUROe decimals
         datatokenDecimals: 18,
-        fixedRate: "1",
+        fixedRate: "2",
         marketFee: "0",
         marketFeeCollector: "0x0000000000000000000000000000000000000000",
       },
