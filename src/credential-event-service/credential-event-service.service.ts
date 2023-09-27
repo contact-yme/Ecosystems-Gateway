@@ -22,7 +22,7 @@ export class CredentialEventServiceService {
       ...defaultComplianceCloudEventDTO,
       id: randomUUID(),
       subject: null, // FIXME: clarifiy what this field should be
-      time: new Date().toUTCString(),
+      time: new Date().toISOString(),
       data: vc,
     };
 
@@ -32,6 +32,7 @@ export class CredentialEventServiceService {
       this.httpService.post(cesUrl, payload).pipe(
         catchError((err: AxiosError) => {
           // TODO: proper error handling
+          console.error(err);
           this.logger.error(err);
           throw 'Failed to push data to the Credential Event Service';
         }),

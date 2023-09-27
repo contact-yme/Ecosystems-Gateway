@@ -33,3 +33,15 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Build gRPC types
+
+At the moment, types for gRPC are created with the the tool below and then handpicked.
+
+```
+protoc \
+        --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
+        --ts_proto_opt=esModuleInterop=true \
+        --ts_proto_out="./src/generated" \
+        src/_proto/spp.proto
+```

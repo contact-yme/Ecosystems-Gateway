@@ -17,6 +17,7 @@ export class AppService {
   private readonly credentialEventService: CredentialEventServiceService;
 
   async publishEverything(vc: any): Promise<string> {
+    // FIXME: If possible, we can do it in parallel (Promise.all())
     const pontusxResult = await this.pontusxService.publish(vc);
     this.logger.debug('result from pontusx', pontusxResult);
 

@@ -17,11 +17,11 @@ export class ComplianceCloudEventDTO {
 }
 
 export const defaultComplianceCloudEventDTO: ComplianceCloudEventDTO = {
-  specVersion: '1.0.0',
-  type: 'VerifiableCredential',
+  specVersion: '1.0',
+  type: 'eu.gaia-x.credential',
   source: 'Konnektor',
-  id: '',
-  time: '',
+  id: null,
+  time: null,
   datacontenttype: 'application/json',
   data: undefined,
 };
