@@ -1,0 +1,45 @@
+{
+    "main": {
+        "type": "dataset",
+        "files": [
+            {
+                "url": "http://example.com",
+                "index": 0,
+                "method": "GET"
+            }
+        ],
+        "name": "Data Part No. <<<TEST>>> EuProGigant",
+        "author": "EuProGigant",
+        "description": "This is a test-data-service-offering.",
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "created": "2023-09-27T16:31:27Z",
+        "tags": [
+            "euprogigant",
+            "manufacturing",
+            "industry40",
+            "austria",
+            "germany",
+            "validation-platform",
+            "predictive-maintenance",
+            "machinelearning",
+            "carbon-footprint",
+            "esg",
+            "supplychain"
+        ]
+    },
+    "additionalInformation": {
+        "termsAndConditions": true,
+        "gaiaXInformation": {
+            "containsPII": false,
+            "termsAndConditions": [
+                {
+                    "url": "https://creativecommons.org/licenses/by/4.0/"
+                }
+            ],
+            "serviceSD": {
+                "url": "http://example.com/serviceSelfDescriptionUrl",
+                "isVerified": true
+            }
+        }
+    }
+}
