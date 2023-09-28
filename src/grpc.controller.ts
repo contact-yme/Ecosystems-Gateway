@@ -2,12 +2,16 @@ import { Controller, Logger } from '@nestjs/common';
 import { AppService } from './app.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { JsonOffering, Offering, Status } from './generated/src/_proto/spp';
+import { PontusxService } from './pontusx/pontusx.service';
 
 @Controller('grpc')
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly pontusxService: PontusxService,
+  ) {}
 
   @GrpcMethod('serviceofferingPublisher')
   async publishOfferingJson(data: JsonOffering): Promise<Status> {
@@ -28,9 +32,10 @@ export class GrpcController {
 
   @GrpcMethod('serviceofferingPublisher')
   async publishOffering(data: Offering): Promise<Status> {
-    console.log(data);
+    console.log(data.main);
 
-    await this.appService.publishEverything(data.main);
+    //await this.appService.publishEverything(data.main);
+    await this.pontusxService.publish(data.main);
 
     return {
       statusCode: 201,
