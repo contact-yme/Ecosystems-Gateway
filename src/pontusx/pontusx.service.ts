@@ -17,6 +17,8 @@ import {
   PricingConfig,
 } from '@deltadao/nautilus';
 import { JsonOffering, Offering } from 'src/generated/src/_proto/spp';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class PontusxService {
@@ -27,8 +29,8 @@ export class PontusxService {
   private readonly wallet: Wallet;
   private logLevel: LogLevel = LogLevel.Verbose;
 
-  constructor(privateKey: string, selNetwork: string) {
-    this.selectedNetwork = selNetwork.toUpperCase();
+  constructor() {
+    this.selectedNetwork = process.env.NETWORK.toUpperCase();
     if (!(this.selectedNetwork in Network)) {
       this.logger.error(
         `Invalid network selection: ${
@@ -42,7 +44,7 @@ export class PontusxService {
     this.networkConfig = NETWORK_CONFIGS[this.selectedNetwork];
     this.pricingConfig = PRICING_CONFIGS[this.selectedNetwork];
     const provider = new providers.JsonRpcProvider(this.networkConfig.nodeUri);
-    this.wallet = new Wallet(privateKey, provider);
+    this.wallet = new Wallet(process.env.PRIVATE_KEY, provider);
   }
 
   getSelectedNetwork() {
@@ -88,12 +90,12 @@ export class PontusxService {
       .setTimeout(86400)
       .setPricing(this.pricingConfig.FIXED_EUROE)
       .setDatatokenNameAndSymbol(offering.name, offering.token) // important for following access token transactions in the explorer
-      .addTrustedAlgorithm(trustedAlgo1)
-      .addTrustedAlgorithm(trustedAlgo2)
+      //.addTrustedAlgorithm(trustedAlgo1)
+      //.addTrustedAlgorithm(trustedAlgo2)
       .allowRawAlgorithms(false);
     //.addConsumerParameter(cunsumerParameter) // optional
 
-    offering.main.files.forEach((file) => {
+    offering.main.files?.forEach((file) => {
       const urlFile: UrlFile = {
         type: 'url',
         url: file.url, // link to your file or api
@@ -105,7 +107,7 @@ export class PontusxService {
       };
       serviceBuilder.addFile(urlFile);
     });
-    offering.allowedAlgorithm.forEach((algorithm) => {
+    offering.main.allowedAlgorithm?.forEach((algorithm) => {
       serviceBuilder.addTrustedAlgorithm(algorithm);
     });
     const service = serviceBuilder.build();
