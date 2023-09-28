@@ -8,7 +8,7 @@ export interface JsonOffering {
   metadata: { [key: string]: any } | undefined;
   token: string;
   name: string;
-  allowedAlgorithm: string[];
+  allowedAlgorithm: Algorithm[];
   deploymentTarget: string;
 }
 
@@ -17,7 +17,7 @@ export interface Offering {
   additionalInformation: AdditionalInformation | undefined;
   token: string;
   name: string;
-  allowedAlgorithm: string[];
+  allowedAlgorithm: Algorithm[];
   deploymentTarget: string;
 }
 
@@ -28,6 +28,8 @@ export interface Main {
   licence: string;
   dateCreated: string;
   files: Files[];
+  tags: string[];
+  description: string;
 }
 
 export interface AdditionalInformation {
@@ -40,6 +42,14 @@ export interface Files {
   url: string;
   indest: number;
   contentType: string;
+  method: string;
+  index: number;
+}
+
+export interface Algorithm {
+  did: string;
+  filesChecksum: string;
+  containerSectionChecksum: string;
 }
 
 export interface ServiceSelfDescription {
@@ -68,7 +78,7 @@ export const JsonOffering = {
       writer.uint32(34).string(message.name);
     }
     for (const v of message.allowedAlgorithm) {
-      writer.uint32(42).string(v!);
+      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     if (message.deploymentTarget !== "") {
       writer.uint32(58).string(message.deploymentTarget);
@@ -109,7 +119,7 @@ export const JsonOffering = {
             break;
           }
 
-          message.allowedAlgorithm.push(reader.string());
+          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
           continue;
         case 7:
           if (tag !== 58) {
@@ -133,7 +143,7 @@ export const JsonOffering = {
       token: isSet(object.token) ? String(object.token) : "",
       name: isSet(object.name) ? String(object.name) : "",
       allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => String(e))
+        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
         : [],
       deploymentTarget: isSet(object.deploymentTarget) ? String(object.deploymentTarget) : "",
     };
@@ -151,7 +161,7 @@ export const JsonOffering = {
       obj.name = message.name;
     }
     if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm;
+      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
     }
     if (message.deploymentTarget !== "") {
       obj.deploymentTarget = message.deploymentTarget;
@@ -167,7 +177,7 @@ export const JsonOffering = {
     message.metadata = object.metadata ?? undefined;
     message.token = object.token ?? "";
     message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => e) || [];
+    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
     message.deploymentTarget = object.deploymentTarget ?? "";
     return message;
   },
@@ -199,7 +209,7 @@ export const Offering = {
       writer.uint32(34).string(message.name);
     }
     for (const v of message.allowedAlgorithm) {
-      writer.uint32(42).string(v!);
+      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     if (message.deploymentTarget !== "") {
       writer.uint32(58).string(message.deploymentTarget);
@@ -247,7 +257,7 @@ export const Offering = {
             break;
           }
 
-          message.allowedAlgorithm.push(reader.string());
+          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
           continue;
         case 7:
           if (tag !== 58) {
@@ -274,7 +284,7 @@ export const Offering = {
       token: isSet(object.token) ? String(object.token) : "",
       name: isSet(object.name) ? String(object.name) : "",
       allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => String(e))
+        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
         : [],
       deploymentTarget: isSet(object.deploymentTarget) ? String(object.deploymentTarget) : "",
     };
@@ -295,7 +305,7 @@ export const Offering = {
       obj.name = message.name;
     }
     if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm;
+      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
     }
     if (message.deploymentTarget !== "") {
       obj.deploymentTarget = message.deploymentTarget;
@@ -315,14 +325,14 @@ export const Offering = {
         : undefined;
     message.token = object.token ?? "";
     message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => e) || [];
+    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
     message.deploymentTarget = object.deploymentTarget ?? "";
     return message;
   },
 };
 
 function createBaseMain(): Main {
-  return { type: "", name: "", author: "", licence: "", dateCreated: "", files: [] };
+  return { type: "", name: "", author: "", licence: "", dateCreated: "", files: [], tags: [], description: "" };
 }
 
 export const Main = {
@@ -344,6 +354,12 @@ export const Main = {
     }
     for (const v of message.files) {
       Files.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    for (const v of message.tags) {
+      writer.uint32(58).string(v!);
+    }
+    if (message.description !== "") {
+      writer.uint32(66).string(message.description);
     }
     return writer;
   },
@@ -397,6 +413,20 @@ export const Main = {
 
           message.files.push(Files.decode(reader, reader.uint32()));
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.tags.push(reader.string());
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -414,6 +444,8 @@ export const Main = {
       licence: isSet(object.licence) ? String(object.licence) : "",
       dateCreated: isSet(object.dateCreated) ? String(object.dateCreated) : "",
       files: Array.isArray(object?.files) ? object.files.map((e: any) => Files.fromJSON(e)) : [],
+      tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
+      description: isSet(object.description) ? String(object.description) : "",
     };
   },
 
@@ -437,6 +469,12 @@ export const Main = {
     if (message.files?.length) {
       obj.files = message.files.map((e) => Files.toJSON(e));
     }
+    if (message.tags?.length) {
+      obj.tags = message.tags;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
     return obj;
   },
 
@@ -451,6 +489,8 @@ export const Main = {
     message.licence = object.licence ?? "";
     message.dateCreated = object.dateCreated ?? "";
     message.files = object.files?.map((e) => Files.fromPartial(e)) || [];
+    message.tags = object.tags?.map((e) => e) || [];
+    message.description = object.description ?? "";
     return message;
   },
 };
@@ -550,7 +590,7 @@ export const AdditionalInformation = {
 };
 
 function createBaseFiles(): Files {
-  return { url: "", indest: 0, contentType: "" };
+  return { url: "", indest: 0, contentType: "", method: "", index: 0 };
 }
 
 export const Files = {
@@ -563,6 +603,12 @@ export const Files = {
     }
     if (message.contentType !== "") {
       writer.uint32(26).string(message.contentType);
+    }
+    if (message.method !== "") {
+      writer.uint32(34).string(message.method);
+    }
+    if (message.index !== 0) {
+      writer.uint32(40).int32(message.index);
     }
     return writer;
   },
@@ -595,6 +641,20 @@ export const Files = {
 
           message.contentType = reader.string();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.method = reader.string();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.index = reader.int32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -609,6 +669,8 @@ export const Files = {
       url: isSet(object.url) ? String(object.url) : "",
       indest: isSet(object.indest) ? Number(object.indest) : 0,
       contentType: isSet(object.contentType) ? String(object.contentType) : "",
+      method: isSet(object.method) ? String(object.method) : "",
+      index: isSet(object.index) ? Number(object.index) : 0,
     };
   },
 
@@ -623,6 +685,12 @@ export const Files = {
     if (message.contentType !== "") {
       obj.contentType = message.contentType;
     }
+    if (message.method !== "") {
+      obj.method = message.method;
+    }
+    if (message.index !== 0) {
+      obj.index = Math.round(message.index);
+    }
     return obj;
   },
 
@@ -634,6 +702,97 @@ export const Files = {
     message.url = object.url ?? "";
     message.indest = object.indest ?? 0;
     message.contentType = object.contentType ?? "";
+    message.method = object.method ?? "";
+    message.index = object.index ?? 0;
+    return message;
+  },
+};
+
+function createBaseAlgorithm(): Algorithm {
+  return { did: "", filesChecksum: "", containerSectionChecksum: "" };
+}
+
+export const Algorithm = {
+  encode(message: Algorithm, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.filesChecksum !== "") {
+      writer.uint32(18).string(message.filesChecksum);
+    }
+    if (message.containerSectionChecksum !== "") {
+      writer.uint32(26).string(message.containerSectionChecksum);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Algorithm {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAlgorithm();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.filesChecksum = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.containerSectionChecksum = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Algorithm {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      filesChecksum: isSet(object.filesChecksum) ? String(object.filesChecksum) : "",
+      containerSectionChecksum: isSet(object.containerSectionChecksum) ? String(object.containerSectionChecksum) : "",
+    };
+  },
+
+  toJSON(message: Algorithm): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.filesChecksum !== "") {
+      obj.filesChecksum = message.filesChecksum;
+    }
+    if (message.containerSectionChecksum !== "") {
+      obj.containerSectionChecksum = message.containerSectionChecksum;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Algorithm>, I>>(base?: I): Algorithm {
+    return Algorithm.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Algorithm>, I>>(object: I): Algorithm {
+    const message = createBaseAlgorithm();
+    message.did = object.did ?? "";
+    message.filesChecksum = object.filesChecksum ?? "";
+    message.containerSectionChecksum = object.containerSectionChecksum ?? "";
     return message;
   },
 };
