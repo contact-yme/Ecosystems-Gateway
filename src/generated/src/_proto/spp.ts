@@ -18,7 +18,6 @@ export interface Offering {
   token: string;
   name: string;
   allowedAlgorithm: Algorithm[];
-  deploymentTarget: string;
 }
 
 export interface Main {
@@ -30,6 +29,7 @@ export interface Main {
   files: Files[];
   tags: string[];
   description: string;
+  allowedAlgorithm: Algorithm[];
 }
 
 export interface AdditionalInformation {
@@ -184,14 +184,7 @@ export const JsonOffering = {
 };
 
 function createBaseOffering(): Offering {
-  return {
-    main: undefined,
-    additionalInformation: undefined,
-    token: "",
-    name: "",
-    allowedAlgorithm: [],
-    deploymentTarget: "",
-  };
+  return { main: undefined, additionalInformation: undefined, token: "", name: "", allowedAlgorithm: [] };
 }
 
 export const Offering = {
@@ -210,9 +203,6 @@ export const Offering = {
     }
     for (const v of message.allowedAlgorithm) {
       Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.deploymentTarget !== "") {
-      writer.uint32(58).string(message.deploymentTarget);
     }
     return writer;
   },
@@ -259,13 +249,6 @@ export const Offering = {
 
           message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
           continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.deploymentTarget = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -286,7 +269,6 @@ export const Offering = {
       allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
         ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
         : [],
-      deploymentTarget: isSet(object.deploymentTarget) ? String(object.deploymentTarget) : "",
     };
   },
 
@@ -307,9 +289,6 @@ export const Offering = {
     if (message.allowedAlgorithm?.length) {
       obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
     }
-    if (message.deploymentTarget !== "") {
-      obj.deploymentTarget = message.deploymentTarget;
-    }
     return obj;
   },
 
@@ -326,13 +305,22 @@ export const Offering = {
     message.token = object.token ?? "";
     message.name = object.name ?? "";
     message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
-    message.deploymentTarget = object.deploymentTarget ?? "";
     return message;
   },
 };
 
 function createBaseMain(): Main {
-  return { type: "", name: "", author: "", licence: "", dateCreated: "", files: [], tags: [], description: "" };
+  return {
+    type: "",
+    name: "",
+    author: "",
+    licence: "",
+    dateCreated: "",
+    files: [],
+    tags: [],
+    description: "",
+    allowedAlgorithm: [],
+  };
 }
 
 export const Main = {
@@ -360,6 +348,9 @@ export const Main = {
     }
     if (message.description !== "") {
       writer.uint32(66).string(message.description);
+    }
+    for (const v of message.allowedAlgorithm) {
+      Algorithm.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -427,6 +418,13 @@ export const Main = {
 
           message.description = reader.string();
           continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -446,6 +444,9 @@ export const Main = {
       files: Array.isArray(object?.files) ? object.files.map((e: any) => Files.fromJSON(e)) : [],
       tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
       description: isSet(object.description) ? String(object.description) : "",
+      allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
+        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
+        : [],
     };
   },
 
@@ -475,6 +476,9 @@ export const Main = {
     if (message.description !== "") {
       obj.description = message.description;
     }
+    if (message.allowedAlgorithm?.length) {
+      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
+    }
     return obj;
   },
 
@@ -491,6 +495,7 @@ export const Main = {
     message.files = object.files?.map((e) => Files.fromPartial(e)) || [];
     message.tags = object.tags?.map((e) => e) || [];
     message.description = object.description ?? "";
+    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
     return message;
   },
 };
