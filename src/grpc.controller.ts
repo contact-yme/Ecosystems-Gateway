@@ -32,10 +32,12 @@ export class GrpcController {
 
   @GrpcMethod('serviceofferingPublisher')
   async publishOffering(data: Offering): Promise<Status> {
-    console.log(data.main);
+    console.log(data);
 
     //await this.appService.publishEverything(data.main);
-    await this.pontusxService.publish(data.main);
+    if (data.main.type === 'dataset') {
+      await this.pontusxService.publishComputeAsset(data);
+    }
 
     return {
       statusCode: 201,
