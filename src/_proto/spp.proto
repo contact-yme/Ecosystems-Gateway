@@ -42,8 +42,8 @@ message AdditionalInformation{
     string description = 1;
     repeated string tags = 2;
     ServiceSelfDescription serviceSelfDescription = 3;
-    string termsAndConditions = 4;
-    gaiaX gaiaXInformation = 5
+    bool termsAndConditions = 4;
+    gaiaX gaiaXInformation = 5;
 }
 
 message Files{
@@ -62,13 +62,17 @@ message Algorithm{
 
 message ServiceSelfDescription{
     string url = 1;
-    boolean isVerified = 2;
+    bool isVerified = 2;
 }
 
 message gaiaX{
-    boolean containsPII = 1;
-    repeat Terms termsAndConditions = 2;
+    bool containsPII = 1;
+    repeated Terms termsAndConditions = 2;
     ServiceSelfDescription serviceSD = 3;
+}
+
+message Terms{
+    string url = 1;
 }
 
 message Status{
