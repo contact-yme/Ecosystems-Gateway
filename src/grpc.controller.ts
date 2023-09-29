@@ -17,8 +17,8 @@ export class GrpcController {
   async publishOfferingJson(data: JsonOffering): Promise<Status> {
     this.logger.debug('grpc method publishOfferingJson called');
     return {
-      statusCode: 501,
-      simpleMessage: 'NOT IMPLEMENTED',
+      statusCode: 12,
+      simpleMessage: 'method publishOfferingJson not implemented',
       DebugInformation: undefined,
     };
 
@@ -26,13 +26,6 @@ export class GrpcController {
 
     // TODO: use the right input...
     await this.appService.publishEverything(data.metadata);
-
-    // TODO: what's the response
-    return {
-      statusCode: 201,
-      simpleMessage: 'CREATED',
-      DebugInformation: undefined,
-    };
   }
 
   @GrpcMethod('serviceofferingPublisher')
@@ -42,13 +35,26 @@ export class GrpcController {
 
     //await this.appService.publishEverything(data.main);
     if (data.main.type === 'dataset') {
-      await this.pontusxService.publishComputeAsset(data);
+      const result = await this.pontusxService.publishComputeAsset(data);
+      if (result) {
+        return {
+          statusCode: 0,
+          simpleMessage: 'offering published',
+          DebugInformation: undefined,
+        };
+      } else {
+        return {
+          statusCode: 2,
+          simpleMessage: 'publishing not successful',
+          DebugInformation: undefined,
+        };
+      }
+    } else {
+      return {
+        statusCode: 12,
+        simpleMessage: 'publishing of non dataset not implemented',
+        DebugInformation: undefined,
+      };
     }
-
-    return {
-      statusCode: 201,
-      simpleMessage: 'CREATED',
-      DebugInformation: undefined,
-    };
   }
 }
