@@ -16,6 +16,11 @@ export class GrpcController {
   @GrpcMethod('serviceofferingPublisher')
   async publishOfferingJson(data: JsonOffering): Promise<Status> {
     this.logger.debug('grpc method publishOfferingJson called');
+    return {
+      statusCode: 501,
+      simpleMessage: 'NOT IMPLEMENTED',
+      DebugInformation: undefined,
+    };
 
     console.log(data.metadata);
 
@@ -32,7 +37,8 @@ export class GrpcController {
 
   @GrpcMethod('serviceofferingPublisher')
   async publishOffering(data: Offering): Promise<Status> {
-    console.log(data);
+    this.logger.debug('grpc method publishOffering called');
+    this.logger.debug(data);
 
     //await this.appService.publishEverything(data.main);
     if (data.main.type === 'dataset') {
