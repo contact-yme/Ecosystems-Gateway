@@ -1,0 +1,87 @@
+/*
+Copyright 2021-2022 Stefan Dumss, MIVP TU Wien
+*/
+
+syntax = "proto3";
+
+import "google/protobuf/struct.proto";
+
+package eupg.serviceofferingpublisher;
+
+option go_package = "serviceofferingpublisher/pb";
+
+message JsonOffering{   
+    google.protobuf.Struct metadata = 1;
+    string token = 3;
+    string name = 4;
+    repeated Algorithm allowedAlgorithm = 5;
+    string deploymentTarget = 7;
+}
+
+message Offering{
+    Main main = 1;
+    AdditionalInformation additionalInformation = 2;
+    string token = 3;
+    string name = 4;
+    repeated Algorithm allowedAlgorithm = 5;
+}
+
+message Main{
+    string type = 1;
+    string name = 2;
+    string author = 3;
+    string licence = 4;
+    string dateCreated = 5;
+    repeated Files files = 6;
+    repeated string tags = 7;
+    string description = 8;
+    repeated Algorithm allowedAlgorithm = 9;
+}
+
+message AdditionalInformation{
+    string description = 1;
+    repeated string tags = 2;
+    ServiceSelfDescription serviceSelfDescription = 3;
+    bool termsAndConditions = 4;
+    gaiaX gaiaXInformation = 5;
+}
+
+message Files{
+    string url  =1;
+    int32 indest = 2;
+    string contentType = 3;
+    string method = 4;
+    int32 index = 5;
+}
+
+message Algorithm{
+    string did = 1;
+    string filesChecksum = 2;
+    string containerSectionChecksum = 3;
+}
+
+message ServiceSelfDescription{
+    string url = 1;
+    bool isVerified = 2;
+}
+
+message gaiaX{
+    bool containsPII = 1;
+    repeated Terms termsAndConditions = 2;
+    ServiceSelfDescription serviceSD = 3;
+}
+
+message Terms{
+    string url = 1;
+}
+
+message Status{
+    int32 statusCode = 1;
+    string simpleMessage = 2;
+    google.protobuf.Struct DebugInformation = 3;
+}
+
+service serviceofferingPublisher{
+    rpc PublishOfferingJson(JsonOffering) returns (Status) {} //metadata as (json)struct
+    rpc PublishOffering(Offering) returns (Status){} //metadata as protobuf
+}
