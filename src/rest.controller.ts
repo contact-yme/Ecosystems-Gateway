@@ -23,7 +23,7 @@ export class RestController {
       "Push a VC to Pontus-X, XFSC Federated Catalog and Gaia-X's CredentialEventService",
     description: 'Put a VC in in the request body',
   })
-  @ApiTags('schieber')
+  @ApiTags('publishing-connector')
   @ApiProperty()
   async publishVcEverywhere(
     @Body() body: string, // TODO: use dto, also validation is never a bad idea

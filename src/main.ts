@@ -19,12 +19,12 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   const config = new DocumentBuilder()
-    .setTitle('VC Schieber')
+    .setTitle('Publishing Connector')
     .setDescription(
-      'The schiebers API description. It pushes Verifiable Credentials for Gaia-X to different catalogs/marketplaces',
+      'The Connectors API description. It pushes Verifiable Credentials for Gaia-X to different catalogs/marketplaces',
     )
     .setVersion('0.1.0')
-    .addTag('schieber')
+    .addTag('publishing-connector')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

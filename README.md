@@ -1,4 +1,4 @@
-# vc-schieber
+# Publishing connector
 
 A small service to push gaia-x vc to Pontus-X, XFSC-Catalog and CredentialEventService. This is just a proposal, right now!
 
