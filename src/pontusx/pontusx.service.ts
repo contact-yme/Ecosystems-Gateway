@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   Network,
   NETWORK_CONFIGS,
   NetworkConfig,
   PRICING_CONFIGS,
+  PricingConfig,
 } from './config';
 import { Wallet, providers } from 'ethers';
 import {
@@ -14,23 +16,23 @@ import {
   ServiceBuilder,
   ServiceTypes,
   UrlFile,
-  PricingConfig,
 } from '@deltadao/nautilus';
-import { JsonOffering, Offering } from 'src/generated/src/_proto/spp';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { Offering } from 'src/generated/src/_proto/spp';
 
 @Injectable()
 export class PontusxService {
   private readonly logger = new Logger(PontusxService.name);
   private readonly selectedNetwork: string;
-  private readonly networkConfig;
-  private readonly pricingConfig;
+  private readonly networkConfig: NetworkConfig;
+  private readonly pricingConfig: PricingConfig;
   private readonly wallet: Wallet;
   private logLevel: LogLevel = LogLevel.Verbose;
 
-  constructor() {
-    this.selectedNetwork = process.env.NETWORK.toUpperCase();
+  constructor(private readonly configService: ConfigService) {
+    this.selectedNetwork = this.configService
+      .getOrThrow('NETWORK')
+      .toUpperCase();
+
     if (!(this.selectedNetwork in Network)) {
       this.logger.error(
         `Invalid network selection: ${
@@ -44,7 +46,11 @@ export class PontusxService {
     this.networkConfig = NETWORK_CONFIGS[this.selectedNetwork];
     this.pricingConfig = PRICING_CONFIGS[this.selectedNetwork];
     const provider = new providers.JsonRpcProvider(this.networkConfig.nodeUri);
-    this.wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+
+    this.wallet = new Wallet(
+      this.configService.getOrThrow('PRIVATE_KEY'),
+      provider,
+    );
   }
 
   getSelectedNetwork() {
@@ -88,7 +94,7 @@ export class PontusxService {
     serviceBuilder
       .setServiceEndpoint(this.networkConfig.providerUri)
       .setTimeout(86400)
-      .setPricing(this.pricingConfig.FIXED_EUROE)
+      .setPricing(this.pricingConfig['FIXED_EUROE'])
       .setDatatokenNameAndSymbol(offering.name, offering.token) // important for following access token transactions in the explorer
       //.addTrustedAlgorithm(trustedAlgo1)
       //.addTrustedAlgorithm(trustedAlgo2)

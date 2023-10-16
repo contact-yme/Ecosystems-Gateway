@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
 import { RestController } from './rest.controller';
 import { GrpcController } from './grpc.controller';
 import { AppService } from './app.service';
@@ -7,7 +9,14 @@ import { PontusxModule } from './pontusx/pontusx.module';
 import { XfscModule } from './xfsc/xfsc.module';
 
 @Module({
-  imports: [CredentialEventServiceModule, PontusxModule, XfscModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    CredentialEventServiceModule,
+    PontusxModule,
+    XfscModule,
+  ],
   controllers: [RestController, GrpcController],
   providers: [AppService],
 })

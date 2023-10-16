@@ -8,6 +8,14 @@ A small service to push gaia-x vc to Pontus-X, XFSC-Catalog and CredentialEventS
 $ npm install
 ```
 
+
+## Configuration
+
+See the example `.env.exmple` for enviroments variables that can be set.
+
+Mandatory are the values `NETWORK`, `PRIVATE_KEY` and `CES_HOST`.
+
+
 ## Running the app
 
 ```bash

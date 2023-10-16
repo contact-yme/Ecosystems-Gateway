@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import {
@@ -12,11 +13,13 @@ import { randomUUID } from 'crypto';
 export class CredentialEventServiceService {
   private readonly logger = new Logger(CredentialEventServiceService.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async publish(vc: any) {
-    // FIXME: config management
-    const cesUrl = 'https://ces-v1.lab.gaia-x.eu/credentials-events';
+    const cesUrl = this.configService.getOrThrow('CES_HOST');
 
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
