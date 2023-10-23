@@ -4,20 +4,11 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "eupg.serviceofferingpublisher";
 
-export interface JsonOffering {
-  metadata: { [key: string]: any } | undefined;
-  token: string;
-  name: string;
-  allowedAlgorithm: Algorithm[];
-  deploymentTarget: string;
-}
-
 export interface Offering {
   main: Main | undefined;
   additionalInformation: AdditionalInformation | undefined;
   token: string;
   name: string;
-  allowedAlgorithm: Algorithm[];
 }
 
 export interface Main {
@@ -36,6 +27,8 @@ export interface AdditionalInformation {
   description: string;
   tags: string[];
   serviceSelfDescription: ServiceSelfDescription | undefined;
+  termsAndConditions: boolean;
+  gaiaXInformation: gaiaX | undefined;
 }
 
 export interface Files {
@@ -54,6 +47,17 @@ export interface Algorithm {
 
 export interface ServiceSelfDescription {
   url: string;
+  isVerified: boolean;
+}
+
+export interface gaiaX {
+  containsPII: boolean;
+  termsAndConditions: Terms[];
+  serviceSD: ServiceSelfDescription | undefined;
+}
+
+export interface Terms {
+  url: string;
 }
 
 export interface Status {
@@ -62,129 +66,8 @@ export interface Status {
   DebugInformation: { [key: string]: any } | undefined;
 }
 
-function createBaseJsonOffering(): JsonOffering {
-  return { metadata: undefined, token: "", name: "", allowedAlgorithm: [], deploymentTarget: "" };
-}
-
-export const JsonOffering = {
-  encode(message: JsonOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.metadata !== undefined) {
-      Struct.encode(Struct.wrap(message.metadata), writer.uint32(10).fork()).ldelim();
-    }
-    if (message.token !== "") {
-      writer.uint32(26).string(message.token);
-    }
-    if (message.name !== "") {
-      writer.uint32(34).string(message.name);
-    }
-    for (const v of message.allowedAlgorithm) {
-      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.deploymentTarget !== "") {
-      writer.uint32(58).string(message.deploymentTarget);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): JsonOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseJsonOffering();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.metadata = Struct.unwrap(Struct.decode(reader, reader.uint32()));
-          continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.token = reader.string();
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
-          continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.deploymentTarget = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): JsonOffering {
-    return {
-      metadata: isObject(object.metadata) ? object.metadata : undefined,
-      token: isSet(object.token) ? String(object.token) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
-        : [],
-      deploymentTarget: isSet(object.deploymentTarget) ? String(object.deploymentTarget) : "",
-    };
-  },
-
-  toJSON(message: JsonOffering): unknown {
-    const obj: any = {};
-    if (message.metadata !== undefined) {
-      obj.metadata = message.metadata;
-    }
-    if (message.token !== "") {
-      obj.token = message.token;
-    }
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
-    }
-    if (message.deploymentTarget !== "") {
-      obj.deploymentTarget = message.deploymentTarget;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<JsonOffering>, I>>(base?: I): JsonOffering {
-    return JsonOffering.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<JsonOffering>, I>>(object: I): JsonOffering {
-    const message = createBaseJsonOffering();
-    message.metadata = object.metadata ?? undefined;
-    message.token = object.token ?? "";
-    message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
-    message.deploymentTarget = object.deploymentTarget ?? "";
-    return message;
-  },
-};
-
 function createBaseOffering(): Offering {
-  return { main: undefined, additionalInformation: undefined, token: "", name: "", allowedAlgorithm: [] };
+  return { main: undefined, additionalInformation: undefined, token: "", name: "" };
 }
 
 export const Offering = {
@@ -200,9 +83,6 @@ export const Offering = {
     }
     if (message.name !== "") {
       writer.uint32(34).string(message.name);
-    }
-    for (const v of message.allowedAlgorithm) {
-      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -242,13 +122,6 @@ export const Offering = {
 
           message.name = reader.string();
           continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -266,9 +139,6 @@ export const Offering = {
         : undefined,
       token: isSet(object.token) ? String(object.token) : "",
       name: isSet(object.name) ? String(object.name) : "",
-      allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
-        : [],
     };
   },
 
@@ -286,9 +156,6 @@ export const Offering = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
-    }
     return obj;
   },
 
@@ -304,7 +171,6 @@ export const Offering = {
         : undefined;
     message.token = object.token ?? "";
     message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
     return message;
   },
 };
@@ -501,7 +367,13 @@ export const Main = {
 };
 
 function createBaseAdditionalInformation(): AdditionalInformation {
-  return { description: "", tags: [], serviceSelfDescription: undefined };
+  return {
+    description: "",
+    tags: [],
+    serviceSelfDescription: undefined,
+    termsAndConditions: false,
+    gaiaXInformation: undefined,
+  };
 }
 
 export const AdditionalInformation = {
@@ -514,6 +386,12 @@ export const AdditionalInformation = {
     }
     if (message.serviceSelfDescription !== undefined) {
       ServiceSelfDescription.encode(message.serviceSelfDescription, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.termsAndConditions === true) {
+      writer.uint32(32).bool(message.termsAndConditions);
+    }
+    if (message.gaiaXInformation !== undefined) {
+      gaiaX.encode(message.gaiaXInformation, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -546,6 +424,20 @@ export const AdditionalInformation = {
 
           message.serviceSelfDescription = ServiceSelfDescription.decode(reader, reader.uint32());
           continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.termsAndConditions = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.gaiaXInformation = gaiaX.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -562,6 +454,8 @@ export const AdditionalInformation = {
       serviceSelfDescription: isSet(object.serviceSelfDescription)
         ? ServiceSelfDescription.fromJSON(object.serviceSelfDescription)
         : undefined,
+      termsAndConditions: isSet(object.termsAndConditions) ? Boolean(object.termsAndConditions) : false,
+      gaiaXInformation: isSet(object.gaiaXInformation) ? gaiaX.fromJSON(object.gaiaXInformation) : undefined,
     };
   },
 
@@ -575,6 +469,12 @@ export const AdditionalInformation = {
     }
     if (message.serviceSelfDescription !== undefined) {
       obj.serviceSelfDescription = ServiceSelfDescription.toJSON(message.serviceSelfDescription);
+    }
+    if (message.termsAndConditions === true) {
+      obj.termsAndConditions = message.termsAndConditions;
+    }
+    if (message.gaiaXInformation !== undefined) {
+      obj.gaiaXInformation = gaiaX.toJSON(message.gaiaXInformation);
     }
     return obj;
   },
@@ -590,6 +490,10 @@ export const AdditionalInformation = {
       (object.serviceSelfDescription !== undefined && object.serviceSelfDescription !== null)
         ? ServiceSelfDescription.fromPartial(object.serviceSelfDescription)
         : undefined;
+    message.termsAndConditions = object.termsAndConditions ?? false;
+    message.gaiaXInformation = (object.gaiaXInformation !== undefined && object.gaiaXInformation !== null)
+      ? gaiaX.fromPartial(object.gaiaXInformation)
+      : undefined;
     return message;
   },
 };
@@ -803,13 +707,16 @@ export const Algorithm = {
 };
 
 function createBaseServiceSelfDescription(): ServiceSelfDescription {
-  return { url: "" };
+  return { url: "", isVerified: false };
 }
 
 export const ServiceSelfDescription = {
   encode(message: ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.url !== "") {
       writer.uint32(10).string(message.url);
+    }
+    if (message.isVerified === true) {
+      writer.uint32(16).bool(message.isVerified);
     }
     return writer;
   },
@@ -818,6 +725,170 @@ export const ServiceSelfDescription = {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseServiceSelfDescription();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.isVerified = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ServiceSelfDescription {
+    return {
+      url: isSet(object.url) ? String(object.url) : "",
+      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : false,
+    };
+  },
+
+  toJSON(message: ServiceSelfDescription): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.isVerified === true) {
+      obj.isVerified = message.isVerified;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
+    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
+    const message = createBaseServiceSelfDescription();
+    message.url = object.url ?? "";
+    message.isVerified = object.isVerified ?? false;
+    return message;
+  },
+};
+
+function createBasegaiaX(): gaiaX {
+  return { containsPII: false, termsAndConditions: [], serviceSD: undefined };
+}
+
+export const gaiaX = {
+  encode(message: gaiaX, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.containsPII === true) {
+      writer.uint32(8).bool(message.containsPII);
+    }
+    for (const v of message.termsAndConditions) {
+      Terms.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.serviceSD !== undefined) {
+      ServiceSelfDescription.encode(message.serviceSD, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasegaiaX();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.containsPII = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.termsAndConditions.push(Terms.decode(reader, reader.uint32()));
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.serviceSD = ServiceSelfDescription.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): gaiaX {
+    return {
+      containsPII: isSet(object.containsPII) ? Boolean(object.containsPII) : false,
+      termsAndConditions: Array.isArray(object?.termsAndConditions)
+        ? object.termsAndConditions.map((e: any) => Terms.fromJSON(e))
+        : [],
+      serviceSD: isSet(object.serviceSD) ? ServiceSelfDescription.fromJSON(object.serviceSD) : undefined,
+    };
+  },
+
+  toJSON(message: gaiaX): unknown {
+    const obj: any = {};
+    if (message.containsPII === true) {
+      obj.containsPII = message.containsPII;
+    }
+    if (message.termsAndConditions?.length) {
+      obj.termsAndConditions = message.termsAndConditions.map((e) => Terms.toJSON(e));
+    }
+    if (message.serviceSD !== undefined) {
+      obj.serviceSD = ServiceSelfDescription.toJSON(message.serviceSD);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<gaiaX>, I>>(base?: I): gaiaX {
+    return gaiaX.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<gaiaX>, I>>(object: I): gaiaX {
+    const message = createBasegaiaX();
+    message.containsPII = object.containsPII ?? false;
+    message.termsAndConditions = object.termsAndConditions?.map((e) => Terms.fromPartial(e)) || [];
+    message.serviceSD = (object.serviceSD !== undefined && object.serviceSD !== null)
+      ? ServiceSelfDescription.fromPartial(object.serviceSD)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTerms(): Terms {
+  return { url: "" };
+}
+
+export const Terms = {
+  encode(message: Terms, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Terms {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTerms();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -837,11 +908,11 @@ export const ServiceSelfDescription = {
     return message;
   },
 
-  fromJSON(object: any): ServiceSelfDescription {
+  fromJSON(object: any): Terms {
     return { url: isSet(object.url) ? String(object.url) : "" };
   },
 
-  toJSON(message: ServiceSelfDescription): unknown {
+  toJSON(message: Terms): unknown {
     const obj: any = {};
     if (message.url !== "") {
       obj.url = message.url;
@@ -849,11 +920,11 @@ export const ServiceSelfDescription = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
-    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<Terms>, I>>(base?: I): Terms {
+    return Terms.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
-    const message = createBaseServiceSelfDescription();
+  fromPartial<I extends Exact<DeepPartial<Terms>, I>>(object: I): Terms {
+    const message = createBaseTerms();
     message.url = object.url ?? "";
     return message;
   },
@@ -949,7 +1020,6 @@ export const Status = {
 };
 
 export interface serviceofferingPublisher {
-  PublishOfferingJson(request: JsonOffering): Promise<Status>;
   PublishOffering(request: Offering): Promise<Status>;
 }
 
@@ -960,15 +1030,8 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || serviceofferingPublisherServiceName;
     this.rpc = rpc;
-    this.PublishOfferingJson = this.PublishOfferingJson.bind(this);
     this.PublishOffering = this.PublishOffering.bind(this);
   }
-  PublishOfferingJson(request: JsonOffering): Promise<Status> {
-    const data = JsonOffering.encode(request).finish();
-    const promise = this.rpc.request(this.service, "PublishOfferingJson", data);
-    return promise.then((data) => Status.decode(_m0.Reader.create(data)));
-  }
-
   PublishOffering(request: Offering): Promise<Status> {
     const data = Offering.encode(request).finish();
     const promise = this.rpc.request(this.service, "PublishOffering", data);

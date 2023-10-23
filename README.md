@@ -44,7 +44,7 @@ $ npm run test:cov
 
 ## Build gRPC types
 
-At the moment, types for gRPC are created with the the tool below and then handpicked.
+At the moment, types for gRPC are created with the the tool below and then handpicked. `protoc` can be downloaded here: https://github.com/protocolbuffers/protobuf/releases
 
 ```
 protoc \

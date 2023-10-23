@@ -10,20 +10,11 @@ package eupg.serviceofferingpublisher;
 
 option go_package = "serviceofferingpublisher/pb";
 
-message JsonOffering{   
-    google.protobuf.Struct metadata = 1;
-    string token = 3;
-    string name = 4;
-    repeated Algorithm allowedAlgorithm = 5;
-    string deploymentTarget = 7;
-}
-
 message Offering{
     Main main = 1;
     AdditionalInformation additionalInformation = 2;
     string token = 3;
     string name = 4;
-    repeated Algorithm allowedAlgorithm = 5;
 }
 
 message Main{
@@ -82,6 +73,5 @@ message Status{
 }
 
 service serviceofferingPublisher{
-    rpc PublishOfferingJson(JsonOffering) returns (Status) {} //metadata as (json)struct
-    rpc PublishOffering(Offering) returns (Status){} //metadata as protobuf
+    rpc PublishOffering(Offering) returns (Status){}
 }
