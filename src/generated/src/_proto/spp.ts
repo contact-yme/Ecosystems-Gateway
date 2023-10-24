@@ -17,7 +17,12 @@ export interface UpdateOfferingRequest {
   additionalInformation: AdditionalInformation | undefined;
   token: string;
   name: string;
-  publishToCes?: boolean | undefined;
+  publishInfo?: PublishInfo | undefined;
+}
+
+export interface PublishInfo {
+  source: string;
+  data: string;
 }
 
 export interface Main {
@@ -74,9 +79,15 @@ export interface StatusResponse {
   DebugInformation: { [key: string]: any } | undefined;
 }
 
+export interface UpdateResponse {
+  statusCode: number;
+  simpleMessage: string;
+  location?: string | undefined;
+  DebugInformation: { [key: string]: any } | undefined;
+}
+
 export interface Result {
   did: string;
-  serviceId: string;
 }
 
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
@@ -189,7 +200,7 @@ export const CreateOfferingRequest = {
 };
 
 function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
-  return { did: "", main: undefined, additionalInformation: undefined, token: "", name: "", publishToCes: undefined };
+  return { did: "", main: undefined, additionalInformation: undefined, token: "", name: "", publishInfo: undefined };
 }
 
 export const UpdateOfferingRequest = {
@@ -209,8 +220,8 @@ export const UpdateOfferingRequest = {
     if (message.name !== "") {
       writer.uint32(42).string(message.name);
     }
-    if (message.publishToCes !== undefined) {
-      writer.uint32(48).bool(message.publishToCes);
+    if (message.publishInfo !== undefined) {
+      PublishInfo.encode(message.publishInfo, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -258,11 +269,11 @@ export const UpdateOfferingRequest = {
           message.name = reader.string();
           continue;
         case 6:
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.publishToCes = reader.bool();
+          message.publishInfo = PublishInfo.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -282,7 +293,7 @@ export const UpdateOfferingRequest = {
         : undefined,
       token: isSet(object.token) ? String(object.token) : "",
       name: isSet(object.name) ? String(object.name) : "",
-      publishToCes: isSet(object.publishToCes) ? Boolean(object.publishToCes) : undefined,
+      publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
     };
   },
 
@@ -303,8 +314,8 @@ export const UpdateOfferingRequest = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.publishToCes !== undefined) {
-      obj.publishToCes = message.publishToCes;
+    if (message.publishInfo !== undefined) {
+      obj.publishInfo = PublishInfo.toJSON(message.publishInfo);
     }
     return obj;
   },
@@ -322,7 +333,83 @@ export const UpdateOfferingRequest = {
         : undefined;
     message.token = object.token ?? "";
     message.name = object.name ?? "";
-    message.publishToCes = object.publishToCes ?? undefined;
+    message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
+      ? PublishInfo.fromPartial(object.publishInfo)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePublishInfo(): PublishInfo {
+  return { source: "", data: "" };
+}
+
+export const PublishInfo = {
+  encode(message: PublishInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.source !== "") {
+      writer.uint32(10).string(message.source);
+    }
+    if (message.data !== "") {
+      writer.uint32(18).string(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PublishInfo {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePublishInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.source = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.data = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PublishInfo {
+    return {
+      source: isSet(object.source) ? String(object.source) : "",
+      data: isSet(object.data) ? String(object.data) : "",
+    };
+  },
+
+  toJSON(message: PublishInfo): unknown {
+    const obj: any = {};
+    if (message.source !== "") {
+      obj.source = message.source;
+    }
+    if (message.data !== "") {
+      obj.data = message.data;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PublishInfo>, I>>(base?: I): PublishInfo {
+    return PublishInfo.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PublishInfo>, I>>(object: I): PublishInfo {
+    const message = createBasePublishInfo();
+    message.source = object.source ?? "";
+    message.data = object.data ?? "";
     return message;
   },
 };
@@ -1149,17 +1236,118 @@ export const StatusResponse = {
   },
 };
 
+function createBaseUpdateResponse(): UpdateResponse {
+  return { statusCode: 0, simpleMessage: "", location: undefined, DebugInformation: undefined };
+}
+
+export const UpdateResponse = {
+  encode(message: UpdateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.statusCode !== 0) {
+      writer.uint32(8).int32(message.statusCode);
+    }
+    if (message.simpleMessage !== "") {
+      writer.uint32(18).string(message.simpleMessage);
+    }
+    if (message.location !== undefined) {
+      writer.uint32(34).string(message.location);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.statusCode = reader.int32();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.simpleMessage = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.location = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateResponse {
+    return {
+      statusCode: isSet(object.statusCode) ? Number(object.statusCode) : 0,
+      simpleMessage: isSet(object.simpleMessage) ? String(object.simpleMessage) : "",
+      location: isSet(object.location) ? String(object.location) : undefined,
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: UpdateResponse): unknown {
+    const obj: any = {};
+    if (message.statusCode !== 0) {
+      obj.statusCode = Math.round(message.statusCode);
+    }
+    if (message.simpleMessage !== "") {
+      obj.simpleMessage = message.simpleMessage;
+    }
+    if (message.location !== undefined) {
+      obj.location = message.location;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateResponse>, I>>(base?: I): UpdateResponse {
+    return UpdateResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateResponse>, I>>(object: I): UpdateResponse {
+    const message = createBaseUpdateResponse();
+    message.statusCode = object.statusCode ?? 0;
+    message.simpleMessage = object.simpleMessage ?? "";
+    message.location = object.location ?? undefined;
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
 function createBaseResult(): Result {
-  return { did: "", serviceId: "" };
+  return { did: "" };
 }
 
 export const Result = {
   encode(message: Result, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.did !== "") {
       writer.uint32(10).string(message.did);
-    }
-    if (message.serviceId !== "") {
-      writer.uint32(18).string(message.serviceId);
     }
     return writer;
   },
@@ -1178,13 +1366,6 @@ export const Result = {
 
           message.did = reader.string();
           continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.serviceId = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1195,19 +1376,13 @@ export const Result = {
   },
 
   fromJSON(object: any): Result {
-    return {
-      did: isSet(object.did) ? String(object.did) : "",
-      serviceId: isSet(object.serviceId) ? String(object.serviceId) : "",
-    };
+    return { did: isSet(object.did) ? String(object.did) : "" };
   },
 
   toJSON(message: Result): unknown {
     const obj: any = {};
     if (message.did !== "") {
       obj.did = message.did;
-    }
-    if (message.serviceId !== "") {
-      obj.serviceId = message.serviceId;
     }
     return obj;
   },
@@ -1218,14 +1393,13 @@ export const Result = {
   fromPartial<I extends Exact<DeepPartial<Result>, I>>(object: I): Result {
     const message = createBaseResult();
     message.did = object.did ?? "";
-    message.serviceId = object.serviceId ?? "";
     return message;
   },
 };
 
 export interface serviceofferingPublisher {
   CreateOffering(request: CreateOfferingRequest): Promise<StatusResponse>;
-  UpdateOffering(request: UpdateOfferingRequest): Promise<StatusResponse>;
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateResponse>;
 }
 
 export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
@@ -1244,10 +1418,10 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     return promise.then((data) => StatusResponse.decode(_m0.Reader.create(data)));
   }
 
-  UpdateOffering(request: UpdateOfferingRequest): Promise<StatusResponse> {
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateResponse> {
     const data = UpdateOfferingRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "UpdateOffering", data);
-    return promise.then((data) => StatusResponse.decode(_m0.Reader.create(data)));
+    return promise.then((data) => UpdateResponse.decode(_m0.Reader.create(data)));
   }
 }
 

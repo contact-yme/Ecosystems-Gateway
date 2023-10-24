@@ -28,7 +28,7 @@ message UpdateOfferingRequest {
 
 message PublishInfo{
     string source = 1;
-    google.protobuf.Struct data = 2;
+    string data = 2;
 }
 
 message Main{
@@ -85,13 +85,18 @@ message StatusResponse{
     google.protobuf.Struct DebugInformation = 3;
 }
 
-message Result{
-    string did = 1;
-    string serviceId = 2;
+message UpdateResponse{
+    int32 statusCode = 1;
+    string simpleMessage = 2;
+    optional string location = 4;
+    google.protobuf.Struct DebugInformation = 3;
 }
 
+message Result{
+    string did = 1;
+}
 
 service serviceofferingPublisher{
     rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
-    rpc UpdateOffering(UpdateOfferingRequest) returns (StatusResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateResponse){}
 }

@@ -5,6 +5,7 @@ import {
   CreateOfferingRequest,
   StatusResponse,
   UpdateOfferingRequest,
+  UpdateResponse,
 } from './generated/src/_proto/spp';
 
 @Controller('grpc')
@@ -27,7 +28,6 @@ export class GrpcController {
           DebugInformation: undefined,
           data: {
             did: result.ddo.id,
-            serviceId: result.ddo.services[0].id, // there must be one service
           },
         };
       } else {
@@ -47,7 +47,7 @@ export class GrpcController {
   }
 
   @GrpcMethod('serviceofferingPublisher')
-  async updateOffering(data: UpdateOfferingRequest): Promise<StatusResponse> {
+  async updateOffering(data: UpdateOfferingRequest): Promise<UpdateResponse> {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
 
@@ -57,6 +57,7 @@ export class GrpcController {
       return {
         statusCode: 0,
         simpleMessage: 'offering updated',
+        location: result.ces,
         DebugInformation: result,
       };
     } else {

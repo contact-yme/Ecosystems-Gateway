@@ -24,7 +24,10 @@ export class AppService {
     const xfscResult = await this.xfscService.publish(vc);
     this.logger.debug('result from xfsc catalog', xfscResult);
 
-    const credentialEventResult = await this.credentialEventService.publish(vc);
+    const credentialEventResult = await this.credentialEventService.publish(
+      'hmm',
+      vc,
+    );
     this.logger.debug(
       'result from credential event service',
       credentialEventResult,

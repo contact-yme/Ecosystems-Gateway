@@ -22,6 +22,7 @@ import {
   CreateOfferingRequest,
   UpdateOfferingRequest,
 } from 'src/generated/src/_proto/spp';
+import { CredentialEventServiceService } from 'src/credential-event-service/credential-event-service.service';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -33,7 +34,10 @@ export class PontusxService implements OnModuleInit {
   private nautilus: Nautilus;
   private logLevel: LogLevel = LogLevel.Verbose;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly credentialEventService: CredentialEventServiceService,
+  ) {
     this.selectedNetwork = this.configService
       .getOrThrow('NETWORK')
       .toUpperCase();
@@ -184,7 +188,19 @@ export class PontusxService implements OnModuleInit {
       .build();
 
     const result = await this.nautilus.edit(asset);
-    return result;
+
+    let cesResult;
+    if (offeringRequest.publishInfo) {
+      cesResult = await this.credentialEventService.publish(
+        offeringRequest.publishInfo.source,
+        JSON.parse(offeringRequest.publishInfo.data),
+      );
+    }
+
+    return {
+      pontus: result,
+      ces: cesResult,
+    };
   }
   async getTheOneService(nautilusDDO: NautilusDDO) {
     const ddo = await nautilusDDO.getDDO();

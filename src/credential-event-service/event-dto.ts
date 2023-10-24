@@ -1,5 +1,5 @@
 export class ComplianceCloudEventDTO {
-  specVersion: string;
+  specversion: string;
 
   type: string;
 
@@ -15,7 +15,7 @@ export class ComplianceCloudEventDTO {
 }
 
 export const defaultComplianceCloudEventDTO: ComplianceCloudEventDTO = {
-  specVersion: '1.0',
+  specversion: '1.0',
   type: 'eu.gaia-x.credential',
   source: null,
   time: null,

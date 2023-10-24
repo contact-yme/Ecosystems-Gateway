@@ -17,12 +17,12 @@ export class CredentialEventServiceService {
     private readonly configService: ConfigService,
   ) {}
 
-  async publish(vc: any) {
+  async publish(source: string, vc: any) {
     const cesUrl = this.configService.getOrThrow('CES_HOST');
 
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
-      source: vc.source,
+      source: source,
       subject: null, // FIXME: clarifiy what this field should be
       time: new Date().toISOString(),
       data: vc,
@@ -30,7 +30,7 @@ export class CredentialEventServiceService {
 
     this.logger.debug(`posting to ${cesUrl}:`, payload);
 
-    const { data } = await firstValueFrom(
+    const { headers } = await firstValueFrom(
       this.httpService.post(cesUrl, payload).pipe(
         catchError((err: AxiosError) => {
           // TODO: proper error handling
@@ -40,7 +40,8 @@ export class CredentialEventServiceService {
         }),
       ),
     );
-    this.logger.debug('got', data);
-    return data;
+    this.logger.debug('got', headers);
+    console.log('result', headers);
+    return headers['location'];
   }
 }
