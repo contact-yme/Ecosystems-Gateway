@@ -4,6 +4,7 @@ import { PontusxService } from './pontusx/pontusx.service';
 import {
   CreateOfferingRequest,
   StatusResponse,
+  UpdateOfferingRequest,
 } from './generated/src/_proto/spp';
 
 @Controller('grpc')
@@ -14,7 +15,7 @@ export class GrpcController {
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(data: CreateOfferingRequest): Promise<StatusResponse> {
-    this.logger.debug('grpc method publishOffering called');
+    this.logger.debug('grpc method CreateOffering called');
     this.logger.debug(data);
 
     if (data.main.type === 'dataset') {
@@ -44,4 +45,9 @@ export class GrpcController {
       };
     }
   }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async updateOffering(data: UpdateOfferingRequest): Promise<StatusResponse> {
+    this.logger.debug('grpc method UpdateOffering called');
+    this.logger.debug(data);  }
 }

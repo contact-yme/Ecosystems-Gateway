@@ -40,7 +40,6 @@ message Main{
 
 message AdditionalInformation{
     string description = 1;
-    repeated string tags = 2;
     ServiceSelfDescription serviceSelfDescription = 3;
     bool termsAndConditions = 4;
     gaiaX gaiaXInformation = 5;
@@ -85,11 +84,6 @@ message StatusResponse{
 message Result{
     string did = 1;
     string serviceId = 2;
-}
-
-message SelfDescription {
-    string did = 1;
-    ServiceSelfDescription serviceSelfDescription = 2;
 }
 
 service serviceofferingPublisher{

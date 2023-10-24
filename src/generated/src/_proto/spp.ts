@@ -33,7 +33,6 @@ export interface Main {
 
 export interface AdditionalInformation {
   description: string;
-  tags: string[];
   serviceSelfDescription: ServiceSelfDescription | undefined;
   termsAndConditions: boolean;
   gaiaXInformation: gaiaX | undefined;
@@ -78,11 +77,6 @@ export interface StatusResponse {
 export interface Result {
   did: string;
   serviceId: string;
-}
-
-export interface SelfDescription {
-  did: string;
-  serviceSelfDescription: ServiceSelfDescription | undefined;
 }
 
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
@@ -509,22 +503,13 @@ export const Main = {
 };
 
 function createBaseAdditionalInformation(): AdditionalInformation {
-  return {
-    description: "",
-    tags: [],
-    serviceSelfDescription: undefined,
-    termsAndConditions: false,
-    gaiaXInformation: undefined,
-  };
+  return { description: "", serviceSelfDescription: undefined, termsAndConditions: false, gaiaXInformation: undefined };
 }
 
 export const AdditionalInformation = {
   encode(message: AdditionalInformation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.description !== "") {
       writer.uint32(10).string(message.description);
-    }
-    for (const v of message.tags) {
-      writer.uint32(18).string(v!);
     }
     if (message.serviceSelfDescription !== undefined) {
       ServiceSelfDescription.encode(message.serviceSelfDescription, writer.uint32(26).fork()).ldelim();
@@ -551,13 +536,6 @@ export const AdditionalInformation = {
           }
 
           message.description = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.tags.push(reader.string());
           continue;
         case 3:
           if (tag !== 26) {
@@ -592,7 +570,6 @@ export const AdditionalInformation = {
   fromJSON(object: any): AdditionalInformation {
     return {
       description: isSet(object.description) ? String(object.description) : "",
-      tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
       serviceSelfDescription: isSet(object.serviceSelfDescription)
         ? ServiceSelfDescription.fromJSON(object.serviceSelfDescription)
         : undefined,
@@ -605,9 +582,6 @@ export const AdditionalInformation = {
     const obj: any = {};
     if (message.description !== "") {
       obj.description = message.description;
-    }
-    if (message.tags?.length) {
-      obj.tags = message.tags;
     }
     if (message.serviceSelfDescription !== undefined) {
       obj.serviceSelfDescription = ServiceSelfDescription.toJSON(message.serviceSelfDescription);
@@ -627,7 +601,6 @@ export const AdditionalInformation = {
   fromPartial<I extends Exact<DeepPartial<AdditionalInformation>, I>>(object: I): AdditionalInformation {
     const message = createBaseAdditionalInformation();
     message.description = object.description ?? "";
-    message.tags = object.tags?.map((e) => e) || [];
     message.serviceSelfDescription =
       (object.serviceSelfDescription !== undefined && object.serviceSelfDescription !== null)
         ? ServiceSelfDescription.fromPartial(object.serviceSelfDescription)
@@ -1246,85 +1219,6 @@ export const Result = {
     const message = createBaseResult();
     message.did = object.did ?? "";
     message.serviceId = object.serviceId ?? "";
-    return message;
-  },
-};
-
-function createBaseSelfDescription(): SelfDescription {
-  return { did: "", serviceSelfDescription: undefined };
-}
-
-export const SelfDescription = {
-  encode(message: SelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
-      writer.uint32(10).string(message.did);
-    }
-    if (message.serviceSelfDescription !== undefined) {
-      ServiceSelfDescription.encode(message.serviceSelfDescription, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SelfDescription {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSelfDescription();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.did = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.serviceSelfDescription = ServiceSelfDescription.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): SelfDescription {
-    return {
-      did: isSet(object.did) ? String(object.did) : "",
-      serviceSelfDescription: isSet(object.serviceSelfDescription)
-        ? ServiceSelfDescription.fromJSON(object.serviceSelfDescription)
-        : undefined,
-    };
-  },
-
-  toJSON(message: SelfDescription): unknown {
-    const obj: any = {};
-    if (message.did !== "") {
-      obj.did = message.did;
-    }
-    if (message.serviceSelfDescription !== undefined) {
-      obj.serviceSelfDescription = ServiceSelfDescription.toJSON(message.serviceSelfDescription);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<SelfDescription>, I>>(base?: I): SelfDescription {
-    return SelfDescription.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SelfDescription>, I>>(object: I): SelfDescription {
-    const message = createBaseSelfDescription();
-    message.did = object.did ?? "";
-    message.serviceSelfDescription =
-      (object.serviceSelfDescription !== undefined && object.serviceSelfDescription !== null)
-        ? ServiceSelfDescription.fromPartial(object.serviceSelfDescription)
-        : undefined;
     return message;
   },
 };
