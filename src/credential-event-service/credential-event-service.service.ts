@@ -7,7 +7,6 @@ import {
   ComplianceCloudEventDTO,
   defaultComplianceCloudEventDTO,
 } from './event-dto';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CredentialEventServiceService {
@@ -23,7 +22,7 @@ export class CredentialEventServiceService {
 
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
-      id: randomUUID(),
+      source: vc.source,
       subject: null, // FIXME: clarifiy what this field should be
       time: new Date().toISOString(),
       data: vc,

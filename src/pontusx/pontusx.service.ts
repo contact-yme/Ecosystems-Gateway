@@ -18,7 +18,10 @@ import {
   UrlFile,
   NautilusDDO,
 } from 'nautilus';
-import { Offering } from 'src/generated/src/_proto/spp';
+import {
+  CreateOfferingRequest,
+  UpdateOfferingRequest,
+} from 'src/generated/src/_proto/spp';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -68,47 +71,22 @@ export class PontusxService implements OnModuleInit {
     this.logLevel = level;
   }
 
-  async publishComputeAsset(offering: Offering) {
+  async publishComputeAsset(offering: CreateOfferingRequest) {
     this.logger.debug('VC from pontusx publishing:', offering);
 
     const owner = await this.wallet.getAddress();
     this.logger.debug(`Your address is ${owner}`);
 
-    let serviceBuilder;
-    let aquariusAsset;
-    let nautilusDDO;
-
-    if (offering.did && offering.did?.trim().length !== 0) {
-      const fromDid = await NautilusDDO.createFromDID(
-        offering.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
-        this.nautilus,
-      );
-      aquariusAsset = fromDid.aquariusAsset;
-      nautilusDDO = fromDid.nautilusDDO;
-
-      if (offering.serviceId && offering.serviceId?.trim().length !== 0) {
-        if (!this.serviceExistsOnDDO(nautilusDDO, offering.serviceId)) {
-          throw new Error(`ServiceID (${offering.serviceId}) not found on ddo`);
-        }
-      } else {
-        serviceBuilder = new ServiceBuilder({
-          aquariusAsset,
-          serviceId: offering.serviceId,
-        });
-      }
-    } else {
-      serviceBuilder = new ServiceBuilder({
-        serviceType: ServiceTypes.COMPUTE,
-        fileType: FileTypes.URL,
-      }); // compute type dataset with URL data source
-    }
+    const serviceBuilder = new ServiceBuilder({
+      serviceType: ServiceTypes.COMPUTE,
+      fileType: FileTypes.URL,
+    }); // compute type dataset with URL data source
 
     serviceBuilder
       .setServiceEndpoint(this.networkConfig.providerUri)
       .setTimeout(86400)
       .setPricing(this.pricingConfig['FIXED_EUROE'])
       .setDatatokenNameAndSymbol(offering.name, offering.token) // important for following access token transactions in the explorer
-
       .allowRawAlgorithms(false);
     //.addConsumerParameter(cunsumerParameter) // optional
 
@@ -133,12 +111,7 @@ export class PontusxService implements OnModuleInit {
       throw new Error('Incopatible type of offering!');
     }
 
-    let assetBuilder;
-    if (offering.did?.trim().length !== 0) {
-      assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
-    } else {
-      assetBuilder = new AssetBuilder();
-    }
+    const assetBuilder = new AssetBuilder();
     const asset = assetBuilder
       .setType(<'dataset'>offering.main.type)
       .setName(offering.name)
@@ -156,7 +129,68 @@ export class PontusxService implements OnModuleInit {
     return result;
   }
 
-  private serviceExistsOnDDO(nautilusDDO: any, serviceID: string) {
-    return nautilusDDO.services.map((s) => s.id).includes(serviceID);
+  async updateOffering(offeringRequest: UpdateOfferingRequest) {
+    const { aquariusAsset, nautilusDDO } = await NautilusDDO.createFromDID(
+      offeringRequest.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
+      this.nautilus,
+    );
+
+    const theOneService = await this.getTheOneService(nautilusDDO);
+
+    const serviceBuilder = new ServiceBuilder({
+      aquariusAsset,
+      serviceId: theOneService.id,
+    });
+
+    serviceBuilder.setDatatokenNameAndSymbol(
+      offeringRequest.name,
+      offeringRequest.token,
+    ); // important for following access token transactions in the explorer
+
+    offeringRequest.main.files?.forEach((file) => {
+      const urlFile: UrlFile = {
+        type: 'url',
+        url: file.url, // link to your file or api
+        method: file.method,
+        index: file.index,
+        // headers: {
+        //     Authorization: 'Basic XXX' // optional headers field e.g. for basic access control
+        // }
+      };
+      serviceBuilder.addFile(urlFile);
+    });
+    offeringRequest.main.allowedAlgorithm?.forEach((algorithm) => {
+      serviceBuilder.addTrustedAlgorithm(algorithm);
+    });
+
+    const service = serviceBuilder.build();
+
+    const assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
+
+    if (offeringRequest.main.type !== 'dataset') {
+      throw new Error('Incopatible type of offering!');
+    }
+
+    const asset = assetBuilder
+      .setType(<'dataset'>offeringRequest.main.type)
+      .setName(offeringRequest.name)
+      .setDescription(offeringRequest.main.description)
+      .setAuthor(offeringRequest.main.author)
+      .setLicense(offeringRequest.main.licence)
+      .setContentLanguage('de')
+      .addTags(offeringRequest.main.tags) // remove tags first
+      .addService(service)
+      .addAdditionalInformation(offeringRequest.additionalInformation)
+      .build();
+
+    const result = await this.nautilus.edit(asset);
+    return result;
+  }
+  async getTheOneService(nautilusDDO: NautilusDDO) {
+    const ddo = await nautilusDDO.getDDO();
+    if (ddo.services.length !== 1) {
+      throw Error('We can only handle one service :(');
+    }
+    return ddo.services[0];
   }
 }

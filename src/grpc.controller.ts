@@ -49,5 +49,22 @@ export class GrpcController {
   @GrpcMethod('serviceofferingPublisher')
   async updateOffering(data: UpdateOfferingRequest): Promise<StatusResponse> {
     this.logger.debug('grpc method UpdateOffering called');
-    this.logger.debug(data);  }
+    this.logger.debug(data);
+
+    const result = await this.pontusxService.updateOffering(data);
+
+    if (result) {
+      return {
+        statusCode: 0,
+        simpleMessage: 'offering updated',
+        DebugInformation: result,
+      };
+    } else {
+      return {
+        statusCode: 2,
+        simpleMessage: 'failed',
+        DebugInformation: undefined,
+      };
+    }
+  }
 }

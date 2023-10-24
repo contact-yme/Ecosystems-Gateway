@@ -23,9 +23,13 @@ message UpdateOfferingRequest {
     AdditionalInformation additionalInformation = 3;
     string token = 4;
     string name = 5;
-    optional bool publishToCes = 6;
+    optional PublishInfo publishInfo = 6;
 }
 
+message PublishInfo{
+    string source = 1;
+    google.protobuf.Struct data = 2;
+}
 
 message Main{
     string type = 1;
@@ -86,7 +90,8 @@ message Result{
     string serviceId = 2;
 }
 
+
 service serviceofferingPublisher{
     rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
-    rpc UpdateOffering(UpdateOfferingRequest) returns (StatusResponse){}    
+    rpc UpdateOffering(UpdateOfferingRequest) returns (StatusResponse){}
 }

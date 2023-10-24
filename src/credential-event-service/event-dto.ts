@@ -7,8 +7,6 @@ export class ComplianceCloudEventDTO {
 
   subject?: string;
 
-  id: string;
-
   time: string;
 
   datacontenttype: string;
@@ -19,8 +17,7 @@ export class ComplianceCloudEventDTO {
 export const defaultComplianceCloudEventDTO: ComplianceCloudEventDTO = {
   specVersion: '1.0',
   type: 'eu.gaia-x.credential',
-  source: 'Konnektor',
-  id: null,
+  source: null,
   time: null,
   datacontenttype: 'application/json',
   data: undefined,
