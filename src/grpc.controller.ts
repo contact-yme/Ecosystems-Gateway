@@ -1,39 +1,24 @@
 import { Controller, Logger } from '@nestjs/common';
-import { AppService } from './app.service';
 import { GrpcMethod } from '@nestjs/microservices';
-import { JsonOffering, Offering, Status } from './generated/src/_proto/spp';
 import { PontusxService } from './pontusx/pontusx.service';
+import {
+  CreateOfferingRequest,
+  StatusResponse,
+  UpdateOfferingRequest,
+  UpdateResponse,
+} from './generated/src/_proto/spp';
 
 @Controller('grpc')
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
-  constructor(
-    private readonly appService: AppService,
-    private readonly pontusxService: PontusxService,
-  ) {}
+  constructor(private readonly pontusxService: PontusxService) {}
 
   @GrpcMethod('serviceofferingPublisher')
-  async publishOfferingJson(data: JsonOffering): Promise<Status> {
-    this.logger.debug('grpc method publishOfferingJson called');
-    return {
-      statusCode: 12,
-      simpleMessage: 'method publishOfferingJson not implemented',
-      DebugInformation: undefined,
-    };
-
-    console.log(data.metadata);
-
-    // TODO: use the right input...
-    await this.appService.publishEverything(data.metadata);
-  }
-
-  @GrpcMethod('serviceofferingPublisher')
-  async publishOffering(data: Offering): Promise<Status> {
-    this.logger.debug('grpc method publishOffering called');
+  async createOffering(data: CreateOfferingRequest): Promise<StatusResponse> {
+    this.logger.debug('grpc method CreateOffering called');
     this.logger.debug(data);
 
-    //await this.appService.publishEverything(data.main);
     if (data.main.type === 'dataset') {
       const result = await this.pontusxService.publishComputeAsset(data);
       if (result) {
@@ -41,6 +26,9 @@ export class GrpcController {
           statusCode: 0,
           simpleMessage: 'offering published',
           DebugInformation: undefined,
+          data: {
+            did: result.ddo.id,
+          },
         };
       } else {
         return {
@@ -53,6 +41,29 @@ export class GrpcController {
       return {
         statusCode: 12,
         simpleMessage: 'publishing of non dataset not implemented',
+        DebugInformation: undefined,
+      };
+    }
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async updateOffering(data: UpdateOfferingRequest): Promise<UpdateResponse> {
+    this.logger.debug('grpc method UpdateOffering called');
+    this.logger.debug(data);
+
+    const result = await this.pontusxService.updateOffering(data);
+
+    if (result) {
+      return {
+        statusCode: 0,
+        simpleMessage: 'offering updated',
+        location: result.ces,
+        DebugInformation: result,
+      };
+    } else {
+      return {
+        statusCode: 2,
+        simpleMessage: 'failed',
         DebugInformation: undefined,
       };
     }

@@ -10,25 +10,29 @@ package eupg.serviceofferingpublisher;
 
 option go_package = "serviceofferingpublisher/pb";
 
-message JsonOffering{   
-    google.protobuf.Struct metadata = 1;
-    string token = 3;
-    string name = 4;
-    repeated Algorithm allowedAlgorithm = 5;
-    string deploymentTarget = 7;
+message CreateOfferingRequest{
+    Main main = 2;
+    AdditionalInformation additionalInformation = 3;
+    string token = 4;
+    string name = 5;
 }
 
-message Offering{
-    Main main = 1;
-    AdditionalInformation additionalInformation = 2;
-    string token = 3;
-    string name = 4;
-    repeated Algorithm allowedAlgorithm = 5;
+message UpdateOfferingRequest {
+    string did = 1;
+    Main main = 2;
+    AdditionalInformation additionalInformation = 3;
+    string token = 4;
+    string name = 5;
+    optional PublishInfo publishInfo = 6;
+}
+
+message PublishInfo{
+    string source = 1;
+    string data = 2;
 }
 
 message Main{
     string type = 1;
-    string name = 2;
     string author = 3;
     string licence = 4;
     string dateCreated = 5;
@@ -40,7 +44,6 @@ message Main{
 
 message AdditionalInformation{
     string description = 1;
-    repeated string tags = 2;
     ServiceSelfDescription serviceSelfDescription = 3;
     bool termsAndConditions = 4;
     gaiaX gaiaXInformation = 5;
@@ -75,13 +78,25 @@ message Terms{
     string url = 1;
 }
 
-message Status{
+message StatusResponse{
     int32 statusCode = 1;
     string simpleMessage = 2;
+    optional Result data = 4;
     google.protobuf.Struct DebugInformation = 3;
 }
 
+message UpdateResponse{
+    int32 statusCode = 1;
+    string simpleMessage = 2;
+    optional string location = 4;
+    google.protobuf.Struct DebugInformation = 3;
+}
+
+message Result{
+    string did = 1;
+}
+
 service serviceofferingPublisher{
-    rpc PublishOfferingJson(JsonOffering) returns (Status) {} //metadata as (json)struct
-    rpc PublishOffering(Offering) returns (Status){} //metadata as protobuf
+    rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateResponse){}
 }

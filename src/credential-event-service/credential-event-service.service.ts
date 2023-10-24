@@ -1,26 +1,28 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import {
   ComplianceCloudEventDTO,
   defaultComplianceCloudEventDTO,
 } from './event-dto';
-import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CredentialEventServiceService {
   private readonly logger = new Logger(CredentialEventServiceService.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  async publish(vc: any) {
-    // FIXME: config management
-    const cesUrl = 'https://ces-v1.lab.gaia-x.eu/credentials-events';
+  async publish(source: string, vc: any) {
+    const cesUrl = this.configService.getOrThrow('CES_HOST');
 
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
-      id: randomUUID(),
+      source: source,
       subject: null, // FIXME: clarifiy what this field should be
       time: new Date().toISOString(),
       data: vc,
@@ -28,7 +30,7 @@ export class CredentialEventServiceService {
 
     this.logger.debug(`posting to ${cesUrl}:`, payload);
 
-    const { data } = await firstValueFrom(
+    const { headers } = await firstValueFrom(
       this.httpService.post(cesUrl, payload).pipe(
         catchError((err: AxiosError) => {
           // TODO: proper error handling
@@ -38,7 +40,8 @@ export class CredentialEventServiceService {
         }),
       ),
     );
-    this.logger.debug('got', data);
-    return data;
+    this.logger.debug('got', headers);
+    console.log('result', headers);
+    return headers['location'];
   }
 }

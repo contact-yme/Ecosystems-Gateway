@@ -4,25 +4,29 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "eupg.serviceofferingpublisher";
 
-export interface JsonOffering {
-  metadata: { [key: string]: any } | undefined;
-  token: string;
-  name: string;
-  allowedAlgorithm: Algorithm[];
-  deploymentTarget: string;
-}
-
-export interface Offering {
+export interface CreateOfferingRequest {
   main: Main | undefined;
   additionalInformation: AdditionalInformation | undefined;
   token: string;
   name: string;
-  allowedAlgorithm: Algorithm[];
+}
+
+export interface UpdateOfferingRequest {
+  did: string;
+  main: Main | undefined;
+  additionalInformation: AdditionalInformation | undefined;
+  token: string;
+  name: string;
+  publishInfo?: PublishInfo | undefined;
+}
+
+export interface PublishInfo {
+  source: string;
+  data: string;
 }
 
 export interface Main {
   type: string;
-  name: string;
   author: string;
   licence: string;
   dateCreated: string;
@@ -34,8 +38,9 @@ export interface Main {
 
 export interface AdditionalInformation {
   description: string;
-  tags: string[];
   serviceSelfDescription: ServiceSelfDescription | undefined;
+  termsAndConditions: boolean;
+  gaiaXInformation: gaiaX | undefined;
 }
 
 export interface Files {
@@ -54,200 +59,92 @@ export interface Algorithm {
 
 export interface ServiceSelfDescription {
   url: string;
+  isVerified: boolean;
 }
 
-export interface Status {
+export interface gaiaX {
+  containsPII: boolean;
+  termsAndConditions: Terms[];
+  serviceSD: ServiceSelfDescription | undefined;
+}
+
+export interface Terms {
+  url: string;
+}
+
+export interface StatusResponse {
   statusCode: number;
   simpleMessage: string;
+  data?: Result | undefined;
   DebugInformation: { [key: string]: any } | undefined;
 }
 
-function createBaseJsonOffering(): JsonOffering {
-  return { metadata: undefined, token: "", name: "", allowedAlgorithm: [], deploymentTarget: "" };
+export interface UpdateResponse {
+  statusCode: number;
+  simpleMessage: string;
+  location?: string | undefined;
+  DebugInformation: { [key: string]: any } | undefined;
 }
 
-export const JsonOffering = {
-  encode(message: JsonOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.metadata !== undefined) {
-      Struct.encode(Struct.wrap(message.metadata), writer.uint32(10).fork()).ldelim();
-    }
-    if (message.token !== "") {
-      writer.uint32(26).string(message.token);
-    }
-    if (message.name !== "") {
-      writer.uint32(34).string(message.name);
-    }
-    for (const v of message.allowedAlgorithm) {
-      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.deploymentTarget !== "") {
-      writer.uint32(58).string(message.deploymentTarget);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): JsonOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseJsonOffering();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.metadata = Struct.unwrap(Struct.decode(reader, reader.uint32()));
-          continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.token = reader.string();
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
-          continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.deploymentTarget = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): JsonOffering {
-    return {
-      metadata: isObject(object.metadata) ? object.metadata : undefined,
-      token: isSet(object.token) ? String(object.token) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
-        : [],
-      deploymentTarget: isSet(object.deploymentTarget) ? String(object.deploymentTarget) : "",
-    };
-  },
-
-  toJSON(message: JsonOffering): unknown {
-    const obj: any = {};
-    if (message.metadata !== undefined) {
-      obj.metadata = message.metadata;
-    }
-    if (message.token !== "") {
-      obj.token = message.token;
-    }
-    if (message.name !== "") {
-      obj.name = message.name;
-    }
-    if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
-    }
-    if (message.deploymentTarget !== "") {
-      obj.deploymentTarget = message.deploymentTarget;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<JsonOffering>, I>>(base?: I): JsonOffering {
-    return JsonOffering.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<JsonOffering>, I>>(object: I): JsonOffering {
-    const message = createBaseJsonOffering();
-    message.metadata = object.metadata ?? undefined;
-    message.token = object.token ?? "";
-    message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
-    message.deploymentTarget = object.deploymentTarget ?? "";
-    return message;
-  },
-};
-
-function createBaseOffering(): Offering {
-  return { main: undefined, additionalInformation: undefined, token: "", name: "", allowedAlgorithm: [] };
+export interface Result {
+  did: string;
 }
 
-export const Offering = {
-  encode(message: Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+function createBaseCreateOfferingRequest(): CreateOfferingRequest {
+  return { main: undefined, additionalInformation: undefined, token: "", name: "" };
+}
+
+export const CreateOfferingRequest = {
+  encode(message: CreateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.main !== undefined) {
-      Main.encode(message.main, writer.uint32(10).fork()).ldelim();
+      Main.encode(message.main, writer.uint32(18).fork()).ldelim();
     }
     if (message.additionalInformation !== undefined) {
-      AdditionalInformation.encode(message.additionalInformation, writer.uint32(18).fork()).ldelim();
+      AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
     }
     if (message.token !== "") {
-      writer.uint32(26).string(message.token);
+      writer.uint32(34).string(message.token);
     }
     if (message.name !== "") {
-      writer.uint32(34).string(message.name);
-    }
-    for (const v of message.allowedAlgorithm) {
-      Algorithm.encode(v!, writer.uint32(42).fork()).ldelim();
+      writer.uint32(42).string(message.name);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Offering {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseOffering();
+    const message = createBaseCreateOfferingRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.main = Main.decode(reader, reader.uint32());
-          continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          message.main = Main.decode(reader, reader.uint32());
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.token = reader.string();
+          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.name = reader.string();
+          message.token = reader.string();
           continue;
         case 5:
           if (tag !== 42) {
             break;
           }
 
-          message.allowedAlgorithm.push(Algorithm.decode(reader, reader.uint32()));
+          message.name = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -258,7 +155,7 @@ export const Offering = {
     return message;
   },
 
-  fromJSON(object: any): Offering {
+  fromJSON(object: any): CreateOfferingRequest {
     return {
       main: isSet(object.main) ? Main.fromJSON(object.main) : undefined,
       additionalInformation: isSet(object.additionalInformation)
@@ -266,13 +163,10 @@ export const Offering = {
         : undefined,
       token: isSet(object.token) ? String(object.token) : "",
       name: isSet(object.name) ? String(object.name) : "",
-      allowedAlgorithm: Array.isArray(object?.allowedAlgorithm)
-        ? object.allowedAlgorithm.map((e: any) => Algorithm.fromJSON(e))
-        : [],
     };
   },
 
-  toJSON(message: Offering): unknown {
+  toJSON(message: CreateOfferingRequest): unknown {
     const obj: any = {};
     if (message.main !== undefined) {
       obj.main = Main.toJSON(message.main);
@@ -286,17 +180,14 @@ export const Offering = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.allowedAlgorithm?.length) {
-      obj.allowedAlgorithm = message.allowedAlgorithm.map((e) => Algorithm.toJSON(e));
-    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<Offering>, I>>(base?: I): Offering {
-    return Offering.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(base?: I): CreateOfferingRequest {
+    return CreateOfferingRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Offering>, I>>(object: I): Offering {
-    const message = createBaseOffering();
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(object: I): CreateOfferingRequest {
+    const message = createBaseCreateOfferingRequest();
     message.main = (object.main !== undefined && object.main !== null) ? Main.fromPartial(object.main) : undefined;
     message.additionalInformation =
       (object.additionalInformation !== undefined && object.additionalInformation !== null)
@@ -304,7 +195,221 @@ export const Offering = {
         : undefined;
     message.token = object.token ?? "";
     message.name = object.name ?? "";
-    message.allowedAlgorithm = object.allowedAlgorithm?.map((e) => Algorithm.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
+  return { did: "", main: undefined, additionalInformation: undefined, token: "", name: "", publishInfo: undefined };
+}
+
+export const UpdateOfferingRequest = {
+  encode(message: UpdateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.main !== undefined) {
+      Main.encode(message.main, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.additionalInformation !== undefined) {
+      AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.token !== "") {
+      writer.uint32(34).string(message.token);
+    }
+    if (message.name !== "") {
+      writer.uint32(42).string(message.name);
+    }
+    if (message.publishInfo !== undefined) {
+      PublishInfo.encode(message.publishInfo, writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.main = Main.decode(reader, reader.uint32());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.token = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.publishInfo = PublishInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingRequest {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      main: isSet(object.main) ? Main.fromJSON(object.main) : undefined,
+      additionalInformation: isSet(object.additionalInformation)
+        ? AdditionalInformation.fromJSON(object.additionalInformation)
+        : undefined,
+      token: isSet(object.token) ? String(object.token) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
+    };
+  },
+
+  toJSON(message: UpdateOfferingRequest): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.main !== undefined) {
+      obj.main = Main.toJSON(message.main);
+    }
+    if (message.additionalInformation !== undefined) {
+      obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
+    }
+    if (message.token !== "") {
+      obj.token = message.token;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.publishInfo !== undefined) {
+      obj.publishInfo = PublishInfo.toJSON(message.publishInfo);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(base?: I): UpdateOfferingRequest {
+    return UpdateOfferingRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(object: I): UpdateOfferingRequest {
+    const message = createBaseUpdateOfferingRequest();
+    message.did = object.did ?? "";
+    message.main = (object.main !== undefined && object.main !== null) ? Main.fromPartial(object.main) : undefined;
+    message.additionalInformation =
+      (object.additionalInformation !== undefined && object.additionalInformation !== null)
+        ? AdditionalInformation.fromPartial(object.additionalInformation)
+        : undefined;
+    message.token = object.token ?? "";
+    message.name = object.name ?? "";
+    message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
+      ? PublishInfo.fromPartial(object.publishInfo)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasePublishInfo(): PublishInfo {
+  return { source: "", data: "" };
+}
+
+export const PublishInfo = {
+  encode(message: PublishInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.source !== "") {
+      writer.uint32(10).string(message.source);
+    }
+    if (message.data !== "") {
+      writer.uint32(18).string(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PublishInfo {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePublishInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.source = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.data = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PublishInfo {
+    return {
+      source: isSet(object.source) ? String(object.source) : "",
+      data: isSet(object.data) ? String(object.data) : "",
+    };
+  },
+
+  toJSON(message: PublishInfo): unknown {
+    const obj: any = {};
+    if (message.source !== "") {
+      obj.source = message.source;
+    }
+    if (message.data !== "") {
+      obj.data = message.data;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PublishInfo>, I>>(base?: I): PublishInfo {
+    return PublishInfo.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PublishInfo>, I>>(object: I): PublishInfo {
+    const message = createBasePublishInfo();
+    message.source = object.source ?? "";
+    message.data = object.data ?? "";
     return message;
   },
 };
@@ -312,7 +417,6 @@ export const Offering = {
 function createBaseMain(): Main {
   return {
     type: "",
-    name: "",
     author: "",
     licence: "",
     dateCreated: "",
@@ -327,9 +431,6 @@ export const Main = {
   encode(message: Main, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.type !== "") {
       writer.uint32(10).string(message.type);
-    }
-    if (message.name !== "") {
-      writer.uint32(18).string(message.name);
     }
     if (message.author !== "") {
       writer.uint32(26).string(message.author);
@@ -368,13 +469,6 @@ export const Main = {
           }
 
           message.type = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.name = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -437,7 +531,6 @@ export const Main = {
   fromJSON(object: any): Main {
     return {
       type: isSet(object.type) ? String(object.type) : "",
-      name: isSet(object.name) ? String(object.name) : "",
       author: isSet(object.author) ? String(object.author) : "",
       licence: isSet(object.licence) ? String(object.licence) : "",
       dateCreated: isSet(object.dateCreated) ? String(object.dateCreated) : "",
@@ -454,9 +547,6 @@ export const Main = {
     const obj: any = {};
     if (message.type !== "") {
       obj.type = message.type;
-    }
-    if (message.name !== "") {
-      obj.name = message.name;
     }
     if (message.author !== "") {
       obj.author = message.author;
@@ -488,7 +578,6 @@ export const Main = {
   fromPartial<I extends Exact<DeepPartial<Main>, I>>(object: I): Main {
     const message = createBaseMain();
     message.type = object.type ?? "";
-    message.name = object.name ?? "";
     message.author = object.author ?? "";
     message.licence = object.licence ?? "";
     message.dateCreated = object.dateCreated ?? "";
@@ -501,7 +590,7 @@ export const Main = {
 };
 
 function createBaseAdditionalInformation(): AdditionalInformation {
-  return { description: "", tags: [], serviceSelfDescription: undefined };
+  return { description: "", serviceSelfDescription: undefined, termsAndConditions: false, gaiaXInformation: undefined };
 }
 
 export const AdditionalInformation = {
@@ -509,11 +598,14 @@ export const AdditionalInformation = {
     if (message.description !== "") {
       writer.uint32(10).string(message.description);
     }
-    for (const v of message.tags) {
-      writer.uint32(18).string(v!);
-    }
     if (message.serviceSelfDescription !== undefined) {
       ServiceSelfDescription.encode(message.serviceSelfDescription, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.termsAndConditions === true) {
+      writer.uint32(32).bool(message.termsAndConditions);
+    }
+    if (message.gaiaXInformation !== undefined) {
+      gaiaX.encode(message.gaiaXInformation, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -532,19 +624,26 @@ export const AdditionalInformation = {
 
           message.description = reader.string();
           continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.tags.push(reader.string());
-          continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
           message.serviceSelfDescription = ServiceSelfDescription.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.termsAndConditions = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.gaiaXInformation = gaiaX.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -558,10 +657,11 @@ export const AdditionalInformation = {
   fromJSON(object: any): AdditionalInformation {
     return {
       description: isSet(object.description) ? String(object.description) : "",
-      tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
       serviceSelfDescription: isSet(object.serviceSelfDescription)
         ? ServiceSelfDescription.fromJSON(object.serviceSelfDescription)
         : undefined,
+      termsAndConditions: isSet(object.termsAndConditions) ? Boolean(object.termsAndConditions) : false,
+      gaiaXInformation: isSet(object.gaiaXInformation) ? gaiaX.fromJSON(object.gaiaXInformation) : undefined,
     };
   },
 
@@ -570,11 +670,14 @@ export const AdditionalInformation = {
     if (message.description !== "") {
       obj.description = message.description;
     }
-    if (message.tags?.length) {
-      obj.tags = message.tags;
-    }
     if (message.serviceSelfDescription !== undefined) {
       obj.serviceSelfDescription = ServiceSelfDescription.toJSON(message.serviceSelfDescription);
+    }
+    if (message.termsAndConditions === true) {
+      obj.termsAndConditions = message.termsAndConditions;
+    }
+    if (message.gaiaXInformation !== undefined) {
+      obj.gaiaXInformation = gaiaX.toJSON(message.gaiaXInformation);
     }
     return obj;
   },
@@ -585,11 +688,14 @@ export const AdditionalInformation = {
   fromPartial<I extends Exact<DeepPartial<AdditionalInformation>, I>>(object: I): AdditionalInformation {
     const message = createBaseAdditionalInformation();
     message.description = object.description ?? "";
-    message.tags = object.tags?.map((e) => e) || [];
     message.serviceSelfDescription =
       (object.serviceSelfDescription !== undefined && object.serviceSelfDescription !== null)
         ? ServiceSelfDescription.fromPartial(object.serviceSelfDescription)
         : undefined;
+    message.termsAndConditions = object.termsAndConditions ?? false;
+    message.gaiaXInformation = (object.gaiaXInformation !== undefined && object.gaiaXInformation !== null)
+      ? gaiaX.fromPartial(object.gaiaXInformation)
+      : undefined;
     return message;
   },
 };
@@ -803,13 +909,16 @@ export const Algorithm = {
 };
 
 function createBaseServiceSelfDescription(): ServiceSelfDescription {
-  return { url: "" };
+  return { url: "", isVerified: false };
 }
 
 export const ServiceSelfDescription = {
   encode(message: ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.url !== "") {
       writer.uint32(10).string(message.url);
+    }
+    if (message.isVerified === true) {
+      writer.uint32(16).bool(message.isVerified);
     }
     return writer;
   },
@@ -818,6 +927,170 @@ export const ServiceSelfDescription = {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseServiceSelfDescription();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.isVerified = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ServiceSelfDescription {
+    return {
+      url: isSet(object.url) ? String(object.url) : "",
+      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : false,
+    };
+  },
+
+  toJSON(message: ServiceSelfDescription): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.isVerified === true) {
+      obj.isVerified = message.isVerified;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
+    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
+    const message = createBaseServiceSelfDescription();
+    message.url = object.url ?? "";
+    message.isVerified = object.isVerified ?? false;
+    return message;
+  },
+};
+
+function createBasegaiaX(): gaiaX {
+  return { containsPII: false, termsAndConditions: [], serviceSD: undefined };
+}
+
+export const gaiaX = {
+  encode(message: gaiaX, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.containsPII === true) {
+      writer.uint32(8).bool(message.containsPII);
+    }
+    for (const v of message.termsAndConditions) {
+      Terms.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.serviceSD !== undefined) {
+      ServiceSelfDescription.encode(message.serviceSD, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasegaiaX();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.containsPII = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.termsAndConditions.push(Terms.decode(reader, reader.uint32()));
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.serviceSD = ServiceSelfDescription.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): gaiaX {
+    return {
+      containsPII: isSet(object.containsPII) ? Boolean(object.containsPII) : false,
+      termsAndConditions: Array.isArray(object?.termsAndConditions)
+        ? object.termsAndConditions.map((e: any) => Terms.fromJSON(e))
+        : [],
+      serviceSD: isSet(object.serviceSD) ? ServiceSelfDescription.fromJSON(object.serviceSD) : undefined,
+    };
+  },
+
+  toJSON(message: gaiaX): unknown {
+    const obj: any = {};
+    if (message.containsPII === true) {
+      obj.containsPII = message.containsPII;
+    }
+    if (message.termsAndConditions?.length) {
+      obj.termsAndConditions = message.termsAndConditions.map((e) => Terms.toJSON(e));
+    }
+    if (message.serviceSD !== undefined) {
+      obj.serviceSD = ServiceSelfDescription.toJSON(message.serviceSD);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<gaiaX>, I>>(base?: I): gaiaX {
+    return gaiaX.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<gaiaX>, I>>(object: I): gaiaX {
+    const message = createBasegaiaX();
+    message.containsPII = object.containsPII ?? false;
+    message.termsAndConditions = object.termsAndConditions?.map((e) => Terms.fromPartial(e)) || [];
+    message.serviceSD = (object.serviceSD !== undefined && object.serviceSD !== null)
+      ? ServiceSelfDescription.fromPartial(object.serviceSD)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseTerms(): Terms {
+  return { url: "" };
+}
+
+export const Terms = {
+  encode(message: Terms, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Terms {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTerms();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -837,11 +1110,11 @@ export const ServiceSelfDescription = {
     return message;
   },
 
-  fromJSON(object: any): ServiceSelfDescription {
+  fromJSON(object: any): Terms {
     return { url: isSet(object.url) ? String(object.url) : "" };
   },
 
-  toJSON(message: ServiceSelfDescription): unknown {
+  toJSON(message: Terms): unknown {
     const obj: any = {};
     if (message.url !== "") {
       obj.url = message.url;
@@ -849,27 +1122,30 @@ export const ServiceSelfDescription = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
-    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<Terms>, I>>(base?: I): Terms {
+    return Terms.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
-    const message = createBaseServiceSelfDescription();
+  fromPartial<I extends Exact<DeepPartial<Terms>, I>>(object: I): Terms {
+    const message = createBaseTerms();
     message.url = object.url ?? "";
     return message;
   },
 };
 
-function createBaseStatus(): Status {
-  return { statusCode: 0, simpleMessage: "", DebugInformation: undefined };
+function createBaseStatusResponse(): StatusResponse {
+  return { statusCode: 0, simpleMessage: "", data: undefined, DebugInformation: undefined };
 }
 
-export const Status = {
-  encode(message: Status, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const StatusResponse = {
+  encode(message: StatusResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.statusCode !== 0) {
       writer.uint32(8).int32(message.statusCode);
     }
     if (message.simpleMessage !== "") {
       writer.uint32(18).string(message.simpleMessage);
+    }
+    if (message.data !== undefined) {
+      Result.encode(message.data, writer.uint32(34).fork()).ldelim();
     }
     if (message.DebugInformation !== undefined) {
       Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
@@ -877,10 +1153,10 @@ export const Status = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Status {
+  decode(input: _m0.Reader | Uint8Array, length?: number): StatusResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseStatus();
+    const message = createBaseStatusResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -898,6 +1174,13 @@ export const Status = {
 
           message.simpleMessage = reader.string();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.data = Result.decode(reader, reader.uint32());
+          continue;
         case 3:
           if (tag !== 26) {
             break;
@@ -914,15 +1197,16 @@ export const Status = {
     return message;
   },
 
-  fromJSON(object: any): Status {
+  fromJSON(object: any): StatusResponse {
     return {
       statusCode: isSet(object.statusCode) ? Number(object.statusCode) : 0,
       simpleMessage: isSet(object.simpleMessage) ? String(object.simpleMessage) : "",
+      data: isSet(object.data) ? Result.fromJSON(object.data) : undefined,
       DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
     };
   },
 
-  toJSON(message: Status): unknown {
+  toJSON(message: StatusResponse): unknown {
     const obj: any = {};
     if (message.statusCode !== 0) {
       obj.statusCode = Math.round(message.statusCode);
@@ -930,27 +1214,192 @@ export const Status = {
     if (message.simpleMessage !== "") {
       obj.simpleMessage = message.simpleMessage;
     }
+    if (message.data !== undefined) {
+      obj.data = Result.toJSON(message.data);
+    }
     if (message.DebugInformation !== undefined) {
       obj.DebugInformation = message.DebugInformation;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<Status>, I>>(base?: I): Status {
-    return Status.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<StatusResponse>, I>>(base?: I): StatusResponse {
+    return StatusResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Status>, I>>(object: I): Status {
-    const message = createBaseStatus();
+  fromPartial<I extends Exact<DeepPartial<StatusResponse>, I>>(object: I): StatusResponse {
+    const message = createBaseStatusResponse();
     message.statusCode = object.statusCode ?? 0;
     message.simpleMessage = object.simpleMessage ?? "";
+    message.data = (object.data !== undefined && object.data !== null) ? Result.fromPartial(object.data) : undefined;
     message.DebugInformation = object.DebugInformation ?? undefined;
     return message;
   },
 };
 
+function createBaseUpdateResponse(): UpdateResponse {
+  return { statusCode: 0, simpleMessage: "", location: undefined, DebugInformation: undefined };
+}
+
+export const UpdateResponse = {
+  encode(message: UpdateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.statusCode !== 0) {
+      writer.uint32(8).int32(message.statusCode);
+    }
+    if (message.simpleMessage !== "") {
+      writer.uint32(18).string(message.simpleMessage);
+    }
+    if (message.location !== undefined) {
+      writer.uint32(34).string(message.location);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.statusCode = reader.int32();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.simpleMessage = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.location = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateResponse {
+    return {
+      statusCode: isSet(object.statusCode) ? Number(object.statusCode) : 0,
+      simpleMessage: isSet(object.simpleMessage) ? String(object.simpleMessage) : "",
+      location: isSet(object.location) ? String(object.location) : undefined,
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: UpdateResponse): unknown {
+    const obj: any = {};
+    if (message.statusCode !== 0) {
+      obj.statusCode = Math.round(message.statusCode);
+    }
+    if (message.simpleMessage !== "") {
+      obj.simpleMessage = message.simpleMessage;
+    }
+    if (message.location !== undefined) {
+      obj.location = message.location;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateResponse>, I>>(base?: I): UpdateResponse {
+    return UpdateResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateResponse>, I>>(object: I): UpdateResponse {
+    const message = createBaseUpdateResponse();
+    message.statusCode = object.statusCode ?? 0;
+    message.simpleMessage = object.simpleMessage ?? "";
+    message.location = object.location ?? undefined;
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
+function createBaseResult(): Result {
+  return { did: "" };
+}
+
+export const Result = {
+  encode(message: Result, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Result {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Result {
+    return { did: isSet(object.did) ? String(object.did) : "" };
+  },
+
+  toJSON(message: Result): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Result>, I>>(base?: I): Result {
+    return Result.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Result>, I>>(object: I): Result {
+    const message = createBaseResult();
+    message.did = object.did ?? "";
+    return message;
+  },
+};
+
 export interface serviceofferingPublisher {
-  PublishOfferingJson(request: JsonOffering): Promise<Status>;
-  PublishOffering(request: Offering): Promise<Status>;
+  CreateOffering(request: CreateOfferingRequest): Promise<StatusResponse>;
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateResponse>;
 }
 
 export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
@@ -960,19 +1409,19 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || serviceofferingPublisherServiceName;
     this.rpc = rpc;
-    this.PublishOfferingJson = this.PublishOfferingJson.bind(this);
-    this.PublishOffering = this.PublishOffering.bind(this);
+    this.CreateOffering = this.CreateOffering.bind(this);
+    this.UpdateOffering = this.UpdateOffering.bind(this);
   }
-  PublishOfferingJson(request: JsonOffering): Promise<Status> {
-    const data = JsonOffering.encode(request).finish();
-    const promise = this.rpc.request(this.service, "PublishOfferingJson", data);
-    return promise.then((data) => Status.decode(_m0.Reader.create(data)));
+  CreateOffering(request: CreateOfferingRequest): Promise<StatusResponse> {
+    const data = CreateOfferingRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "CreateOffering", data);
+    return promise.then((data) => StatusResponse.decode(_m0.Reader.create(data)));
   }
 
-  PublishOffering(request: Offering): Promise<Status> {
-    const data = Offering.encode(request).finish();
-    const promise = this.rpc.request(this.service, "PublishOffering", data);
-    return promise.then((data) => Status.decode(_m0.Reader.create(data)));
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateResponse> {
+    const data = UpdateOfferingRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "UpdateOffering", data);
+    return promise.then((data) => UpdateResponse.decode(_m0.Reader.create(data)));
   }
 }
 
