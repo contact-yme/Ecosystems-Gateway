@@ -1,4 +1,4 @@
-import { PricingConfigWithoutOwner } from '@deltadao/nautilus';
+import { PricingConfigWithoutOwner } from 'nautilus';
 
 export enum Network {
   PONTUSX = 'PONTUSX',

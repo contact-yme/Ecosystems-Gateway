@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { PontusxService } from './pontusx/pontusx.service';
 import { XfscService } from './xfsc/xfsc.service';
 import { CredentialEventServiceService } from './credential-event-service/credential-event-service.service';
+import { PontusxService } from './pontusx/pontusx.service';
 
 @Injectable()
 export class AppService {

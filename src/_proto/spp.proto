@@ -10,16 +10,25 @@ package eupg.serviceofferingpublisher;
 
 option go_package = "serviceofferingpublisher/pb";
 
-message Offering{
-    Main main = 1;
-    AdditionalInformation additionalInformation = 2;
-    string token = 3;
-    string name = 4;
+message CreateOfferingRequest{
+    Main main = 2;
+    AdditionalInformation additionalInformation = 3;
+    string token = 4;
+    string name = 5;
 }
+
+message UpdateOfferingRequest {
+    string did = 1;
+    Main main = 2;
+    AdditionalInformation additionalInformation = 3;
+    string token = 4;
+    string name = 5;
+    optional bool publishToCes = 6;
+}
+
 
 message Main{
     string type = 1;
-    string name = 2;
     string author = 3;
     string licence = 4;
     string dateCreated = 5;
@@ -66,12 +75,24 @@ message Terms{
     string url = 1;
 }
 
-message Status{
+message StatusResponse{
     int32 statusCode = 1;
     string simpleMessage = 2;
+    optional Result data = 4;
     google.protobuf.Struct DebugInformation = 3;
 }
 
+message Result{
+    string did = 1;
+    string serviceId = 2;
+}
+
+message SelfDescription {
+    string did = 1;
+    ServiceSelfDescription serviceSelfDescription = 2;
+}
+
 service serviceofferingPublisher{
-    rpc PublishOffering(Offering) returns (Status){}
+    rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (StatusResponse){}    
 }

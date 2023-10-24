@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Network,
@@ -16,16 +16,18 @@ import {
   ServiceBuilder,
   ServiceTypes,
   UrlFile,
-} from '@deltadao/nautilus';
+  NautilusDDO,
+} from 'nautilus';
 import { Offering } from 'src/generated/src/_proto/spp';
 
 @Injectable()
-export class PontusxService {
+export class PontusxService implements OnModuleInit {
   private readonly logger = new Logger(PontusxService.name);
   private readonly selectedNetwork: string;
   private readonly networkConfig: NetworkConfig;
   private readonly pricingConfig: PricingConfig;
   private readonly wallet: Wallet;
+  private nautilus: Nautilus;
   private logLevel: LogLevel = LogLevel.Verbose;
 
   constructor(private readonly configService: ConfigService) {
@@ -53,6 +55,11 @@ export class PontusxService {
     );
   }
 
+  async onModuleInit(): Promise<void> {
+    this.nautilus = await Nautilus.create(this.wallet, this.networkConfig);
+    Nautilus.setLogLevel(this.logLevel);
+  }
+
   getSelectedNetwork() {
     return this.selectedNetwork;
   }
@@ -63,41 +70,45 @@ export class PontusxService {
 
   async publishComputeAsset(offering: Offering) {
     this.logger.debug('VC from pontusx publishing:', offering);
-    Nautilus.setLogLevel(this.logLevel);
-    const nautilus = await Nautilus.create(this.wallet, this.networkConfig);
 
     const owner = await this.wallet.getAddress();
     this.logger.debug(`Your address is ${owner}`);
 
-    //ToolCondition-Algorithm
-    const trustedAlgo1 = {
-      did: 'did:op:bd74d6a281ba414de2b4d8ee4087277575f95676bd74e20ee9e2960c9c38d7c5',
-      filesChecksum:
-        'e824e61f496db857b88c44a62670a8162e9cca2a21dcbdf0990f92f07fada0f4', //Hash of algorithm's files section
-      containerSectionChecksum:
-        '8f7e42a9529e57f6d4c198a23bb26461be7d36873b2d4ccaeedaf2e36f492541',
-    };
-    //CO2-Estimate Algorithm
-    const trustedAlgo2 = {
-      did: 'did:op:a3da777fd3711da36d5e1e5904a8c074b6e8df51549db2b6c8a5bc7ec3ab60cf',
-      filesChecksum:
-        'e824e61f496db857b88c44a62670a8162e9cca2a21dcbdf0990f92f07fada0f4',
-      containerSectionChecksum:
-        '0bc95cdfec91541042d6847c82af4401261fcff633d41d9fba8e612760d77996',
-    };
+    let serviceBuilder;
+    let aquariusAsset;
+    let nautilusDDO;
 
-    const serviceBuilder = new ServiceBuilder(
-      ServiceTypes.COMPUTE,
-      FileTypes.URL,
-    ); // compute type dataset with URL data source
+    if (offering.did && offering.did?.trim().length !== 0) {
+      const fromDid = await NautilusDDO.createFromDID(
+        offering.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
+        this.nautilus,
+      );
+      aquariusAsset = fromDid.aquariusAsset;
+      nautilusDDO = fromDid.nautilusDDO;
+
+      if (offering.serviceId && offering.serviceId?.trim().length !== 0) {
+        if (!this.serviceExistsOnDDO(nautilusDDO, offering.serviceId)) {
+          throw new Error(`ServiceID (${offering.serviceId}) not found on ddo`);
+        }
+      } else {
+        serviceBuilder = new ServiceBuilder({
+          aquariusAsset,
+          serviceId: offering.serviceId,
+        });
+      }
+    } else {
+      serviceBuilder = new ServiceBuilder({
+        serviceType: ServiceTypes.COMPUTE,
+        fileType: FileTypes.URL,
+      }); // compute type dataset with URL data source
+    }
 
     serviceBuilder
       .setServiceEndpoint(this.networkConfig.providerUri)
       .setTimeout(86400)
       .setPricing(this.pricingConfig['FIXED_EUROE'])
       .setDatatokenNameAndSymbol(offering.name, offering.token) // important for following access token transactions in the explorer
-      //.addTrustedAlgorithm(trustedAlgo1)
-      //.addTrustedAlgorithm(trustedAlgo2)
+
       .allowRawAlgorithms(false);
     //.addConsumerParameter(cunsumerParameter) // optional
 
@@ -122,10 +133,15 @@ export class PontusxService {
       throw new Error('Incopatible type of offering!');
     }
 
-    const assetBuilder = new AssetBuilder();
+    let assetBuilder;
+    if (offering.did?.trim().length !== 0) {
+      assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
+    } else {
+      assetBuilder = new AssetBuilder();
+    }
     const asset = assetBuilder
       .setType(<'dataset'>offering.main.type)
-      .setName(offering.main.name)
+      .setName(offering.name)
       .setDescription(offering.main.description)
       .setAuthor(offering.main.author)
       .setLicense(offering.main.licence)
@@ -136,7 +152,11 @@ export class PontusxService {
       .addAdditionalInformation(offering.additionalInformation)
       .build();
 
-    const result = await nautilus.publish(asset);
+    const result = await this.nautilus.publish(asset);
     return result;
+  }
+
+  private serviceExistsOnDDO(nautilusDDO: any, serviceID: string) {
+    return nautilusDDO.services.map((s) => s.id).includes(serviceID);
   }
 }

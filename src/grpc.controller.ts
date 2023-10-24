@@ -1,7 +1,10 @@
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { Offering, Status } from './generated/src/_proto/spp';
 import { PontusxService } from './pontusx/pontusx.service';
+import {
+  CreateOfferingRequest,
+  StatusResponse,
+} from './generated/src/_proto/spp';
 
 @Controller('grpc')
 export class GrpcController {
@@ -10,7 +13,7 @@ export class GrpcController {
   constructor(private readonly pontusxService: PontusxService) {}
 
   @GrpcMethod('serviceofferingPublisher')
-  async publishOffering(data: Offering): Promise<Status> {
+  async createOffering(data: CreateOfferingRequest): Promise<StatusResponse> {
     this.logger.debug('grpc method publishOffering called');
     this.logger.debug(data);
 
@@ -21,6 +24,10 @@ export class GrpcController {
           statusCode: 0,
           simpleMessage: 'offering published',
           DebugInformation: undefined,
+          data: {
+            did: result.ddo.id,
+            serviceId: result.ddo.services[0].id, // there must be one service
+          },
         };
       } else {
         return {
