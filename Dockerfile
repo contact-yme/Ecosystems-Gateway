@@ -3,6 +3,7 @@ FROM node:18-alpine As build
 WORKDIR /usr/src/app
 
 COPY --chown=node:node package*.json ./
+ADD vendor ./vendor
 
 RUN npm ci
 

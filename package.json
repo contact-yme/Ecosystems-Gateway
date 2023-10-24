@@ -32,7 +32,7 @@
     "axios": "^1.5.0",
     "axios-oauth-client": "^2.0.3",
     "ethers": "^5.7.2",
-    "nautilus": "file:vendor/deltadao-nautilus.edited.24-10-14-13.tgz",
+    "nautilus": "file:./vendor/deltadao-nautilus.edited.24-10-14-13.tgz",
     "openid-client": "^5.5.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
