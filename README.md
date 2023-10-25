@@ -1,6 +1,14 @@
 # Publishing connector
 
-A small service to push gaia-x vc to Pontus-X, XFSC-Catalog and CredentialEventService. This is just a proposal, right now!
+A small service to push Gaia-X Verifiable Credentials (VC's) to [Pontus-X](https://portal.euprogigant.io/search?sortOrder=desc&text=&sort=nft.created),
+[XFSC-Catalog](https://gitlab.eclipse.org/eclipse/xfsc/cat/fc-service) and 
+[CredentialEventService](https://gitlab.com/gaia-x/lab/credentials-events-service/-/tree/main?ref_type=heads).
+
+
+It offers a gRPC API described in [here](./src/_proto/spp.proto).
+
+While the REST API is currently __not__ supported.
+
 
 ## Installation
 
@@ -11,9 +19,9 @@ $ npm install
 
 ## Configuration
 
-See the example `.env.exmple` for enviroments variables that can be set.
+See the example `.env.example` for enviroments variables that can be set.
 
-Mandatory are the values `NETWORK`, `PRIVATE_KEY` and `CES_HOST`.
+Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_HOST` for the CredentialEventService.
 
 
 ## Running the app
