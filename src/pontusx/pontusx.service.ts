@@ -144,10 +144,10 @@ export class PontusxService implements OnModuleInit {
       );
       aquariusAsset = res.aquariusAsset;
       nautilusDDO = res.nautilusDDO;
-    } catch (err: any) {
+    } catch (err) {
       throw new RpcException({
         code: GrpcStatusCode.NOT_FOUND,
-        message: 'Not found',
+        message: err.message,
       });
     }
 
