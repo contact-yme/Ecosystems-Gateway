@@ -23,6 +23,8 @@ import {
   UpdateOfferingRequest,
 } from 'src/generated/src/_proto/spp';
 import { CredentialEventServiceService } from 'src/credential-event-service/credential-event-service.service';
+import { RpcException } from '@nestjs/microservices';
+import { status as GrpcStatusCode } from '@grpc/grpc-js';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -134,10 +136,20 @@ export class PontusxService implements OnModuleInit {
   }
 
   async updateOffering(offeringRequest: UpdateOfferingRequest) {
-    const { aquariusAsset, nautilusDDO } = await NautilusDDO.createFromDID(
-      offeringRequest.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
-      this.nautilus,
-    );
+    let aquariusAsset, nautilusDDO;
+    try {
+      const res = await NautilusDDO.createFromDID(
+        offeringRequest.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
+        this.nautilus,
+      );
+      aquariusAsset = res.aquariusAsset;
+      nautilusDDO = res.nautilusDDO;
+    } catch (err: any) {
+      throw new RpcException({
+        code: GrpcStatusCode.NOT_FOUND,
+        message: 'Not found',
+      });
+    }
 
     const theOneService = await this.getTheOneService(nautilusDDO);
 
