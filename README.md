@@ -21,7 +21,7 @@ $ npm install
 
 See the example `.env.example` for enviroments variables that can be set.
 
-Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_HOST` for the CredentialEventService.
+Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_URL` for the CredentialEventService.
 
 
 ## Running the app

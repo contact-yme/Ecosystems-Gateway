@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -9,17 +9,20 @@ import {
 } from './event-dto';
 
 @Injectable()
-export class CredentialEventServiceService {
+export class CredentialEventServiceService implements OnModuleInit {
   private readonly logger = new Logger(CredentialEventServiceService.name);
+  private cesUrl: string;
 
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {}
 
-  async publish(source: string, vc: any) {
-    const cesUrl = this.configService.getOrThrow('CES_HOST');
+  onModuleInit() {
+    this.cesUrl = this.configService.getOrThrow('CES_URL');
+  }
 
+  async publish(source: string, vc: any) {
     const payload: ComplianceCloudEventDTO = {
       ...defaultComplianceCloudEventDTO,
       source: source,
@@ -28,10 +31,10 @@ export class CredentialEventServiceService {
       data: vc,
     };
 
-    this.logger.debug(`posting to ${cesUrl}:`, payload);
+    this.logger.debug(`posting to ${this.cesUrl}:`, payload);
 
     const { headers } = await firstValueFrom(
-      this.httpService.post(cesUrl, payload).pipe(
+      this.httpService.post(this.cesUrl, payload).pipe(
         catchError((err: AxiosError) => {
           // TODO: proper error handling
           console.error(err);
