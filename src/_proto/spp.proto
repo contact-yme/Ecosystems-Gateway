@@ -26,6 +26,20 @@ message UpdateOfferingRequest {
     optional PublishInfo publishInfo = 6;
 }
 
+message UpdateOfferingLifecycleRequest{
+    string did = 1;
+    LifecycleStates to = 2;
+}
+
+enum LifecycleStates{
+    ACTIVE = 0;
+    END_OF_LIFE = 1;
+    DEPRECATED = 2;
+    REVOKED_BY_PUBLISHER = 3;
+    ORDERING_DISABLED_TEMPORARILY = 4;
+    ASSET_UNLISTED = 5;
+}
+
 message PublishInfo{
     string source = 1;
     string data = 2;
@@ -78,25 +92,22 @@ message Terms{
     string url = 1;
 }
 
-message StatusResponse{
-    int32 statusCode = 1;
-    string simpleMessage = 2;
-    optional Result data = 4;
+message CreateOfferingResponse {
+    string did = 1;
     google.protobuf.Struct DebugInformation = 3;
 }
 
-message UpdateResponse{
-    int32 statusCode = 1;
-    string simpleMessage = 2;
+message UpdateOfferingResponse{
     optional string location = 4;
     google.protobuf.Struct DebugInformation = 3;
 }
 
-message Result{
-    string did = 1;
+message UpdateOfferingLifecycleResponse{
+
 }
 
 service serviceofferingPublisher{
-    rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
-    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateResponse){}
+    rpc CreateOffering(CreateOfferingRequest) returns (CreateOfferingResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateOfferingResponse){}
+    rpc UpdateOfferingLifecycle(UpdateOfferingLifecycleRequest) returns (UpdateOfferingLifecycleResponse){}
 }
