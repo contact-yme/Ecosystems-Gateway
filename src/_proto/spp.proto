@@ -78,25 +78,17 @@ message Terms{
     string url = 1;
 }
 
-message StatusResponse{
-    int32 statusCode = 1;
-    string simpleMessage = 2;
-    optional Result data = 4;
+message CreateOfferingResponse {
+    string did = 1;
     google.protobuf.Struct DebugInformation = 3;
 }
 
-message UpdateResponse{
-    int32 statusCode = 1;
-    string simpleMessage = 2;
+message UpdateOfferingResponse{
     optional string location = 4;
     google.protobuf.Struct DebugInformation = 3;
 }
 
-message Result{
-    string did = 1;
-}
-
 service serviceofferingPublisher{
-    rpc CreateOffering(CreateOfferingRequest) returns (StatusResponse){}
-    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateResponse){}
+    rpc CreateOffering(CreateOfferingRequest) returns (CreateOfferingResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateOfferingResponse){}
 }

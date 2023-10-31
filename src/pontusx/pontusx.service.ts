@@ -214,10 +214,14 @@ export class PontusxService implements OnModuleInit {
       ces: cesResult,
     };
   }
+
   async getTheOneService(nautilusDDO: NautilusDDO) {
     const ddo = await nautilusDDO.getDDO();
     if (ddo.services.length !== 1) {
-      throw Error('We can only handle one service :(');
+      throw new RpcException({
+        code: GrpcStatusCode.UNIMPLEMENTED,
+        message: 'We can only handle DDOs with exactly one service.',
+      });
     }
     return ddo.services[0];
   }
