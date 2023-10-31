@@ -17,6 +17,7 @@ import {
   ServiceTypes,
   UrlFile,
   NautilusDDO,
+  LifecycleStates,
 } from 'nautilus';
 import {
   CreateOfferingRequest,
@@ -136,20 +137,9 @@ export class PontusxService implements OnModuleInit {
   }
 
   async updateOffering(offeringRequest: UpdateOfferingRequest) {
-    let aquariusAsset, nautilusDDO;
-    try {
-      const res = await NautilusDDO.createFromDID(
-        offeringRequest.did, // 'did:op:5c7a3b65a01240b5b18e6cc7ca0d652a4932a032111c2b7a98149a4602354296',
-        this.nautilus,
-      );
-      aquariusAsset = res.aquariusAsset;
-      nautilusDDO = res.nautilusDDO;
-    } catch (err) {
-      throw new RpcException({
-        code: GrpcStatusCode.NOT_FOUND,
-        message: err.message,
-      });
-    }
+    const { nautilusDDO, aquariusAsset } = await this.retrieveFromDid(
+      offeringRequest.did,
+    );
 
     const theOneService = await this.getTheOneService(nautilusDDO);
 
@@ -213,6 +203,28 @@ export class PontusxService implements OnModuleInit {
       pontus: result,
       ces: cesResult,
     };
+  }
+
+  async setState(did: string, state: LifecycleStates) {
+    const { aquariusAsset, nautilusDDO } = await this.retrieveFromDid(did);
+    const assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
+    const asset = assetBuilder.setLifecycleState(state).build();
+    return await this.nautilus.edit(asset);
+  }
+
+  private async retrieveFromDid(did: string) {
+    let aquariusAsset, nautilusDDO;
+    try {
+      const res = await NautilusDDO.createFromDID(did, this.nautilus);
+      aquariusAsset = res.aquariusAsset;
+      nautilusDDO = res.nautilusDDO;
+    } catch (err) {
+      throw new RpcException({
+        code: GrpcStatusCode.NOT_FOUND,
+        message: err.message,
+      });
+    }
+    return { nautilusDDO, aquariusAsset };
   }
 
   async getTheOneService(nautilusDDO: NautilusDDO) {
