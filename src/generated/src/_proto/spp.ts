@@ -4,6 +4,63 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "eupg.serviceofferingpublisher";
 
+export enum LifecycleStates {
+  ACTIVE = 0,
+  END_OF_LIFE = 1,
+  DEPRECATED = 2,
+  REVOKED_BY_PUBLISHER = 3,
+  ORDERING_DISABLED_TEMPORARILY = 4,
+  ASSET_UNLISTED = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function lifecycleStatesFromJSON(object: any): LifecycleStates {
+  switch (object) {
+    case 0:
+    case "ACTIVE":
+      return LifecycleStates.ACTIVE;
+    case 1:
+    case "END_OF_LIFE":
+      return LifecycleStates.END_OF_LIFE;
+    case 2:
+    case "DEPRECATED":
+      return LifecycleStates.DEPRECATED;
+    case 3:
+    case "REVOKED_BY_PUBLISHER":
+      return LifecycleStates.REVOKED_BY_PUBLISHER;
+    case 4:
+    case "ORDERING_DISABLED_TEMPORARILY":
+      return LifecycleStates.ORDERING_DISABLED_TEMPORARILY;
+    case 5:
+    case "ASSET_UNLISTED":
+      return LifecycleStates.ASSET_UNLISTED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return LifecycleStates.UNRECOGNIZED;
+  }
+}
+
+export function lifecycleStatesToJSON(object: LifecycleStates): string {
+  switch (object) {
+    case LifecycleStates.ACTIVE:
+      return "ACTIVE";
+    case LifecycleStates.END_OF_LIFE:
+      return "END_OF_LIFE";
+    case LifecycleStates.DEPRECATED:
+      return "DEPRECATED";
+    case LifecycleStates.REVOKED_BY_PUBLISHER:
+      return "REVOKED_BY_PUBLISHER";
+    case LifecycleStates.ORDERING_DISABLED_TEMPORARILY:
+      return "ORDERING_DISABLED_TEMPORARILY";
+    case LifecycleStates.ASSET_UNLISTED:
+      return "ASSET_UNLISTED";
+    case LifecycleStates.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface CreateOfferingRequest {
   main: Main | undefined;
   additionalInformation: AdditionalInformation | undefined;
@@ -18,6 +75,11 @@ export interface UpdateOfferingRequest {
   token: string;
   name: string;
   publishInfo?: PublishInfo | undefined;
+}
+
+export interface UpdateOfferingLifecycleRequest {
+  did: string;
+  to: LifecycleStates;
 }
 
 export interface PublishInfo {
@@ -80,6 +142,9 @@ export interface CreateOfferingResponse {
 export interface UpdateOfferingResponse {
   location?: string | undefined;
   DebugInformation: { [key: string]: any } | undefined;
+}
+
+export interface UpdateOfferingLifecycleResponse {
 }
 
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
@@ -328,6 +393,82 @@ export const UpdateOfferingRequest = {
     message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
       ? PublishInfo.fromPartial(object.publishInfo)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingLifecycleRequest(): UpdateOfferingLifecycleRequest {
+  return { did: "", to: 0 };
+}
+
+export const UpdateOfferingLifecycleRequest = {
+  encode(message: UpdateOfferingLifecycleRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.to !== 0) {
+      writer.uint32(16).int32(message.to);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingLifecycleRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.to = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingLifecycleRequest {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      to: isSet(object.to) ? lifecycleStatesFromJSON(object.to) : 0,
+    };
+  },
+
+  toJSON(message: UpdateOfferingLifecycleRequest): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.to !== 0) {
+      obj.to = lifecycleStatesToJSON(message.to);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(base?: I): UpdateOfferingLifecycleRequest {
+    return UpdateOfferingLifecycleRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleRequest {
+    const message = createBaseUpdateOfferingLifecycleRequest();
+    message.did = object.did ?? "";
+    message.to = object.to ?? 0;
     return message;
   },
 };
@@ -1272,9 +1413,53 @@ export const UpdateOfferingResponse = {
   },
 };
 
+function createBaseUpdateOfferingLifecycleResponse(): UpdateOfferingLifecycleResponse {
+  return {};
+}
+
+export const UpdateOfferingLifecycleResponse = {
+  encode(_: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingLifecycleResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): UpdateOfferingLifecycleResponse {
+    return {};
+  },
+
+  toJSON(_: UpdateOfferingLifecycleResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(base?: I): UpdateOfferingLifecycleResponse {
+    return UpdateOfferingLifecycleResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(_: I): UpdateOfferingLifecycleResponse {
+    const message = createBaseUpdateOfferingLifecycleResponse();
+    return message;
+  },
+};
+
 export interface serviceofferingPublisher {
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse>;
   UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
+  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
 }
 
 export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
@@ -1286,6 +1471,7 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.rpc = rpc;
     this.CreateOffering = this.CreateOffering.bind(this);
     this.UpdateOffering = this.UpdateOffering.bind(this);
+    this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
   }
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
     const data = CreateOfferingRequest.encode(request).finish();
@@ -1297,6 +1483,12 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     const data = UpdateOfferingRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "UpdateOffering", data);
     return promise.then((data) => UpdateOfferingResponse.decode(_m0.Reader.create(data)));
+  }
+
+  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse> {
+    const data = UpdateOfferingLifecycleRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "UpdateOfferingLifecycle", data);
+    return promise.then((data) => UpdateOfferingLifecycleResponse.decode(_m0.Reader.create(data)));
   }
 }
 

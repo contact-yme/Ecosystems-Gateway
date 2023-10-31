@@ -6,8 +6,11 @@ import {
   CreateOfferingResponse,
   UpdateOfferingRequest,
   UpdateOfferingResponse,
+  UpdateOfferingLifecycleRequest,
+  UpdateOfferingLifecycleResponse,
 } from './generated/src/_proto/spp';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
+import { LifecycleStates } from 'nautilus';
 
 @Controller('grpc')
 export class GrpcController {
@@ -52,6 +55,26 @@ export class GrpcController {
     if (result) {
       return {
         location: result.ces,
+        DebugInformation: result,
+      };
+    }
+
+    throw new RpcException({
+      code: GrpcStatusCode.INTERNAL,
+      message: 'Internal Error',
+    });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async updateOfferingLifecycle(
+    data: UpdateOfferingLifecycleRequest,
+  ): Promise<UpdateOfferingLifecycleResponse> {
+    const result = await this.pontusxService.setState(
+      data.did,
+      data.to as LifecycleStates,
+    );
+    if (result) {
+      return {
         DebugInformation: result,
       };
     }
