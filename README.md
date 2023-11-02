@@ -61,3 +61,9 @@ protoc \
         --ts_proto_out="./src/generated" \
         src/_proto/spp.proto
 ```
+
+For Windows:
+
+```
+path\to\protoc.exe --plugin=protoc-gen-ts_proto=.\node_modules\.bin\protoc-gen-ts_proto.cmd --ts_proto_opt=esModuleInterop=true --ts_proto_out="./src/generated" src/_proto/spp.proto
+```
