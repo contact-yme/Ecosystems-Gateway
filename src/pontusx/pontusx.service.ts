@@ -22,8 +22,8 @@ import {
 import {
   CreateOfferingRequest,
   UpdateOfferingRequest,
-} from 'src/generated/src/_proto/spp';
-import { CredentialEventServiceService } from 'src/credential-event-service/credential-event-service.service';
+} from '../generated/src/_proto/spp';
+import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 
