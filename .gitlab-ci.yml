@@ -1,12 +1,10 @@
 image: bitnami/git:latest
 
-default:
+docker-build:
   hooks:
     pre_get_sources_script:
       - git config submodule.src/_proto.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
       - git submodule update
-
-docker-build:
   stage: deploy
   image:
     name: gcr.io/kaniko-project/executor:debug
