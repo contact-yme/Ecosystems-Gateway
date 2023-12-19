@@ -2,6 +2,8 @@ image: node:20-alpine
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 1
+  GIT_SUBMODULE_FORCE_HTTPS: "true"
 
 docker-build:
   stage: deploy
