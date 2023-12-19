@@ -1,9 +1,5 @@
 image: node:20-alpine
 
-variables:
-  GIT_SUBMODULE_STRATEGY: normal
-  GIT_SUBMODULE_DEPTH: 3
-
 docker-build:
   stage: deploy
   image:
@@ -12,6 +8,8 @@ docker-build:
   only:
     - main
   script:
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git proto
+
     - ls src
     - ls src/_proto
     - mkdir -p /kaniko/.docker
