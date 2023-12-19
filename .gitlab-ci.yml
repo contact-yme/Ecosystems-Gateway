@@ -8,6 +8,8 @@ before_script:
 test:
   script:
     - ls
+    - ls src
+    - ls src/_proto
 
 docker-build:
   stage: deploy
