@@ -1,8 +1,9 @@
 image: bitnami/git:latest
 
 before_script: 
-  - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git just-to-test-access
-  - git submodule update --init --recursive
+#  - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git just-to-test-access
+  - git config submodule.src/_proto.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
+  - git submodule update
 
 test:
   script:
