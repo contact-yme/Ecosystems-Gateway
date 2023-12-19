@@ -1,5 +1,9 @@
 image: node:20-alpine
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 3
+
 docker-build:
   stage: deploy
   image:
