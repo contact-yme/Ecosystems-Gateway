@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PontusxService } from './pontusx.service';
-import { CredentialEventServiceModule } from 'src/credential-event-service/credential-event-service.module';
+import { CredentialEventServiceModule } from '../credential-event-service/credential-event-service.module';
 
 @Module({
   imports: [CredentialEventServiceModule],
