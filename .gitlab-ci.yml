@@ -1,5 +1,26 @@
-image: node:20-alpine
+image: node:18-alpine
 
+stages:
+#  - test
+  - build
+  - deploy
+
+# once we have proper test
+#test:
+#  stage: test
+#  script: 
+#    - npm ci
+#    - npm run test
+
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+      paths:
+        - dist/*
+      expire_in: 3 month
 
 docker-build:
   stage: deploy
