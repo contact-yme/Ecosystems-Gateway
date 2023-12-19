@@ -3,6 +3,11 @@ image: bitnami/git:latest
 before_script: 
   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git proto
 
+
+test:
+  script:
+    - ls
+
 docker-build:
   stage: deploy
   image:
