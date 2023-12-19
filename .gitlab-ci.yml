@@ -1,16 +1,15 @@
 image: node:18-alpine
 
 stages:
-#  - test
+  - test
   - build
   - deploy
 
-# once we have proper test
-#test:
-#  stage: test
-#  script: 
-#    - npm ci
-#    - npm run test
+test:
+  stage: test
+  script: 
+    - npm ci
+    - npm run test
 
 build:
   stage: build
