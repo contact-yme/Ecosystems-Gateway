@@ -1,5 +1,7 @@
 image: node:20-alpine
 
+variables:
+  GIT_SUBMODULE_DEPTH: 1
 
 docker-build:
   stage: deploy
