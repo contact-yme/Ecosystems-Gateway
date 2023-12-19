@@ -1,10 +1,16 @@
-image: bitnami/git:latest
+image: node:18-alpine
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
 
 docker-build:
-  before_script:
-    - apt-get install git
-    - git config submodule.src/_proto.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
-    - git submodule update
   stage: deploy
   image:
     name: gcr.io/kaniko-project/executor:debug
