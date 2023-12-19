@@ -1,15 +1,10 @@
 image: bitnami/git:latest
 
-before_script: 
-#  - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git just-to-test-access
-  - git config submodule.src/_proto.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
-  - git submodule update
-
-test:
-  script:
-    - ls
-    - ls src
-    - ls src/_proto
+default:
+  hooks:
+    pre_get_sources_script:
+      - git config submodule.src/_proto.url https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
+      - git submodule update
 
 docker-build:
   stage: deploy
