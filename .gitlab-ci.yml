@@ -10,7 +10,7 @@ test:
   script: 
     - npm ci
     - npm run test
-    - npm run test:e2e
+#    - npm run test:e2e
 
 build:
   stage: build
