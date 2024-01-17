@@ -8,6 +8,9 @@ stages:
 test:
   stage: test
   script: 
+    - ls
+    - ls src
+    - ls src/_proto
     - npm ci
     - npm run test
 #    - npm run test:e2e
