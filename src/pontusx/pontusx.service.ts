@@ -18,7 +18,8 @@ import {
   UrlFile,
   NautilusDDO,
   LifecycleStates,
-} from 'nautilus';
+  TrustedAlgorithmAsset,
+} from '@deltadao/nautilus';
 import {
   CreateOfferingRequest,
   UpdateOfferingRequest,
@@ -109,13 +110,17 @@ export class PontusxService implements OnModuleInit {
       };
       serviceBuilder.addFile(urlFile);
     });
+    let trustedAlgorithms: TrustedAlgorithmAsset[];
     offering.main.allowedAlgorithm?.forEach((algorithm) => {
-      serviceBuilder.addTrustedAlgorithm(algorithm);
+      let trustedAlgo: TrustedAlgorithmAsset;
+      trustedAlgo.did = algorithm.did;
+      trustedAlgorithms.push(trustedAlgo);
     });
+    serviceBuilder.addTrustedAlgorithms(trustedAlgorithms);
     const service = serviceBuilder.build();
 
     if (offering.main.type !== 'dataset') {
-      throw new Error('Incopatible type of offering!');
+      throw new Error('Incompatible type of offering!');
     }
 
     const assetBuilder = new AssetBuilder();
@@ -165,9 +170,13 @@ export class PontusxService implements OnModuleInit {
       };
       serviceBuilder.addFile(urlFile);
     });
+    let trustedAlgorithms: TrustedAlgorithmAsset[];
     offeringRequest.main.allowedAlgorithm?.forEach((algorithm) => {
-      serviceBuilder.addTrustedAlgorithm(algorithm);
+      let trustedAlgo: TrustedAlgorithmAsset;
+      trustedAlgo.did = algorithm.did;
+      trustedAlgorithms.push(trustedAlgo);
     });
+    serviceBuilder.addTrustedAlgorithms(trustedAlgorithms);
 
     const service = serviceBuilder.build();
 
