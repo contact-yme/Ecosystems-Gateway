@@ -10,7 +10,7 @@ import {
   UpdateOfferingLifecycleResponse,
 } from './generated/src/_proto/spp';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
-import { LifecycleStates } from 'nautilus';
+import { LifecycleStates } from '@deltadao/nautilus';
 
 @Controller('grpc')
 export class GrpcController {

@@ -16,13 +16,12 @@ import {
   ServiceBuilder,
   ServiceTypes,
   UrlFile,
-  NautilusDDO,
   LifecycleStates,
-  TrustedAlgorithmAsset,
 } from '@deltadao/nautilus';
 import {
   CreateOfferingRequest,
   UpdateOfferingRequest,
+  UpdateOfferingLifecycleRequest,
 } from '../generated/src/_proto/spp';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
@@ -110,13 +109,11 @@ export class PontusxService implements OnModuleInit {
       };
       serviceBuilder.addFile(urlFile);
     });
-    let trustedAlgorithms: TrustedAlgorithmAsset[];
-    offering.main.allowedAlgorithm?.forEach((algorithm) => {
-      let trustedAlgo: TrustedAlgorithmAsset;
-      trustedAlgo.did = algorithm.did;
-      trustedAlgorithms.push(trustedAlgo);
-    });
-    serviceBuilder.addTrustedAlgorithms(trustedAlgorithms);
+    if (offering.main.allowedAlgorithm?.length) {
+      serviceBuilder.addTrustedAlgorithms(
+        offering.main.allowedAlgorithm.map((algo) => ({ did: algo.did })),
+      );
+    }
     const service = serviceBuilder.build();
 
     if (offering.main.type !== 'dataset') {
@@ -142,61 +139,93 @@ export class PontusxService implements OnModuleInit {
   }
 
   async updateOffering(offeringRequest: UpdateOfferingRequest) {
-    const { nautilusDDO, aquariusAsset } = await this.retrieveFromDid(
+    const aquariusAsset = await this.nautilus.getAquariusAsset(
       offeringRequest.did,
     );
 
-    const theOneService = await this.getTheOneService(nautilusDDO);
+    const assetBuilder = new AssetBuilder(aquariusAsset);
 
-    const serviceBuilder = new ServiceBuilder({
-      aquariusAsset,
-      serviceId: theOneService.id,
+    const services: Array<number> = [];
+    offeringRequest.index?.forEach((ind) => {
+      if (ind in aquariusAsset.services) {
+        services.push(ind);
+      } else {
+        throw new RpcException({
+          code: GrpcStatusCode.OUT_OF_RANGE,
+          message: `The requested service index ${ind} is out of range of the existing services of the asset`,
+        });
+      }
     });
-
-    serviceBuilder.setDatatokenNameAndSymbol(
-      offeringRequest.name,
-      offeringRequest.token,
-    ); // important for following access token transactions in the explorer
-
-    offeringRequest.main.files?.forEach((file) => {
-      const urlFile: UrlFile = {
-        type: 'url',
-        url: file.url, // link to your file or api
-        method: file.method,
-        index: file.index,
-        // headers: {
-        //     Authorization: 'Basic XXX' // optional headers field e.g. for basic access control
-        // }
-      };
-      serviceBuilder.addFile(urlFile);
-    });
-    let trustedAlgorithms: TrustedAlgorithmAsset[];
-    offeringRequest.main.allowedAlgorithm?.forEach((algorithm) => {
-      let trustedAlgo: TrustedAlgorithmAsset;
-      trustedAlgo.did = algorithm.did;
-      trustedAlgorithms.push(trustedAlgo);
-    });
-    serviceBuilder.addTrustedAlgorithms(trustedAlgorithms);
-
-    const service = serviceBuilder.build();
-
-    const assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
-
-    if (offeringRequest.main.type !== 'dataset') {
-      throw new Error('Incopatible type of offering!');
+    if (!services.length) {
+      for (let i = 0; i < aquariusAsset.services.length; i++) {
+        services.push(i);
+      }
+      this.logger.debug(
+        `Updating all services of asset ${offeringRequest.did} ...`,
+      );
+    } else {
+      this.logger.debug(
+        `Updating services with indices ${services} of asset ${offeringRequest.did} ...`,
+      );
     }
 
-    const asset = assetBuilder
-      .setType(<'dataset'>offeringRequest.main.type)
-      .setName(offeringRequest.name)
-      .setDescription(offeringRequest.main.description)
-      .setAuthor(offeringRequest.main.author)
-      .setLicense(offeringRequest.main.licence)
-      .setContentLanguage('de')
-      .addTags(offeringRequest.main.tags) // remove tags first
-      .addService(service)
-      .addAdditionalInformation(offeringRequest.additionalInformation)
-      .build();
+    for (const ind of services) {
+      const serviceBuilder = new ServiceBuilder({
+        aquariusAsset,
+        serviceId: aquariusAsset.services[ind].id,
+      });
+
+      serviceBuilder.setDatatokenNameAndSymbol(
+        offeringRequest.name,
+        offeringRequest.token,
+      ); // important for following access token transactions in the explorer
+
+      offeringRequest.main.files?.forEach((file) => {
+        const urlFile: UrlFile = {
+          type: 'url',
+          url: file.url, // link to your file or api
+          method: file.method,
+          index: file.index,
+          // headers: {
+          //     Authorization: 'Basic XXX' // optional headers field e.g. for basic access control
+          // }
+        };
+        serviceBuilder.addFile(urlFile);
+      });
+
+      if (offeringRequest.main.allowedAlgorithm?.length) {
+        serviceBuilder.addTrustedAlgorithms(
+          offeringRequest.main.allowedAlgorithm.map((algo) => ({
+            did: algo.did,
+          })),
+        );
+      }
+
+      const service = serviceBuilder.build();
+      assetBuilder.addService(service);
+    }
+
+    if (offeringRequest.main.type !== 'dataset') {
+      throw new RpcException({
+        code: GrpcStatusCode.UNIMPLEMENTED,
+        message: 'We can only handle datasets for now',
+      });
+    }
+
+    if (offeringRequest?.main) {
+      assetBuilder
+        .setType(<'dataset'>offeringRequest.main.type)
+        .setDescription(offeringRequest.main.description)
+        .setAuthor(offeringRequest.main.author)
+        .setLicense(offeringRequest.main.licence)
+        .addTags(offeringRequest.main.tags);
+    }
+    if (offeringRequest?.additionalInformation) {
+      assetBuilder.addAdditionalInformation(
+        offeringRequest.additionalInformation,
+      );
+    }
+    const asset = assetBuilder.build();
 
     const result = await this.nautilus.edit(asset);
 
@@ -215,35 +244,13 @@ export class PontusxService implements OnModuleInit {
   }
 
   async setState(did: string, state: LifecycleStates) {
-    const { aquariusAsset, nautilusDDO } = await this.retrieveFromDid(did);
-    const assetBuilder = new AssetBuilder({ aquariusAsset, nautilusDDO });
-    const asset = assetBuilder.setLifecycleState(state).build();
-    return await this.nautilus.edit(asset);
-  }
+    const aquariusAsset = await this.nautilus.getAquariusAsset(did);
 
-  private async retrieveFromDid(did: string) {
-    let aquariusAsset, nautilusDDO;
-    try {
-      const res = await NautilusDDO.createFromDID(did, this.nautilus);
-      aquariusAsset = res.aquariusAsset;
-      nautilusDDO = res.nautilusDDO;
-    } catch (err) {
-      throw new RpcException({
-        code: GrpcStatusCode.NOT_FOUND,
-        message: err.message,
-      });
-    }
-    return { nautilusDDO, aquariusAsset };
-  }
+    const result = await this.nautilus.setAssetLifecycleState(
+      aquariusAsset,
+      state,
+    );
 
-  async getTheOneService(nautilusDDO: NautilusDDO) {
-    const ddo = await nautilusDDO.getDDO();
-    if (ddo.services.length !== 1) {
-      throw new RpcException({
-        code: GrpcStatusCode.UNIMPLEMENTED,
-        message: 'We can only handle DDOs with exactly one service.',
-      });
-    }
-    return ddo.services[0];
+    return result;
   }
 }
