@@ -119,10 +119,12 @@ export interface UpdateOfferingRequest {
    * example: did:op:1234
    */
   did: string;
-  main: Main | undefined;
-  additionalInformation: AdditionalInformation | undefined;
-  token: string;
-  name: string;
+  main?: Main | undefined;
+  additionalInformation?: AdditionalInformation | undefined;
+  token?: string | undefined;
+  name?:
+    | string
+    | undefined;
   /**
    * Optional information about the published asset
    * If this Information is set, it is used to publish the offering to the Credential Event Service
@@ -301,6 +303,7 @@ export interface UpdateOfferingResponse {
 }
 
 export interface UpdateOfferingLifecycleResponse {
+  DebugInformation: { [key: string]: any } | undefined;
 }
 
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
@@ -417,8 +420,8 @@ function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
     did: "",
     main: undefined,
     additionalInformation: undefined,
-    token: "",
-    name: "",
+    token: undefined,
+    name: undefined,
     publishInfo: undefined,
     index: [],
   };
@@ -435,10 +438,10 @@ export const UpdateOfferingRequest = {
     if (message.additionalInformation !== undefined) {
       AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
     }
-    if (message.token !== "") {
+    if (message.token !== undefined) {
       writer.uint32(34).string(message.token);
     }
-    if (message.name !== "") {
+    if (message.name !== undefined) {
       writer.uint32(42).string(message.name);
     }
     if (message.publishInfo !== undefined) {
@@ -534,8 +537,8 @@ export const UpdateOfferingRequest = {
       additionalInformation: isSet(object.additionalInformation)
         ? AdditionalInformation.fromJSON(object.additionalInformation)
         : undefined,
-      token: isSet(object.token) ? String(object.token) : "",
-      name: isSet(object.name) ? String(object.name) : "",
+      token: isSet(object.token) ? String(object.token) : undefined,
+      name: isSet(object.name) ? String(object.name) : undefined,
       publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
       index: Array.isArray(object?.index) ? object.index.map((e: any) => Number(e)) : [],
     };
@@ -552,10 +555,10 @@ export const UpdateOfferingRequest = {
     if (message.additionalInformation !== undefined) {
       obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
     }
-    if (message.token !== "") {
+    if (message.token !== undefined) {
       obj.token = message.token;
     }
-    if (message.name !== "") {
+    if (message.name !== undefined) {
       obj.name = message.name;
     }
     if (message.publishInfo !== undefined) {
@@ -578,8 +581,8 @@ export const UpdateOfferingRequest = {
       (object.additionalInformation !== undefined && object.additionalInformation !== null)
         ? AdditionalInformation.fromPartial(object.additionalInformation)
         : undefined;
-    message.token = object.token ?? "";
-    message.name = object.name ?? "";
+    message.token = object.token ?? undefined;
+    message.name = object.name ?? undefined;
     message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
       ? PublishInfo.fromPartial(object.publishInfo)
       : undefined;
@@ -1605,11 +1608,14 @@ export const UpdateOfferingResponse = {
 };
 
 function createBaseUpdateOfferingLifecycleResponse(): UpdateOfferingLifecycleResponse {
-  return {};
+  return { DebugInformation: undefined };
 }
 
 export const UpdateOfferingLifecycleResponse = {
-  encode(_: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -1620,6 +1626,13 @@ export const UpdateOfferingLifecycleResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1629,20 +1642,26 @@ export const UpdateOfferingLifecycleResponse = {
     return message;
   },
 
-  fromJSON(_: any): UpdateOfferingLifecycleResponse {
-    return {};
+  fromJSON(object: any): UpdateOfferingLifecycleResponse {
+    return { DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined };
   },
 
-  toJSON(_: UpdateOfferingLifecycleResponse): unknown {
+  toJSON(message: UpdateOfferingLifecycleResponse): unknown {
     const obj: any = {};
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(base?: I): UpdateOfferingLifecycleResponse {
     return UpdateOfferingLifecycleResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(_: I): UpdateOfferingLifecycleResponse {
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleResponse {
     const message = createBaseUpdateOfferingLifecycleResponse();
+    message.DebugInformation = object.DebugInformation ?? undefined;
     return message;
   },
 };

@@ -20,7 +20,7 @@ describe('PontusxService', () => {
           useValue: mockCesService,
         },
       ],
-    }) // .compile(); // TODO: figure out how to test the pontusX thing
+    }); // .compile(); // TODO: figure out how to test the pontusX thing
 
     // service = module.get<PontusxService>(PontusxService);
   });
