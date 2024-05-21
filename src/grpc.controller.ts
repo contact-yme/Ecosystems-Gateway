@@ -48,7 +48,7 @@ export class GrpcController {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
 
-    this.ensureDatasetOrThrow(data);
+    //this.ensureDatasetOrThrow(data); not necessary any more + type is now optional for updating
 
     const result = await this.pontusxService.updateOffering(data);
 
