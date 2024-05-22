@@ -10,7 +10,7 @@ import {
   UpdateOfferingLifecycleResponse,
 } from './generated/src/_proto/spp';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
-import { LifecycleStates } from 'nautilus';
+import { LifecycleStates } from '@deltadao/nautilus';
 
 @Controller('grpc')
 export class GrpcController {
@@ -48,7 +48,7 @@ export class GrpcController {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
 
-    this.ensureDatasetOrThrow(data);
+    //this.ensureDatasetOrThrow(data); not necessary any more + type is now optional for updating
 
     const result = await this.pontusxService.updateOffering(data);
 

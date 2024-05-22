@@ -4,12 +4,41 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "eupg.serviceofferingpublisher";
 
+/** Possible lifecycle states of asset */
 export enum LifecycleStates {
+  /**
+   * ACTIVE - Fully functional asset
+   * Discoverable in Portal and Ordering allowed
+   * Listed under the owner's profile
+   */
   ACTIVE = 0,
+  /**
+   * END_OF_LIFE - This state indicates that the asset is usually deprecated or outdated
+   * Discoverable, but not orderable
+   * Not listed under the owner's profile
+   */
   END_OF_LIFE = 1,
+  /**
+   * DEPRECATED - This state indicates that another asset has deprecated the current asset
+   * Not discoverable and not orderable
+   * Not listed under the owner's profile
+   */
   DEPRECATED = 2,
+  /**
+   * REVOKED_BY_PUBLISHER - Publisher has explicitly revoked access or ownership rights to the asset
+   * Not discoverable and not orderable
+   */
   REVOKED_BY_PUBLISHER = 3,
+  /**
+   * ORDERING_DISABLED_TEMPORARILY - Users can view the asset and gather information, but they cannot place orders at that moment
+   * Discoverable, but not orderable
+   * Listed under the owner's profile.
+   */
   ORDERING_DISABLED_TEMPORARILY = 4,
+  /**
+   * ASSET_UNLISTED - Not discoverable, but orderable
+   * Listed under the owner's profile
+   */
   ASSET_UNLISTED = 5,
   UNRECOGNIZED = -1,
 }
@@ -61,90 +90,220 @@ export function lifecycleStatesToJSON(object: LifecycleStates): string {
   }
 }
 
+/**
+ * Create message to publish a Offering with the given information
+ * At the moment: Primarily tailored for ocean market (and for datasets)
+ */
 export interface CreateOfferingRequest {
-  main: Main | undefined;
-  additionalInformation: AdditionalInformation | undefined;
+  /** The main information about the asset to publish */
+  main:
+    | Main
+    | undefined;
+  /** Additional information regarding the offering */
+  additionalInformation:
+    | AdditionalInformation
+    | undefined;
+  /**
+   * Symbol (Abbreviation) for the access token that is generated for consuming the asset
+   * Important for following access token transactions in the explorer
+   */
   token: string;
+  /** Name of the offering which is also used for the token name */
   name: string;
 }
 
+/** Update message for an already published Offering */
 export interface UpdateOfferingRequest {
+  /**
+   * Decentralised identifier for the already published offering
+   * example: did:op:1234
+   */
   did: string;
-  main: Main | undefined;
-  additionalInformation: AdditionalInformation | undefined;
-  token: string;
-  name: string;
-  publishInfo?: PublishInfo | undefined;
+  main?: Main | undefined;
+  additionalInformation?: AdditionalInformation | undefined;
+  token?: string | undefined;
+  name?:
+    | string
+    | undefined;
+  /**
+   * Optional information about the published asset
+   * If this Information is set, it is used to publish the offering to the Credential Event Service
+   */
+  publishInfo?:
+    | PublishInfo
+    | undefined;
+  /**
+   * Optional indices of the services of the asset that are to be updated
+   * If no index is given all services are edited
+   */
+  index: number[];
 }
 
+/** Update message for changing the LifecycleState of an already published offering */
 export interface UpdateOfferingLifecycleRequest {
   did: string;
   to: LifecycleStates;
 }
 
+/**
+ * Publish info used in UpdateOfferingRequest
+ * Used for additionally publishing Offering to Credential Event Service
+ */
 export interface PublishInfo {
+  /**
+   * The source where to find the published offering
+   * example: https://www.pontus-x.eu/asset/did:op:ac74139fa102d32f326ccdab3727a95299f1c2b6add9158385439e5b06810833
+   */
   source: string;
+  /**
+   * The data that is submitted to the credential event service
+   * At the moment: Has to be a (Compliance) VC issued by the Gaia-X compliance engine
+   */
   data: string;
 }
 
+/** Main metadata information for the asset used in CreateOfferingRequest and UpdateOfferingRequest */
 export interface Main {
+  /**
+   * type of the asset
+   * Can be either 'dataset' or 'algorithm'
+   */
   type: string;
+  /** Name of the entity generating this data */
   author: string;
+  /**
+   * Short name referencing the license of the asset
+   * example: CC-BY, Public Domain
+   */
   licence: string;
-  dateCreated: string;
+  /**
+   * !UNUSED!
+   * ISO 8601 format preferably with timezone identifiers
+   * example: 2000-10-31T01:30:00Z
+   */
+  dateCreated?:
+    | string
+    | undefined;
+  /**
+   * Files that contain the data related to the asset
+   * At least one file is required
+   */
   files: Files[];
+  /** Optional keywords or tags used to describe the content of the offering */
   tags: string[];
+  /**
+   * Details of what the resource is. For a dataset, this attribute explains what the data represents and what it can be used for.
+   * This information is displayed in the portal
+   * Supports markdown
+   */
   description: string;
+  /**
+   * Optional whitelisted Algorithms than can be used on the asset
+   * Only usable if the offering is of type 'compute' and not 'access' (At the moment default='compute')
+   */
   allowedAlgorithm: Algorithm[];
 }
 
+/** Additional information about the asset used in CreateOfferingRequest and UpdateOfferingRequest */
 export interface AdditionalInformation {
+  /** !UNUSED! */
   description: string;
-  serviceSelfDescription: ServiceSelfDescription | undefined;
+  /** !UNUSED! */
+  serviceSelfDescription:
+    | ServiceSelfDescription
+    | undefined;
+  /** Boolean to indicate if the publisher specifies it's own terms and conditions for consumption of the asset */
   termsAndConditions: boolean;
+  /** Information in the context of Gaia-X compliance including the link to the Self-Description of the offering (VP) */
   gaiaXInformation: gaiaX | undefined;
 }
 
+/**
+ * Information about a file related to a offering used in Main
+ * At the moment only files that are accessible over a Static URL (HTTP) are accepted
+ * (possible alternatives: Arweave, GraphQL, IPFS, Smart Contract)
+ */
 export interface Files {
+  /** File URL */
   url: string;
+  /** !UNUSED! */
   indest: number;
+  /** !UNUSED! */
   contentType: string;
+  /**
+   * HTTP Method used to access the file
+   * example: 'GET'
+   */
   method: string;
-  index: number;
+  /** Optional file index */
+  index?: number | undefined;
 }
 
+/** Algorithm that is allowed/trusted by the publisher to be used on asset used in Main */
 export interface Algorithm {
+  /**
+   * Decentralised identifier of the already published algorithm
+   * example did:op:456
+   */
   did: string;
+  /**
+   * Hash of trusted algorithm's files
+   * Can be created over Ocean Provider FileInfoEndpoint with parameter withChecksum = True
+   * If the algorithm has multiple files, filesChecksum is a concatenated string of all files checksums
+   */
   filesChecksum: string;
+  /**
+   * Hash of algorithm's image details (entrypoint and image checksum)
+   * Produced by: sha256(algorithm_ddo.metadata.algorithm.container.entrypoint + algorithm_ddo.metadata.algorithm.container.checksum)
+   */
   containerSectionChecksum: string;
 }
 
-export interface ServiceSelfDescription {
-  url: string;
-  isVerified: boolean;
-}
-
+/** Information related to Gaia-X compliance used in AdditionalInformation */
 export interface gaiaX {
+  /** Identifier if the asset contains personally identifiable information */
   containsPII: boolean;
+  /** Terms and conditions additionally set by the publisher of the asset */
   termsAndConditions: Terms[];
+  /** Gaia-X compliant Self-Description of the offering */
   serviceSD: ServiceSelfDescription | undefined;
 }
 
+/** Enpoint to the VP of the offering used in gaiaX */
+export interface ServiceSelfDescription {
+  /** Static URL of the self-description */
+  url: string;
+  /**
+   * Optional identifier if the self-description has been verified against a Gaia-X Compliance Service
+   * Mainly used by the deltaDAO portal
+   */
+  isVerified?: boolean | undefined;
+}
+
+/** Static URL to Terms and Conditions defined by the publisher of the asset used in gaiaX */
 export interface Terms {
   url: string;
 }
 
+/** Response to CreateOfferingRequest */
 export interface CreateOfferingResponse {
+  /**
+   * did of the successfully published offering
+   * example: did:op:123
+   */
   did: string;
+  /** Debug information */
   DebugInformation: { [key: string]: any } | undefined;
 }
 
+/** Response to UpdateOfferingRequest */
 export interface UpdateOfferingResponse {
   location?: string | undefined;
   DebugInformation: { [key: string]: any } | undefined;
 }
 
 export interface UpdateOfferingLifecycleResponse {
+  DebugInformation: { [key: string]: any } | undefined;
 }
 
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
@@ -257,7 +416,15 @@ export const CreateOfferingRequest = {
 };
 
 function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
-  return { did: "", main: undefined, additionalInformation: undefined, token: "", name: "", publishInfo: undefined };
+  return {
+    did: "",
+    main: undefined,
+    additionalInformation: undefined,
+    token: undefined,
+    name: undefined,
+    publishInfo: undefined,
+    index: [],
+  };
 }
 
 export const UpdateOfferingRequest = {
@@ -271,15 +438,20 @@ export const UpdateOfferingRequest = {
     if (message.additionalInformation !== undefined) {
       AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
     }
-    if (message.token !== "") {
+    if (message.token !== undefined) {
       writer.uint32(34).string(message.token);
     }
-    if (message.name !== "") {
+    if (message.name !== undefined) {
       writer.uint32(42).string(message.name);
     }
     if (message.publishInfo !== undefined) {
       PublishInfo.encode(message.publishInfo, writer.uint32(50).fork()).ldelim();
     }
+    writer.uint32(58).fork();
+    for (const v of message.index) {
+      writer.int32(v);
+    }
+    writer.ldelim();
     return writer;
   },
 
@@ -332,6 +504,23 @@ export const UpdateOfferingRequest = {
 
           message.publishInfo = PublishInfo.decode(reader, reader.uint32());
           continue;
+        case 7:
+          if (tag === 56) {
+            message.index.push(reader.int32());
+
+            continue;
+          }
+
+          if (tag === 58) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.index.push(reader.int32());
+            }
+
+            continue;
+          }
+
+          break;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -348,9 +537,10 @@ export const UpdateOfferingRequest = {
       additionalInformation: isSet(object.additionalInformation)
         ? AdditionalInformation.fromJSON(object.additionalInformation)
         : undefined,
-      token: isSet(object.token) ? String(object.token) : "",
-      name: isSet(object.name) ? String(object.name) : "",
+      token: isSet(object.token) ? String(object.token) : undefined,
+      name: isSet(object.name) ? String(object.name) : undefined,
       publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
+      index: Array.isArray(object?.index) ? object.index.map((e: any) => Number(e)) : [],
     };
   },
 
@@ -365,14 +555,17 @@ export const UpdateOfferingRequest = {
     if (message.additionalInformation !== undefined) {
       obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
     }
-    if (message.token !== "") {
+    if (message.token !== undefined) {
       obj.token = message.token;
     }
-    if (message.name !== "") {
+    if (message.name !== undefined) {
       obj.name = message.name;
     }
     if (message.publishInfo !== undefined) {
       obj.publishInfo = PublishInfo.toJSON(message.publishInfo);
+    }
+    if (message.index?.length) {
+      obj.index = message.index.map((e) => Math.round(e));
     }
     return obj;
   },
@@ -388,11 +581,12 @@ export const UpdateOfferingRequest = {
       (object.additionalInformation !== undefined && object.additionalInformation !== null)
         ? AdditionalInformation.fromPartial(object.additionalInformation)
         : undefined;
-    message.token = object.token ?? "";
-    message.name = object.name ?? "";
+    message.token = object.token ?? undefined;
+    message.name = object.name ?? undefined;
     message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
       ? PublishInfo.fromPartial(object.publishInfo)
       : undefined;
+    message.index = object.index?.map((e) => e) || [];
     return message;
   },
 };
@@ -552,7 +746,7 @@ function createBaseMain(): Main {
     type: "",
     author: "",
     licence: "",
-    dateCreated: "",
+    dateCreated: undefined,
     files: [],
     tags: [],
     description: "",
@@ -571,7 +765,7 @@ export const Main = {
     if (message.licence !== "") {
       writer.uint32(34).string(message.licence);
     }
-    if (message.dateCreated !== "") {
+    if (message.dateCreated !== undefined) {
       writer.uint32(42).string(message.dateCreated);
     }
     for (const v of message.files) {
@@ -666,7 +860,7 @@ export const Main = {
       type: isSet(object.type) ? String(object.type) : "",
       author: isSet(object.author) ? String(object.author) : "",
       licence: isSet(object.licence) ? String(object.licence) : "",
-      dateCreated: isSet(object.dateCreated) ? String(object.dateCreated) : "",
+      dateCreated: isSet(object.dateCreated) ? String(object.dateCreated) : undefined,
       files: Array.isArray(object?.files) ? object.files.map((e: any) => Files.fromJSON(e)) : [],
       tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
       description: isSet(object.description) ? String(object.description) : "",
@@ -687,7 +881,7 @@ export const Main = {
     if (message.licence !== "") {
       obj.licence = message.licence;
     }
-    if (message.dateCreated !== "") {
+    if (message.dateCreated !== undefined) {
       obj.dateCreated = message.dateCreated;
     }
     if (message.files?.length) {
@@ -713,7 +907,7 @@ export const Main = {
     message.type = object.type ?? "";
     message.author = object.author ?? "";
     message.licence = object.licence ?? "";
-    message.dateCreated = object.dateCreated ?? "";
+    message.dateCreated = object.dateCreated ?? undefined;
     message.files = object.files?.map((e) => Files.fromPartial(e)) || [];
     message.tags = object.tags?.map((e) => e) || [];
     message.description = object.description ?? "";
@@ -834,7 +1028,7 @@ export const AdditionalInformation = {
 };
 
 function createBaseFiles(): Files {
-  return { url: "", indest: 0, contentType: "", method: "", index: 0 };
+  return { url: "", indest: 0, contentType: "", method: "", index: undefined };
 }
 
 export const Files = {
@@ -851,7 +1045,7 @@ export const Files = {
     if (message.method !== "") {
       writer.uint32(34).string(message.method);
     }
-    if (message.index !== 0) {
+    if (message.index !== undefined) {
       writer.uint32(40).int32(message.index);
     }
     return writer;
@@ -914,7 +1108,7 @@ export const Files = {
       indest: isSet(object.indest) ? Number(object.indest) : 0,
       contentType: isSet(object.contentType) ? String(object.contentType) : "",
       method: isSet(object.method) ? String(object.method) : "",
-      index: isSet(object.index) ? Number(object.index) : 0,
+      index: isSet(object.index) ? Number(object.index) : undefined,
     };
   },
 
@@ -932,7 +1126,7 @@ export const Files = {
     if (message.method !== "") {
       obj.method = message.method;
     }
-    if (message.index !== 0) {
+    if (message.index !== undefined) {
       obj.index = Math.round(message.index);
     }
     return obj;
@@ -947,7 +1141,7 @@ export const Files = {
     message.indest = object.indest ?? 0;
     message.contentType = object.contentType ?? "";
     message.method = object.method ?? "";
-    message.index = object.index ?? 0;
+    message.index = object.index ?? undefined;
     return message;
   },
 };
@@ -1041,80 +1235,6 @@ export const Algorithm = {
   },
 };
 
-function createBaseServiceSelfDescription(): ServiceSelfDescription {
-  return { url: "", isVerified: false };
-}
-
-export const ServiceSelfDescription = {
-  encode(message: ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.url !== "") {
-      writer.uint32(10).string(message.url);
-    }
-    if (message.isVerified === true) {
-      writer.uint32(16).bool(message.isVerified);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): ServiceSelfDescription {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseServiceSelfDescription();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.url = reader.string();
-          continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.isVerified = reader.bool();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ServiceSelfDescription {
-    return {
-      url: isSet(object.url) ? String(object.url) : "",
-      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : false,
-    };
-  },
-
-  toJSON(message: ServiceSelfDescription): unknown {
-    const obj: any = {};
-    if (message.url !== "") {
-      obj.url = message.url;
-    }
-    if (message.isVerified === true) {
-      obj.isVerified = message.isVerified;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
-    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
-    const message = createBaseServiceSelfDescription();
-    message.url = object.url ?? "";
-    message.isVerified = object.isVerified ?? false;
-    return message;
-  },
-};
-
 function createBasegaiaX(): gaiaX {
   return { containsPII: false, termsAndConditions: [], serviceSD: undefined };
 }
@@ -1204,6 +1324,80 @@ export const gaiaX = {
     message.serviceSD = (object.serviceSD !== undefined && object.serviceSD !== null)
       ? ServiceSelfDescription.fromPartial(object.serviceSD)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseServiceSelfDescription(): ServiceSelfDescription {
+  return { url: "", isVerified: undefined };
+}
+
+export const ServiceSelfDescription = {
+  encode(message: ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.isVerified !== undefined) {
+      writer.uint32(16).bool(message.isVerified);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ServiceSelfDescription {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseServiceSelfDescription();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.isVerified = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ServiceSelfDescription {
+    return {
+      url: isSet(object.url) ? String(object.url) : "",
+      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : undefined,
+    };
+  },
+
+  toJSON(message: ServiceSelfDescription): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.isVerified !== undefined) {
+      obj.isVerified = message.isVerified;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(base?: I): ServiceSelfDescription {
+    return ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ServiceSelfDescription>, I>>(object: I): ServiceSelfDescription {
+    const message = createBaseServiceSelfDescription();
+    message.url = object.url ?? "";
+    message.isVerified = object.isVerified ?? undefined;
     return message;
   },
 };
@@ -1414,11 +1608,14 @@ export const UpdateOfferingResponse = {
 };
 
 function createBaseUpdateOfferingLifecycleResponse(): UpdateOfferingLifecycleResponse {
-  return {};
+  return { DebugInformation: undefined };
 }
 
 export const UpdateOfferingLifecycleResponse = {
-  encode(_: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -1429,6 +1626,13 @@ export const UpdateOfferingLifecycleResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1438,20 +1642,26 @@ export const UpdateOfferingLifecycleResponse = {
     return message;
   },
 
-  fromJSON(_: any): UpdateOfferingLifecycleResponse {
-    return {};
+  fromJSON(object: any): UpdateOfferingLifecycleResponse {
+    return { DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined };
   },
 
-  toJSON(_: UpdateOfferingLifecycleResponse): unknown {
+  toJSON(message: UpdateOfferingLifecycleResponse): unknown {
     const obj: any = {};
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(base?: I): UpdateOfferingLifecycleResponse {
     return UpdateOfferingLifecycleResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(_: I): UpdateOfferingLifecycleResponse {
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleResponse {
     const message = createBaseUpdateOfferingLifecycleResponse();
+    message.DebugInformation = object.DebugInformation ?? undefined;
     return message;
   },
 };
