@@ -21,7 +21,6 @@ import {
 import {
   CreateOfferingRequest,
   UpdateOfferingRequest,
-  UpdateOfferingLifecycleRequest,
 } from '../generated/src/_proto/spp';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
