@@ -4,11 +4,9 @@ A small service to push Gaia-X Verifiable Credentials (VC's) to [Pontus-X](https
 [XFSC-Catalog](https://gitlab.eclipse.org/eclipse/xfsc/cat/fc-service) and 
 [CredentialEventService](https://gitlab.com/gaia-x/lab/credentials-events-service/-/tree/main?ref_type=heads).
 
-
 It offers a gRPC API described in [here](./src/_proto/spp.proto).
 
 While the REST API is currently __not__ supported.
-
 
 ## Installation
 
@@ -16,13 +14,15 @@ While the REST API is currently __not__ supported.
 $ npm install
 ```
 
-
 ## Configuration
 
 See the example `.env.example` for enviroments variables that can be set.
 
-Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_URL` for the CredentialEventService.
-
+|Key|Value|Description|
+|---|---|---|
+|NETWORK|GENX, PONTUSX, MUMBAI||
+|PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format|
+|CES_URL|https://ces-development.lab.gaia-x.eu/credentials-events|Please do not use another one|
 
 ## Running the app
 
