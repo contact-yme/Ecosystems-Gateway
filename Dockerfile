@@ -1,5 +1,7 @@
 FROM node:18-alpine As build
 
+RUN apk update && apk add python3 make gcc g++ protobuf-dev
+
 WORKDIR /usr/src/app
 
 COPY --chown=node:node package*.json ./
@@ -13,6 +15,11 @@ RUN npm run build
 
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
+
+RUN protoc --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
+            --ts_proto_opt=esModuleInterop=true \
+            --ts_proto_out="./src/generated" \
+            ./src/_proto/spp.proto
 
 # Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
 RUN npm ci --only=production && npm cache clean --force
