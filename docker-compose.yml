@@ -32,5 +32,3 @@ networks:
     external: true
   proxy:
     external: true
-
-# Pontus-X
