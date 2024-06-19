@@ -12,9 +12,25 @@ services:
       - "5001:5000"
     networks:
       - gaia-x
+      - proxy
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+
+      # https redirect
+      traefik.http.routers.publishingconnector.rule: Host(`publishing-connector.localhost`)
+      traefik.http.routers.publishingconnector.entrypoints: web
+      traefik.http.routers.publishingconnector.middlewares: https-redirectscheme@file
+
+      traefik.http.routers.publishingconnector-secure.rule: Host(`publishing-connector.localhost`)
+      traefik.http.routers.publishingconnector-secure.entrypoints: websecure
+      traefik.http.routers.publishingconnector-secure.loadbalancer.port: 5000
+
 
 networks:
   gaia-x:
+    external: true
+  proxy:
     external: true
 
 # Pontus-X
