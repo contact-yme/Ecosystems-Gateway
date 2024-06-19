@@ -24,7 +24,7 @@ services:
 
       traefik.http.routers.publishingconnector-secure.rule: Host(`publishing-connector.localhost`)
       traefik.http.routers.publishingconnector-secure.entrypoints: websecure
-      traefik.http.routers.publishingconnector-secure.loadbalancer.port: 5000
+      traefik.http.services.publishingconnector-secure.loadbalancer.server.port: 5000
 
 
 networks:
