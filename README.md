@@ -8,6 +8,10 @@ It offers a gRPC API described in [here](./src/_proto/spp.proto).
 
 While the REST API is currently __not__ supported.
 
+### Quickstart
+
+The recommended way to run this setup, is to use the [Local Development Common Layer](https://gitlab.euprogigant.kube.a1.digital/sebastian.waldbauer/local-development-core-services)
+
 ## Installation
 
 ```bash
@@ -21,8 +25,8 @@ See the example `.env.example` for enviroments variables that can be set.
 |Key|Value|Description|
 |---|---|---|
 |NETWORK|GENX, PONTUSX, MUMBAI||
-|PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format|
-|CES_URL|https://ces-development.lab.gaia-x.eu/credentials-events|Please do not use another one|
+|PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
+|CES_URL|https://ces-development.lab.gaia-x.eu/credentials-events|Is used for the CredentialEventService|
 
 ## Running the app
 
