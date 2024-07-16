@@ -1,38 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { XfscService } from './xfsc.service';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
+import XfscService from './xfsc.service'
 
-describe('XfscService', () => {
-  let service: XfscService;
-  let httpService: HttpService;
+describe('Xfsc service', () => {
+    let xfscService: XfscService = new XfscService()
 
-  const mockHttpService = {
-    axiosRef: {
-      request: jest.fn(),
-      post: jest.fn(),
-    },
-  };
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        XfscService,
-        HttpService,
-        ConfigService, // replace me with TestConfig
-        {
-          provide: HttpService,
-          useValue: mockHttpService,
-        },
-      ],
-    }).compile();
-
-    service = module.get<XfscService>(XfscService);
-    httpService = module.get<HttpService>(HttpService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-    expect(httpService).toBeDefined();
-  });
-});
+    it('class is initialyzed', () => {
+        expect(XfscService).toBeDefined()
+    }),
+    it('Token is a string', () => {
+        const token = xfscService.getToken()
+        token.then(token => expect(typeof token).toEqual(typeof 'str'))
+    })
+})
