@@ -1,6 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { PontusxService } from './pontusx/pontusx.service';
+import { XfscService } from './xfsc/xfsc.service';
 import {
   CreateOfferingRequest,
   CreateOfferingResponse,
@@ -27,6 +28,17 @@ export class GrpcController {
 
     this.ensureDatasetOrThrow(data);
 
+    // XFSC
+    const xfscService = new XfscService()
+    xfscService.getToken()
+    .then(token => xfscService.publish(token, data=data))
+    .catch(error => {
+      this.logger.error('Error occured when trying to get the Token needed for the XFSC catalogue: ', error)
+      
+      throw error
+    })
+
+    // PONTUS-X
     const result = await this.pontusxService.publishComputeAsset(data);
     if (result) {
       return {
