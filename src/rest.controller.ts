@@ -6,6 +6,8 @@ import {
   ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
+import { XfscService } from './xfsc/xfsc.service';
+import { CreateOfferingRequest } from './generated/src/_proto/spp';
 
 @Controller()
 export class RestController {
@@ -26,8 +28,22 @@ export class RestController {
   @ApiTags('publishing-connector')
   @ApiProperty()
   async publishVcEverywhere(
-    @Body() body: string, // TODO: use dto, also validation is never a bad idea
+    @Body() body: CreateOfferingRequest, // TODO: use dto, also validation is never a bad idea
   ) {
+    // XFSC Implementation:
+    const xfscService = new XfscService()
+    xfscService.getToken()
+    .then(token => {
+      xfscService.publish(token, body)
+      console.debug('Successfully Published VC in XFSC Catalogue:\n', body)
+    })
+    .catch(error => {
+      console.error('Error occured when trying to get the Token needed for the XFSC catalogue: ', error)
+
+      throw error
+    })
+
+
     return await this.appService.publishEverything(body);
   }
 }
