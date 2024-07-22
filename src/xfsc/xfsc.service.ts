@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import encodeBase64 from './utils/base64'
+import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD } from './config'
 
 import {
