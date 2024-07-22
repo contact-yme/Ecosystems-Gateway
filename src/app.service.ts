@@ -21,7 +21,12 @@ export class AppService {
     const pontusxResult = await this.pontusxService.publishAsset(vc);
     this.logger.debug('result from pontusx', pontusxResult);
 
-    const xfscResult = await this.xfscService.publish(vc);
+    let xfscResult = undefined
+
+    this.xfscService.getToken()
+    .then(token => {
+      xfscResult = this.xfscService.publish(token, vc)
+    })
     this.logger.debug('result from xfsc catalog', xfscResult);
 
     const credentialEventResult = await this.credentialEventService.publish(
