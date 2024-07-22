@@ -40,7 +40,7 @@ export class XfscService {
         try {
 
             response = axios.request(config)
-            console.debug('response:' + response)
+            console.debug('response:' + response)  // Debug
 
         } catch (error) {
             console.log('Error occured while processing the request'+ error.message)
