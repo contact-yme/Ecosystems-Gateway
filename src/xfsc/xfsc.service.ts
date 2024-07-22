@@ -22,7 +22,7 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    publish(token: string, data: JSON): Promise<JSON> {
+    publish(token: string, data: CreateOfferingRequest): Promise<JSON> {
         const axios = require('axios')
         let response: Promise<JSON>
 
