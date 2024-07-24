@@ -1,4 +1,4 @@
-import XfscService from './xfsc.service'
+import { XfscService } from './xfsc.service'
 
 describe('Xfsc service', () => {
     let xfscService: XfscService = new XfscService()
