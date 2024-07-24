@@ -1,7 +1,7 @@
 import { PricingConfigWithoutOwner } from '@deltadao/nautilus';
 
 export enum Network {
-  GENX = 'GENX',
+  TESTNET = 'TESTNET',
   PONTUSX = 'PONTUSX',
   MUMBAI = 'MUMBAI',
 }
@@ -9,7 +9,7 @@ export enum Network {
 export const NETWORK_CONFIGS: {
   [key in Network]: NetworkConfig;
 } = {
-  [Network.GENX]: {
+  [Network.TESTNET]: {
     chainId: 32457,
     network: 'pontusx',
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
@@ -76,7 +76,7 @@ export const NETWORK_CONFIGS: {
 
 // These are example pricing configurations with prefilled contract addresses of the payment tokens
 export const PRICING_CONFIGS: PricingConfig = {
-  [Network.GENX]: {
+  [Network.TESTNET]: {
     FREE: {
       type: 'free',
     },
