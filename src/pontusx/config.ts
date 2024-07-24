@@ -11,7 +11,24 @@ export const NETWORK_CONFIGS: {
 } = {
   [Network.GENX]: {
     chainId: 32457,
-    network: 'pontusx',metadataCacheUri: 'https://aquarius.pontus-x.eu',nodeUri: 'https://rpc.test.pontus-x.eu',providerUri: 'https://provider.test.pontus-x.eu',subgraphUri: 'https://subgraph.test.pontus-x.eu',explorerUri: 'https://explorer.pontus-x.eu/testnet/pontusx',oceanTokenAddress: '0x5B190F9E2E721f8c811E4d584383E3d57b865C69',oceanTokenSymbol: 'OCEAN',fixedRateExchangeAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',dispenserAddress: '0xaB5B68F88Bc881CAA427007559E9bbF8818026dE',startBlock: 82191,transactionBlockTimeout: 50,transactionConfirmationBlocks: 1,transactionPollingTimeout: 750,gasFeeMultiplier: 1.1,nftFactoryAddress: '0x2C4d542ff791890D9290Eec89C9348A4891A6Fd2',opfCommunityFeeCollector: '0xACC8d1B2a0007951fb4ed622ACB1C4fcCAbe778D',providerAddress: '0x9546d39CE3E48BC942f0be4AA9652cBe0Aff3592'
+    network: 'pontusx',
+    metadataCacheUri: 'https://aquarius.pontus-x.eu',
+    nodeUri: 'https://rpc.test.pontus-x.eu',
+    providerUri: 'https://provider.test.pontus-x.eu',
+    subgraphUri: 'https://subgraph.test.pontus-x.eu',
+    explorerUri: 'https://explorer.pontus-x.eu/testnet/pontusx',
+    oceanTokenAddress: '0x5B190F9E2E721f8c811E4d584383E3d57b865C69',
+    oceanTokenSymbol: 'OCEAN',
+    fixedRateExchangeAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',
+    dispenserAddress: '0xaB5B68F88Bc881CAA427007559E9bbF8818026dE',
+    startBlock: 82191,
+    transactionBlockTimeout: 50,
+    transactionConfirmationBlocks: 1,
+    transactionPollingTimeout: 750,
+    gasFeeMultiplier: 1.1,
+    nftFactoryAddress: '0x2C4d542ff791890D9290Eec89C9348A4891A6Fd2',
+    opfCommunityFeeCollector: '0xACC8d1B2a0007951fb4ed622ACB1C4fcCAbe778D',
+    providerAddress: '0x9546d39CE3E48BC942f0be4AA9652cBe0Aff3592'
   },
   [Network.PONTUSX]: {
     chainId: 32456,
