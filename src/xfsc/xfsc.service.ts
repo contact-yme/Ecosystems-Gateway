@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import encodeBase64 from './base64'
-import { XFSC_USERNAME, XFSC_PASSWORD } from './config'
+import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
 import {
     CreateOfferingRequest
@@ -14,11 +14,15 @@ export class XfscService {
     private username: string
     private password: string
     private credentials: string
+    private xfscCatAddr: string
+    private xfscTokenEndpoint: string
     
     constructor() {
-        this.username = XFSC_USERNAME  // read .env vars here => sould be XFSC_USERNAME
-        this.password = XFSC_PASSWORD  // read .env vars here => sould be XFSC_PASSWORD
-        console.debug(this.username + ':' + this.password)
+        this.username = XFSC_USERNAME  // read .env vars here
+        this.password = XFSC_PASSWORD  
+        this.xfscCatAddr = XFSC_CAT_HOST
+        this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT
+
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
@@ -29,7 +33,7 @@ export class XfscService {
         let config = { 
             method: 'post',
             maxBodyLength: Infinity,
-            url: 'http://89.145.162.34/self-descriptions',
+            url: this.xfscCatAddr,
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': 'Bearer ' + token
@@ -40,7 +44,7 @@ export class XfscService {
         try {
 
             response = axios.request(config)
-            console.debug('response:' + response)  // Debug
+            console.debug('XFSC CAT response:' + response)
 
         } catch (error) {
             console.log('Error occured while processing the request'+ error.message)
@@ -61,7 +65,7 @@ export class XfscService {
         let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'http://89.145.162.34:8080/realms/gaia-x/protocol/openid-connect/token',
+        url: this.xfscTokenEndpoint,
         headers: { 
             'Content-Type': 'application/x-www-form-urlencoded', 
             'Authorization': 'Basic ' + this.credentials
