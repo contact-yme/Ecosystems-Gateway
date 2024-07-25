@@ -4,7 +4,8 @@ import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
 import {
-    CreateOfferingRequest
+    CreateOfferingRequest,
+    CreateOfferingResponse
   } from '../generated/src/_proto/spp'
 
 
@@ -26,7 +27,7 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    publish(token: string, data: CreateOfferingRequest): Promise<JSON> {
+    publish(token: string, data: CreateOfferingRequest): Promise<CreateOfferingResponse> {
         const axios = require('axios')
         let response: Promise<JSON>
 
@@ -34,35 +35,6 @@ export class XfscService {
             method: 'post',
             maxBodyLength: Infinity,
             url: this.xfscCatAddr + '/self-descriptions',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': 'Bearer ' + token
-            },
-            data : data
-            }
-
-        try {
-
-            response = axios.request(config)
-            console.debug('XFSC CAT response:' + response)
-
-        } catch (error) {
-            console.log('Error occured while processing the request'+ error.message)
-            throw error
-        }
-        
-
-        return response['data']
-    }
-
-    revoke(token: string, data: CreateOfferingRequest, vcHash: string): Promise<JSON> {
-        const axios = require('axios')
-        let response: Promise<JSON>
-
-        let config = { 
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: this.xfscCatAddr + '/self-descriptions/' + vcHash + '/revoke',
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': 'Bearer ' + token
