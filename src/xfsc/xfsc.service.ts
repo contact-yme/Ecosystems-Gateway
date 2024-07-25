@@ -29,7 +29,36 @@ export class XfscService {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: this.xfscCatAddr,
+            url: this.xfscCatAddr + '/self-descriptions',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': 'Bearer ' + token
+            },
+            data : data
+            }
+
+        try {
+
+            response = axios.request(config)
+            console.debug('XFSC CAT response:' + response)
+
+        } catch (error) {
+            console.log('Error occured while processing the request'+ error.message)
+            throw error
+        }
+        
+
+        return response['data']
+    }
+
+    revoke(token: string, data: CreateOfferingRequest, vcHash: string): Promise<JSON> {
+        const axios = require('axios')
+        let response: Promise<JSON>
+
+        let config = { 
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr + '/self-descriptions/' + vcHash + '/revoke',
             headers: { 
               'accept': 'application/json', 
               'Content-Type': 'application/json', 
