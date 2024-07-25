@@ -5,8 +5,12 @@ import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST, XFSC_CAT_TOKEN_ENDPOINT } 
 
 import {
     CreateOfferingRequest,
-    CreateOfferingResponse
-  } from '../generated/src/_proto/spp'
+    CreateOfferingResponse,
+    UpdateOfferingRequest,
+    UpdateOfferingResponse,
+    UpdateOfferingLifecycleRequest,
+    UpdateOfferingLifecycleResponse,
+  } from '../generated/src/_proto/spp';
 
 
 export class XfscService {
@@ -28,6 +32,35 @@ export class XfscService {
     }
 
     publish(token: string, data: CreateOfferingRequest): Promise<CreateOfferingResponse> {
+        const axios = require('axios')
+        let response: Promise<JSON>
+
+        let config = { 
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr + '/self-descriptions',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': 'Bearer ' + token
+            },
+            data : data
+            }
+
+        try {
+
+            response = axios.request(config)
+            console.debug('XFSC CAT response:' + response)
+
+        } catch (error) {
+            console.log('Error occured while processing the request'+ error.message)
+            throw error
+        }
+        
+
+        return response['data']
+    }
+
+    update(token: string, data: UpdateOfferingRequest): Promise<UpdateOfferingResponse> {
         const axios = require('axios')
         let response: Promise<JSON>
 
