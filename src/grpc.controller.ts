@@ -62,7 +62,7 @@ export class GrpcController {
   ): Promise<UpdateOfferingResponse> {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
-
+    
     const result = await this.pontusxService.updateOffering(data);
 
     if (result) {
