@@ -10,4 +10,4 @@ describe('Xfsc service', () => {
         const token = xfscService.getToken()
         token.then(token => expect(typeof token).toEqual(typeof 'str'))
     })
-})
+}) 

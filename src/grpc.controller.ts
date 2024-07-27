@@ -33,7 +33,6 @@ export class GrpcController {
     xfscService.getToken()
     .then(token => {
       xfscService.publish(token, data=data)
-      console.debug('Successfully Published VC in XFSC Catalogue:\n', data)
     })
     .catch(error => {
       this.logger.error('Error occured when trying to get the Token needed for the XFSC catalogue: ', error)
