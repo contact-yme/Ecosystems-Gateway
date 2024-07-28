@@ -37,15 +37,11 @@ export class XfscService {
             data : data
             }
 
-        try {
-
-            response = axios.request(config)
-            console.debug('XFSC CAT response:' + response)
-
-        } catch (error) {
-            console.log('Error occured while processing the request'+ error.message)
-            throw error
-        }
+        await axios.request(config)
+        .then(result => { response = result })
+        .catch(error => { console.log('Error occured while processing the request '+ error.message)
+            throw error })
+        console.debug('XFSC CAT response:' + response)
         
 
         return response['data']

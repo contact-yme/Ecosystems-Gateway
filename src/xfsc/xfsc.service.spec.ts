@@ -1,5 +1,8 @@
 import axios, { AxiosResponse } from 'axios'
 import { XfscService } from './xfsc.service'
+jest.mock('axios')
+import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp'
+
 
 jest.mock('axios')
 describe('Xfsc service', () => {
@@ -128,4 +131,6 @@ describe('Xfsc service', () => {
         expect(result).toBe('mockID')
         expect(xfscService.revoke).rejects.toThrow()
     })
+
+    it.todo('update VC succesfully with the use of the Bearer token')
 }) 
