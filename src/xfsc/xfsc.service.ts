@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST, XFSC_CAT_TOKEN_ENDPOINT } from './config'
@@ -14,13 +14,12 @@ import {
 
 
 export class XfscService {
-    private url: string
-
+    
     private username: string
     private password: string
     private credentials: string
-    private xfscCatAddr: string
-    private xfscTokenEndpoint: string
+    private readonly xfscCatAddr: string
+    private readonly xfscTokenEndpoint: string
     
     constructor() {
         this.username = XFSC_USERNAME  // read .env vars here
@@ -31,9 +30,9 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    publish(token: string, data: CreateOfferingRequest): Promise<CreateOfferingResponse> {
+    async publish(token: string, data: CreateOfferingRequest): Promise<CreateOfferingResponse> {
         const axios = require('axios')
-        let response: Promise<JSON>
+        let response: AxiosResponse<CreateOfferingResponse>
 
         let config = { 
             method: 'post',
@@ -46,15 +45,11 @@ export class XfscService {
             data : data
             }
 
-        try {
-
-            response = axios.request(config)
-            console.debug('XFSC CAT response:' + response)
-
-        } catch (error) {
-            console.log('Error occured while processing the request'+ error.message)
-            throw error
-        }
+        await axios.request(config)
+        .then(result => { response = result })
+        .catch(error => { console.log('Error occured while processing the request '+ error.message)
+            throw error })
+        console.debug('XFSC CAT response:' + response)
         
 
         return response['data']
