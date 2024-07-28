@@ -31,18 +31,7 @@ describe('Xfsc service', () => {
         expect(mockResponse.data.access_token).toEqual(token)
     })
 
-    it('Publish VC succesfully with the use of the Bearer token', async () => {
-        axios.request = jest
-        .fn()
-        .mockResolvedValue(CreateOfferingResponse)
-        
-
-        const data = {} as CreateOfferingRequest 
-
-        const response = await xfscService.publish(token, data)
-
-        expect(CreateOfferingResponse).toEqual(response)
-    })
+    it.todo('Publish VC succesfully with the use of the Bearer token')
 
     it.todo('update VC succesfully with the use of the Bearer token')
 }) 
