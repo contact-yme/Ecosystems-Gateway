@@ -61,6 +61,8 @@ export class GrpcController {
   ): Promise<UpdateOfferingResponse> {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
+
+    // Call XFSC Update function here
     
     const result = await this.pontusxService.updateOffering(data);
 

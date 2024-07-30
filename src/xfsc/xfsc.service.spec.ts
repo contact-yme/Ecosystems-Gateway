@@ -31,7 +31,57 @@ describe('Xfsc service', () => {
         expect(mockResponse.data.access_token).toEqual(token)
     })
 
-    it.todo('Publish VC succesfully with the use of the Bearer token')
-
     it.todo('update VC succesfully with the use of the Bearer token')
 }) 
+
+
+describe('publish in xfsc catalogue', () => {
+    const mockedAxios = axios as jest.Mocked<typeof axios>
+    const xfscService = new XfscService()
+    
+    const token = 'testToken'
+    let data: CreateOfferingRequest
+    let response: CreateOfferingResponse
+  
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+  
+    it('should return response data when request is successful', async () => {
+      mockedAxios.request.mockResolvedValue({
+        data: response,
+      })
+  
+      const result = await xfscService.publish(token, data)
+  
+      expect(mockedAxios.request).toHaveBeenCalledWith({
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: expect.stringContaining('/self-descriptions'),
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}`,
+        },
+        data: data,
+      })
+      expect(typeof result).toEqual(XfscService)
+    })
+  
+    it('should throw an error when request fails', async () => {
+      const errorMessage = 'Network Error'
+      mockedAxios.request.mockRejectedValue(new Error(errorMessage))
+  
+      await expect(xfscService.publish(token, data)).rejects.toThrow(errorMessage)
+      expect(mockedAxios.request).toHaveBeenCalledWith({
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: expect.stringContaining('/self-descriptions'),
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}`,
+        },
+        data: data,
+      })
+    })
+  })
+  
