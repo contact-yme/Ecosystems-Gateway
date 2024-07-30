@@ -64,7 +64,7 @@ describe('publish in xfsc catalogue', () => {
         },
         data: data,
       })
-      expect(typeof result).toEqual(XfscService)
+      expect(result).toBe(response)
     })
   
     it('should throw an error when request fails', async () => {
