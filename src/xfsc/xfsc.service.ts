@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 
 import encodeBase64 from './base64'
-import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST, XFSC_CAT_TOKEN_ENDPOINT } from './config'
+import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
 import {
     CreateOfferingRequest,
@@ -24,7 +24,7 @@ export class XfscService {
     constructor() {
         this.username = XFSC_USERNAME  // read .env vars here
         this.password = XFSC_PASSWORD  
-        this.xfscCatAddr = XFSC_CAT_HOST
+        this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT
         this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT
 
         this.credentials = encodeBase64(this.username + ':' + this.password)
@@ -37,7 +37,7 @@ export class XfscService {
         let config = { 
             method: 'post',
             maxBodyLength: Infinity,
-            url: this.xfscCatAddr + '/self-descriptions',
+            url: this.xfscCatAddr,
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': 'Bearer ' + token
