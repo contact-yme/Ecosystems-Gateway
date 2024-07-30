@@ -29,7 +29,7 @@ export class XfscService {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: this.xfscCatAddr + '/self-descriptions',
+            url: this.xfscCatAddr,
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': 'Bearer ' + token
