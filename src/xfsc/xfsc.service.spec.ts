@@ -17,7 +17,7 @@ describe('Xfsc service', () => {
     it('Return token', async () => {
         const mockResponse = {
             data: {
-                access_token: 'Token'
+                access_token: 'testToken'
             }
         }
 
