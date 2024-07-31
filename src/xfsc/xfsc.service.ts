@@ -30,9 +30,9 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    async publish(token: string, data: CreateOfferingRequest): Promise<CreateOfferingResponse> {
+    async publish(token: string, data: JSON): Promise<JSON> {
         const axios = require('axios')
-        let response: AxiosResponse<CreateOfferingResponse>
+        let response: Promise<JSON>
 
         let config = { 
             method: 'post',
@@ -55,33 +55,24 @@ export class XfscService {
         return response['data']
     }
 
-    update(token: string, data: UpdateOfferingRequest): Promise<UpdateOfferingResponse> {
-        const axios = require('axios')
-        let response: Promise<JSON>
-
-        let config = { 
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: this.xfscCatAddr + '/self-descriptions',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': 'Bearer ' + token
-            },
-            data : data
+    update(token: string, hash: string, data: JSON): void {
+        const del = async (): Promise<void> => {
+                let response: JSON
+            try {
+                response = await axios.delete(this.xfscCatAddr + hash)
             }
-
-        try {
-
-            response = axios.request(config)
-            console.debug('XFSC CAT response:' + response)
-
-        } catch (error) {
-            console.log('Error occured while processing the request'+ error.message)
-            throw error
+            catch (error) {
+                console.error('Error occured while trying to delete SD (${hash})')
+                throw error
+            }
         }
-        
 
-        return response['data']
+        del()
+        console.log('Deleted SD (${hash}) successfully.')
+
+        this.publish(token, data)
+        console.log('Published updated SD successfully.')
+        console.log('Updating was successfull.')
     }
 
     async getToken(): Promise<string> { 
