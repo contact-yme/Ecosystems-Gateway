@@ -31,26 +31,32 @@ export class XfscService {
     }
 
     async publish(token: string, data: CreateOfferingRequest): Promise<JSON> {
-        const axios = require('axios')
-        let response: Promise<JSON>
+        let response: AxiosResponse<JSON>
 
-        let config = { 
+        
+        let config = {
             method: 'post',
             maxBodyLength: Infinity,
             url: this.xfscCatAddr,
             headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': 'Bearer ' + token
+              'accept': 'application/json', 
+              'Content-Type': 'application/json', 
+              'Authorization': 'Bearer ' + token
             },
             data : data
-            }
-
-        await axios.request(config)
-        .then(result => { response = result })
-        .catch(error => { console.log('Error occured while processing the request '+ error.message)
-            throw error })
-        console.debug('XFSC CAT response:' + response)
+          }
         
+          console.log('Publishing in XFSC CAT ...')
+          axios.request(config)
+          .then(result => {
+            response = result
+        })
+          .catch(error => {
+            console.error('Error occured while trying to Publish VP to XFSC Cat: ' + error)
+            throw error
+        })
+
+        console.log('Published successfully in XFSC CAT.')
 
         return response['data']
     }
