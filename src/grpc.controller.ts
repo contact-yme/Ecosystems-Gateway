@@ -8,7 +8,7 @@ import {
   UpdateOfferingResponse,
   UpdateOfferingLifecycleRequest,
   UpdateOfferingLifecycleResponse,
-} from './generated/src/_proto/spp';
+} from './generated/src/_proto/spp_v2_full';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 
@@ -25,12 +25,24 @@ export class GrpcController {
     this.logger.debug('grpc method CreateOffering called');
     this.logger.debug(data);
 
-    this.ensureDatasetOrThrow(data);
+    const results = [];
+    for (const offering of data.offerings) {
+      if (offering.pontusxOffering !== undefined) {
+        const result = await this.pontusxService.publishAsset(
+          offering.pontusxOffering,
+        );
+        if (result) {
+          results.push(result.ddo.id);
+        }
+      } else {
+        //xfscOffering because of oneof
+        //missing
+      }
+    }
 
-    const result = await this.pontusxService.publishComputeAsset(data);
-    if (result) {
+    if (results.length) {
       return {
-        did: result.ddo.id,
+        id: results,
         DebugInformation: undefined,
       };
     }
@@ -48,12 +60,25 @@ export class GrpcController {
     this.logger.debug('grpc method UpdateOffering called');
     this.logger.debug(data);
 
-    const result = await this.pontusxService.updateOffering(data);
+    const ces_results: Array<string> = [];
+    const results = [];
+    for (const offering of data.offerings) {
+      if (offering.pontusxUpdateOffering !== undefined) {
+        const result = await this.pontusxService.updateOffering(offering);
+        if (result) {
+          ces_results.push(result.ces);
+          results.push(result);
+        }
+      } else {
+        //xfscUpdateOffering because of oneof
+        //missing
+      }
+    }
 
-    if (result) {
+    if (ces_results.length) {
       return {
-        location: result.ces,
-        DebugInformation: result,
+        locations: ces_results,
+        DebugInformation: { results },
       };
     }
 
@@ -67,13 +92,26 @@ export class GrpcController {
   async updateOfferingLifecycle(
     data: UpdateOfferingLifecycleRequest,
   ): Promise<UpdateOfferingLifecycleResponse> {
-    const result = await this.pontusxService.setState(
-      data.did,
-      data.to as LifecycleStates,
-    );
-    if (result) {
+    const results = [];
+    for (const offering of data.offerings) {
+      if (offering.pontusxUpdateOfferingLifecycle !== undefined) {
+        const result = await this.pontusxService.setState(
+          offering.pontusxUpdateOfferingLifecycle.did,
+          offering.pontusxUpdateOfferingLifecycle
+            .to as unknown as LifecycleStates, // is there a better way?
+        );
+        if (result) {
+          results.push(result);
+        }
+      } else {
+        //xfscUpdateOffering because of oneof
+        //missing
+      }
+    }
+
+    if (results.length) {
       return {
-        DebugInformation: result,
+        DebugInformation: { results },
       };
     }
 
@@ -81,14 +119,5 @@ export class GrpcController {
       code: GrpcStatusCode.INTERNAL,
       message: 'Internal Error',
     });
-  }
-
-  private ensureDatasetOrThrow(data: CreateOfferingRequest) {
-    if (data.main.type !== 'dataset') {
-      throw new RpcException({
-        code: GrpcStatusCode.UNIMPLEMENTED,
-        message: 'publishing of non dataset not implemented',
-      });
-    }
   }
 }
