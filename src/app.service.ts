@@ -21,7 +21,7 @@ export class AppService {
     const pontusxResult = await this.pontusxService.publishComputeAsset(vc);
     this.logger.debug('result from pontusx', pontusxResult);
 
-    let xfscResult = undefined
+    let xfscResult: Promise<JSON>
 
     this.xfscService.getToken()
     .then(token => {

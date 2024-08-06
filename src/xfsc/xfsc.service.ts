@@ -30,7 +30,7 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    async publish(token: string, data: JSON): Promise<JSON> {
+    async publish(token: string, data: CreateOfferingRequest): Promise<JSON> {
         const axios = require('axios')
         let response: Promise<JSON>
 
@@ -55,7 +55,7 @@ export class XfscService {
         return response['data']
     }
 
-    update(token: string, hash: string, data: JSON): void {
+    update(token: string, hash: string, data: CreateOfferingRequest): void {
         const del = async (): Promise<void> => {
                 let response: JSON
             try {
