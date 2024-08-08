@@ -23,10 +23,12 @@ export class GrpcController {
   async createOffering(
     data: CreateOfferingRequest,
   ): Promise<CreateOfferingResponse> {
-    this.logger.debug('grpc method CreateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method CreateOffering called')
+    this.logger.debug(data)
 
-    this.ensureDatasetOrThrow(data);
+    this.ensureDatasetOrThrow(data)
+
+    // Check the selected catalogue
 
     // XFSC
     const xfscService = new XfscService()
@@ -59,18 +61,17 @@ export class GrpcController {
   async updateOffering(
     data: UpdateOfferingRequest,
   ): Promise<UpdateOfferingResponse> {
-    this.logger.debug('grpc method UpdateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method UpdateOffering called')
+    this.logger.debug(data)
 
     // Call XFSC Update function here
-    
-    const result = await this.pontusxService.updateOffering(data);
+    const result = await this.pontusxService.updateOffering(data)
 
     if (result) {
       return {
         location: result.ces,
         DebugInformation: result,
-      };
+      }
     }
 
     throw new RpcException({
