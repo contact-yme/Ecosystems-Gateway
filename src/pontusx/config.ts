@@ -3,7 +3,6 @@ import { PricingConfigWithoutOwner } from '@deltadao/nautilus';
 export enum Network {
   PONTUSXTEST = 'PONTUSXTEST',
   PONTUSXDEV = 'PONTUSXDEV',
-  GENX = 'GENX',
 }
 
 export const NETWORK_CONFIGS: {
@@ -42,20 +41,6 @@ export const NETWORK_CONFIGS: {
     fixedRateExchangeAddress: '0x8372715D834d286c9aECE1AcD51Da5755B32D505',
     dispenserAddress: '0x5461b629E01f72E0A468931A36e039Eea394f9eA',
     nftFactoryAddress: '0xFdC4a5DEaCDfc6D82F66e894539461a269900E13',
-    providerAddress: '0x68C24FA5b2319C81b34f248d1f928601D2E5246B',
-  },
-  [Network.GENX]: {
-    chainId: 100,
-    network: 'genx',
-    metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
-    nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
-    providerUri: 'https://provider.v4.genx.delta-dao.com',
-    subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',
-    oceanTokenAddress: '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
-    oceanTokenSymbol: 'OCEAN',
-    fixedRateExchangeAddress: '0xAD8E7d2aFf5F5ae7c2645a52110851914eE6664b',
-    dispenserAddress: '0x94cb8FC8719Ed09bE3D9c696d2037EA95ef68d3e',
-    nftFactoryAddress: '0x6cb85858183B82154921f68b434299EC4281da53',
     providerAddress: '0x68C24FA5b2319C81b34f248d1f928601D2E5246B',
   },
 };
@@ -112,35 +97,6 @@ export const PRICING_CONFIGS: PricingConfig = {
       freCreationParams: {
         fixedRateAddress: '0x8372715D834d286c9aECE1AcD51Da5755B32D505',
         baseTokenAddress: '0x8A4826071983655805bF4f29828577Cd6b1aC0cB',
-        baseTokenDecimals: 6, // adapted for EUROe decimals
-        datatokenDecimals: 18,
-        fixedRate: '1',
-        marketFee: '0',
-        marketFeeCollector: '0x0000000000000000000000000000000000000000',
-      },
-    },
-  },
-  [Network.GENX]: {
-    FREE: {
-      type: 'free',
-    },
-    FIXED_OCEAN: {
-      type: 'fixed',
-      freCreationParams: {
-        fixedRateAddress: '0xAD8E7d2aFf5F5ae7c2645a52110851914eE6664b',
-        baseTokenAddress: '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
-        baseTokenDecimals: 18,
-        datatokenDecimals: 18,
-        fixedRate: '1',
-        marketFee: '0',
-        marketFeeCollector: '0x0000000000000000000000000000000000000000',
-      },
-    },
-    FIXED_EUROE: {
-      type: 'fixed',
-      freCreationParams: {
-        fixedRateAddress: '0xAD8E7d2aFf5F5ae7c2645a52110851914eE6664b',
-        baseTokenAddress: '0xe974c4894996E012399dEDbda0bE7314a73BBff1',
         baseTokenDecimals: 6, // adapted for EUROe decimals
         datatokenDecimals: 18,
         fixedRate: '1',
