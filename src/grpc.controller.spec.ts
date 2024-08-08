@@ -8,7 +8,7 @@ import {
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
-
+ 
   const mockPontusXService = {
     publishAsset: jest.fn(() => ({
       ddo: { id: 'test-id' },
