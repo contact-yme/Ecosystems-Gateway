@@ -8,7 +8,7 @@ import {
   UpdateOfferingResponse,
   UpdateOfferingLifecycleRequest,
   UpdateOfferingLifecycleResponse,
-} from './generated/src/_proto/spp_v2_full';
+} from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 
@@ -62,12 +62,14 @@ export class GrpcController {
 
     const ces_results: Array<string> = [];
     const results = [];
+    const ids = [];
     for (const offering of data.offerings) {
       if (offering.pontusxUpdateOffering !== undefined) {
         const result = await this.pontusxService.updateOffering(offering);
         if (result) {
           ces_results.push(result.ces);
-          results.push(result);
+          ids.push(result.pontus.ddo.id);
+          results.push(result.pontus);
         }
       } else {
         //xfscUpdateOffering because of oneof
@@ -75,8 +77,9 @@ export class GrpcController {
       }
     }
 
-    if (ces_results.length) {
+    if (ces_results.length || results.length) {
       return {
+        id: results,
         locations: ces_results,
         DebugInformation: { results },
       };
@@ -93,6 +96,7 @@ export class GrpcController {
     data: UpdateOfferingLifecycleRequest,
   ): Promise<UpdateOfferingLifecycleResponse> {
     const results = [];
+    const ids = [];
     for (const offering of data.offerings) {
       if (offering.pontusxUpdateOfferingLifecycle !== undefined) {
         const result = await this.pontusxService.setState(
@@ -102,6 +106,7 @@ export class GrpcController {
         );
         if (result) {
           results.push(result);
+          ids.push(offering.pontusxUpdateOfferingLifecycle.did);
         }
       } else {
         //xfscUpdateOffering because of oneof
@@ -111,6 +116,7 @@ export class GrpcController {
 
     if (results.length) {
       return {
+        id: ids,
         DebugInformation: { results },
       };
     }

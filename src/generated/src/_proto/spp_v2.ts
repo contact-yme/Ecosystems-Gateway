@@ -1,0 +1,3405 @@
+/* eslint-disable */
+import _m0 from "protobufjs/minimal";
+import { Struct } from "../../google/protobuf/struct";
+
+export const protobufPackage = "eupg.serviceofferingpublisher";
+
+/** Possible lifecycle states of asset in the pontus-x ecosystem */
+export enum PontusxLifecycleStates {
+  /**
+   * ACTIVE - Fully functional asset
+   * Discoverable in Portal and Ordering allowed
+   * Listed under the owner's profile
+   */
+  ACTIVE = 0,
+  /**
+   * END_OF_LIFE - This state indicates that the asset is usually deprecated or outdated
+   * Discoverable, but not orderable
+   * Not listed under the owner's profile
+   */
+  END_OF_LIFE = 1,
+  /**
+   * DEPRECATED - This state indicates that another asset has deprecated the current asset
+   * Not discoverable and not orderable
+   * Not listed under the owner's profile
+   */
+  DEPRECATED = 2,
+  /**
+   * REVOKED_BY_PUBLISHER - Publisher has explicitly revoked access or ownership rights to the asset
+   * Not discoverable and not orderable
+   */
+  REVOKED_BY_PUBLISHER = 3,
+  /**
+   * ORDERING_DISABLED_TEMPORARILY - Users can view the asset and gather information, but they cannot place orders at that moment
+   * Discoverable, but not orderable
+   * Listed under the owner's profile.
+   */
+  ORDERING_DISABLED_TEMPORARILY = 4,
+  /**
+   * ASSET_UNLISTED - Not discoverable, but orderable
+   * Listed under the owner's profile
+   */
+  ASSET_UNLISTED = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function pontusxLifecycleStatesFromJSON(object: any): PontusxLifecycleStates {
+  switch (object) {
+    case 0:
+    case "ACTIVE":
+      return PontusxLifecycleStates.ACTIVE;
+    case 1:
+    case "END_OF_LIFE":
+      return PontusxLifecycleStates.END_OF_LIFE;
+    case 2:
+    case "DEPRECATED":
+      return PontusxLifecycleStates.DEPRECATED;
+    case 3:
+    case "REVOKED_BY_PUBLISHER":
+      return PontusxLifecycleStates.REVOKED_BY_PUBLISHER;
+    case 4:
+    case "ORDERING_DISABLED_TEMPORARILY":
+      return PontusxLifecycleStates.ORDERING_DISABLED_TEMPORARILY;
+    case 5:
+    case "ASSET_UNLISTED":
+      return PontusxLifecycleStates.ASSET_UNLISTED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PontusxLifecycleStates.UNRECOGNIZED;
+  }
+}
+
+export function pontusxLifecycleStatesToJSON(object: PontusxLifecycleStates): string {
+  switch (object) {
+    case PontusxLifecycleStates.ACTIVE:
+      return "ACTIVE";
+    case PontusxLifecycleStates.END_OF_LIFE:
+      return "END_OF_LIFE";
+    case PontusxLifecycleStates.DEPRECATED:
+      return "DEPRECATED";
+    case PontusxLifecycleStates.REVOKED_BY_PUBLISHER:
+      return "REVOKED_BY_PUBLISHER";
+    case PontusxLifecycleStates.ORDERING_DISABLED_TEMPORARILY:
+      return "ORDERING_DISABLED_TEMPORARILY";
+    case PontusxLifecycleStates.ASSET_UNLISTED:
+      return "ASSET_UNLISTED";
+    case PontusxLifecycleStates.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/**
+ * Create message to publish a Offering with the given information to different ecosystems
+ * At the moment Pontus-X and XFSC are supported
+ */
+export interface CreateOfferingRequest {
+  offerings: CreateOfferingRequest_Offering[];
+}
+
+export interface CreateOfferingRequest_Offering {
+  pontusxOffering?: PontusxOffering | undefined;
+  xfscOffering?: XfscOffering | undefined;
+}
+
+/** Message for publication into the Cross Federation Services Catalogue */
+export interface XfscOffering {
+  /** String containing the Gaia-X conformant Verifiable Presentation as JSON-LD for the Service Offering */
+  VP: string;
+}
+
+/** Message for publication into the Pontus-X ecosystem */
+export interface PontusxOffering {
+  /** The main information about the asset to publish */
+  metadata:
+    | Metadata
+    | undefined;
+  /**
+   * Additional information regarding the offering
+   * Exclusively used for terms & conditions and link to Gaia-X VPs
+   */
+  additionalInformation:
+    | AdditionalInformation
+    | undefined;
+  /**
+   * Services that are exposed by the asset to interact with it
+   * Cardinality: 1..n -> At least one service has to be passed for publishing
+   */
+  services: Service[];
+}
+
+/** Response to CreateOfferingRequest */
+export interface CreateOfferingResponse {
+  /**
+   * List of identifier of the successfully published offering(s)
+   * example: did:op:123 in Pontus-X ecosystem
+   */
+  id: string[];
+  /** Debug information */
+  DebugInformation: { [key: string]: any } | undefined;
+}
+
+/**
+ * Update message for an already published Offering
+ * TODO only hash of VP for XFSC
+ */
+export interface UpdateOfferingRequest {
+  offerings: UpdateOfferingRequest_UpdateOffering[];
+}
+
+export interface UpdateOfferingRequest_UpdateOffering {
+  pontusxUpdateOffering?: PontusxUpdateOffering | undefined;
+  xfscUpdateOffering?:
+    | XfscUpdateOffering
+    | undefined;
+  /**
+   * Optional information about the published asset
+   * If this Information is set, it is used to publish the offering to the Credential Event Service
+   */
+  publishInfo?: PublishInfo | undefined;
+}
+
+export interface XfscUpdateOffering {
+  /** String containing the hash of the original Verifiable Presentation published to the catalogue */
+  hash: string;
+  /** String containing the Gaia-X conformant Verifiable Presentation as JSON-LD for the Service Offering */
+  VP: string;
+}
+
+export interface PontusxUpdateOffering {
+  /**
+   * Decentralised identifier for the already published offering
+   * example: did:op:1234
+   */
+  did: string;
+  /** The main information about the asset to publish */
+  metadata?:
+    | Metadata
+    | undefined;
+  /**
+   * Additional information regarding the offering
+   * Exclusively used for terms & conditions and link to Gaia-X VPs
+   */
+  additionalInformation?: AdditionalInformation | undefined;
+  updateServices: PontusxUpdateOffering_UpdateService[];
+}
+
+/** Updated Services that are exposed by the asset to interact with it */
+export interface PontusxUpdateOffering_UpdateService {
+  service:
+    | Service
+    | undefined;
+  /**
+   * Optional index of the service of the asset that is to be updated according to the information in the service field above
+   * If no index is given the first service [index = 0] is updated
+   */
+  index?: number | undefined;
+}
+
+/**
+ * Publish info used in UpdateOfferingRequest
+ * Used for additionally publishing Offering to Credential Event Service
+ */
+export interface PublishInfo {
+  /**
+   * The source where to find the published offering
+   * example: https://www.pontus-x.eu/asset/did:op:ac74139fa102d32f326ccdab3727a95299f1c2b6add9158385439e5b06810833
+   */
+  source: string;
+  /**
+   * The data that is submitted to the credential event service
+   * At the moment: Has to be a (Compliance) VC issued by the Gaia-X compliance engine
+   */
+  data: string;
+}
+
+/** Response to UpdateOfferingRequest */
+export interface UpdateOfferingResponse {
+  /**
+   * List of identifier of the successfully updated offering(s)
+   * example: did:op:123 in Pontus-X ecosystem
+   */
+  id: string[];
+  /** Locations of the offering which where published to the Credential Event Service */
+  locations: string[];
+  DebugInformation: { [key: string]: any } | undefined;
+}
+
+/** Update message for changing the LifecycleState of an already published offering */
+export interface UpdateOfferingLifecycleRequest {
+  offerings: UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle[];
+}
+
+export interface UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+  pontusxUpdateOfferingLifecycle?: PontusxUpdateOfferingLifecycle | undefined;
+  xfscUpdateOfferingLifecycle?: XfscUpdateOfferingLifecycle | undefined;
+}
+
+export interface PontusxUpdateOfferingLifecycle {
+  /**
+   * Decentralised identifier for the already published offering
+   * example: did:op:1234
+   */
+  did: string;
+  /** Pontus-X lifecycle state to which the offering should be changed */
+  to: PontusxLifecycleStates;
+}
+
+export interface XfscUpdateOfferingLifecycle {
+  /** String containing the hash of the original Verifiable Presentation published to the catalogue */
+  hash: string;
+  /** XFSC lifecycle state to which the offering should be changed */
+  to: XfscUpdateOfferingLifecycle_XfscLifecycleStates;
+}
+
+/** Possible lifecycle states of asset in the XFSC ecosystem */
+export enum XfscUpdateOfferingLifecycle_XfscLifecycleStates {
+  /**
+   * ACTIVE - Fully functional asset
+   * Discoverable in Portal
+   * Default value meaning nothing has to be changed
+   */
+  ACTIVE = 0,
+  /**
+   * REVOKED_BY_PUBLISHER - Publisher has explicitly revoked access or ownership rights to the asset
+   * Asset will stay in the catalogue but an expiration date will be added
+   */
+  REVOKED_BY_PUBLISHER = 3,
+  /** DELETED - Asset will be completely deleted from the catalogue */
+  DELETED = 4,
+  UNRECOGNIZED = -1,
+}
+
+export function xfscUpdateOfferingLifecycle_XfscLifecycleStatesFromJSON(
+  object: any,
+): XfscUpdateOfferingLifecycle_XfscLifecycleStates {
+  switch (object) {
+    case 0:
+    case "ACTIVE":
+      return XfscUpdateOfferingLifecycle_XfscLifecycleStates.ACTIVE;
+    case 3:
+    case "REVOKED_BY_PUBLISHER":
+      return XfscUpdateOfferingLifecycle_XfscLifecycleStates.REVOKED_BY_PUBLISHER;
+    case 4:
+    case "DELETED":
+      return XfscUpdateOfferingLifecycle_XfscLifecycleStates.DELETED;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return XfscUpdateOfferingLifecycle_XfscLifecycleStates.UNRECOGNIZED;
+  }
+}
+
+export function xfscUpdateOfferingLifecycle_XfscLifecycleStatesToJSON(
+  object: XfscUpdateOfferingLifecycle_XfscLifecycleStates,
+): string {
+  switch (object) {
+    case XfscUpdateOfferingLifecycle_XfscLifecycleStates.ACTIVE:
+      return "ACTIVE";
+    case XfscUpdateOfferingLifecycle_XfscLifecycleStates.REVOKED_BY_PUBLISHER:
+      return "REVOKED_BY_PUBLISHER";
+    case XfscUpdateOfferingLifecycle_XfscLifecycleStates.DELETED:
+      return "DELETED";
+    case XfscUpdateOfferingLifecycle_XfscLifecycleStates.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export interface UpdateOfferingLifecycleResponse {
+  /**
+   * List of identifier of the successfully changed offering(s)
+   * example: did:op:123 in Pontus-X ecosystem
+   */
+  id: string[];
+  DebugInformation: { [key: string]: any } | undefined;
+}
+
+/**
+ * Main metadata information for the asset used in CreateOfferingRequest and UpdateOfferingRequest
+ * in the Pontus-X Ecosystem (Ocean Protocol)
+ */
+export interface Metadata {
+  /**
+   * type of the asset
+   * Can be either 'dataset' or 'algorithm'
+   */
+  type: string;
+  /**
+   * Descriptive name or title of the asset
+   * This information is displayed in the portal
+   */
+  name: string;
+  /**
+   * Details of what the resource is. For a dataset, this attribute explains what the data represents and what it can be used for.
+   * This information is displayed in the portal
+   * Supports markdown
+   */
+  description: string;
+  /** Name of the entity generating this data */
+  author: string;
+  /**
+   * Short name referencing the license of the asset
+   * example: CC-BY, Public Domain
+   */
+  licence: string;
+  /** Optional keywords or tags used to describe the content of the offering */
+  tags: string[];
+  /**
+   * Information about asset of type algorithm
+   * Only optional for dataset -> Non-optional for algorithm
+   */
+  algorithm?: AlgorithmMetadata | undefined;
+}
+
+export interface AlgorithmMetadata {
+  /** Language used to implement the software, e.g. "python" */
+  language?:
+    | string
+    | undefined;
+  /** Version of the software preferably in SemVer notation, e.g. 1.0.0. */
+  version?:
+    | string
+    | undefined;
+  /**
+   * Optional consumer parameters similar as in Service
+   * Implemented here to gain access to user input at algorithm runtime
+   */
+  consumerParameters: ConsumerParameter[];
+  /** Information about the Docker image for running the algorithm */
+  container: Container | undefined;
+}
+
+export interface Container {
+  /**
+   * The command to execute, or script to run inside the Docker image, e.g. "node $ALGO"
+   * $ALGO is a macro that gets replaced inside the compute job, depending where your algorithm code is downloaded
+   */
+  entrypoint: string;
+  /**
+   * The Docker image name the algorithm will run with
+   * e.g. "node"
+   */
+  image: string;
+  /**
+   * The Docker image tag that you are going to use
+   * e.g. "latest"
+   */
+  tag: string;
+  /** Digest of the Docker image (e.g: sha256:xxxx) */
+  checksum: string;
+}
+
+/** Services define the access for an asset */
+export interface Service {
+  name?: string | undefined;
+  description?:
+    | string
+    | undefined;
+  /** Type of service: access or compute */
+  type: string;
+  /** Information about the pricing model and amount for consumption */
+  pricing:
+    | Pricing
+    | undefined;
+  /**
+   * Files that contain the data related to the asset/service
+   * At least one file is required for publication
+   */
+  files: Files[];
+  /**
+   * Describing how long the service can be used after consumption is initiated.
+   * Expressed in seconds; where 0 represents no time limit
+   */
+  timeout?:
+    | number
+    | undefined;
+  /**
+   * Name for the access token that is generated for consuming the asset/service
+   * Important for following access token transactions in the explorer
+   */
+  tokenName?:
+    | string
+    | undefined;
+  /**
+   * Corresponding Symbol (Abbreviation) for the access token that is generated for consuming the asset/service
+   * Important for following access token transactions in the explorer
+   */
+  tokenSymbol?:
+    | string
+    | undefined;
+  /**
+   * Compute options for a compute asset/service
+   * Only optional if the offering is of type 'access' and not 'compute'
+   */
+  computeOptions?:
+    | ComputeOptions
+    | undefined;
+  /** Optional message that defines required consumer input before consuming the asset/service */
+  consumerParameters: ConsumerParameter[];
+}
+
+/** Information about the price for the asset for consumption in the ecosystem */
+export interface Pricing {
+  /** Definition if the asset is free or has to be payed with a fixed currency */
+  pricingType: Pricing_PricingType;
+  /** The actual amount of currency (according to Pricing Type) that has to be payed */
+  fixedRate?: number | undefined;
+}
+
+export enum Pricing_PricingType {
+  FREE = 0,
+  FIXED_OCEAN = 1,
+  FIXED_EUROE = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function pricing_PricingTypeFromJSON(object: any): Pricing_PricingType {
+  switch (object) {
+    case 0:
+    case "FREE":
+      return Pricing_PricingType.FREE;
+    case 1:
+    case "FIXED_OCEAN":
+      return Pricing_PricingType.FIXED_OCEAN;
+    case 2:
+    case "FIXED_EUROE":
+      return Pricing_PricingType.FIXED_EUROE;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return Pricing_PricingType.UNRECOGNIZED;
+  }
+}
+
+export function pricing_PricingTypeToJSON(object: Pricing_PricingType): string {
+  switch (object) {
+    case Pricing_PricingType.FREE:
+      return "FREE";
+    case Pricing_PricingType.FIXED_OCEAN:
+      return "FIXED_OCEAN";
+    case Pricing_PricingType.FIXED_EUROE:
+      return "FIXED_EUROE";
+    case Pricing_PricingType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+/**
+ * Information about a file related to a offering used in Main
+ * At the moment only files that are accessible over a Static URL (HTTP) are accepted
+ * (possible alternatives: Arweave, GraphQL, IPFS, Smart Contract)
+ */
+export interface Files {
+  /** File URL */
+  url: string;
+  /**
+   * HTTP Method used to access the file
+   * example: 'GET'
+   */
+  method: string;
+  /** Optional headers field e.g. for basic access control */
+  headers?: { [key: string]: any } | undefined;
+}
+
+export interface ComputeOptions {
+  /**
+   * If true, any passed raw text will be allowed to run. Useful for an algorithm drag & drop use case, but increases risk of data escape through malicious user input.
+   * Optional because default value in connector is false
+   */
+  allowRawAlgorithm?:
+    | boolean
+    | undefined;
+  /**
+   * If true, the algorithm job will have network access.
+   * Optional because default value in connector is false
+   */
+  allowNetworkAccess?:
+    | boolean
+    | undefined;
+  /**
+   * Algorithm that is allowed/trusted by the publisher to be used on asset/service
+   * If not defined, then any published algorithm is allowed. If empty array, then no algorithm is allowed.
+   */
+  trustedAlgorithms: TrustedAlgorihm[];
+  /**
+   * Define publishers with their wallet address (0x...) from which all published algorithms are allowed
+   * If not defined, then any published algorithm is allowed. If empty array, then no algorithm is allowed.
+   */
+  trustedPublishers: string[];
+}
+
+export interface TrustedAlgorihm {
+  /**
+   * Decentralised identifier of the already published algorithm
+   * example did:op:456
+   */
+  did: string;
+  /**
+   * Hash of trusted algorithm's files
+   * Can be created over Ocean Provider FileInfoEndpoint with parameter withChecksum = True
+   * If the algorithm has multiple files, filesChecksum is a concatenated string of all files checksums
+   * Optional because this is already handled by nautilus
+   */
+  filesChecksum?:
+    | string
+    | undefined;
+  /**
+   * Hash of algorithm's image details (entrypoint and image checksum)
+   * Produced by: sha256(algorithm_ddo.metadata.algorithm.container.entrypoint + algorithm_ddo.metadata.algorithm.container.checksum)
+   */
+  containerSectionChecksum?: string | undefined;
+}
+
+/**
+ * Additional information about the asset used in CreateOfferingRequest and UpdateOfferingRequest
+ * Taylored for Pontus-X Ecosystem and workaround for Gaia-X Framework implementation (normally customizable)
+ */
+export interface AdditionalInformation {
+  /** Boolean to indicate if the publisher specifies it's own terms and conditions for consumption of the asset */
+  termsAndConditions: boolean;
+  /** Information in the context of Gaia-X compliance including the link to the Self-Description of the offering (VP) */
+  gaiaXInformation: gaiaX | undefined;
+}
+
+/** Information related to Gaia-X compliance used in AdditionalInformation */
+export interface gaiaX {
+  /** Identifier if the asset contains personally identifiable information */
+  containsPII: boolean;
+  /**
+   * Terms and conditions additionally set by the publisher of the asset
+   * Should only be passed if boolean in AdditionalInformation is true
+   */
+  termsAndConditions: Terms[];
+  serviceSD: gaiaX_ServiceSelfDescription | undefined;
+}
+
+/** Endpoint to the Gaia-X compliant Self-Description (VP) of the offering */
+export interface gaiaX_ServiceSelfDescription {
+  /** Static URL of the self-description */
+  url: string;
+  /**
+   * Optional identifier if the self-description has been verified against a Gaia-X Compliance Service
+   * Mainly used by the deltaDAO portal
+   */
+  isVerified?: boolean | undefined;
+}
+
+/** Static URL to Terms and Conditions defined by the publisher of the asset used in gaiaX */
+export interface Terms {
+  url: string;
+}
+
+/** Additional input parameter that the asset needs before downloading or running a Compute-to-Data job at algorithm runtime */
+export interface ConsumerParameter {
+  /** The parameter name (this is sent as HTTP param or key towards algo) */
+  name: string;
+  /** The field type (text, number, boolean, select) */
+  type: string;
+  /** The field label which is displayed */
+  label: string;
+  /** Boolean which indicates if customer input for this field is mandatory */
+  required: boolean;
+  description: string;
+  /** The field default value. Has to match the transmitted type transmitted as string */
+  default: string;
+  /**
+   * For select types, a list of options as JSON objects containing a single key-value-pair
+   * The key represents the option name, and the value is the option value
+   * e.g. {"nodejs": "I love NodeJS"}
+   */
+  options: { [key: string]: any }[];
+}
+
+function createBaseCreateOfferingRequest(): CreateOfferingRequest {
+  return { offerings: [] };
+}
+
+export const CreateOfferingRequest = {
+  encode(message: CreateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.offerings) {
+      CreateOfferingRequest_Offering.encode(v!, writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateOfferingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.offerings.push(CreateOfferingRequest_Offering.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateOfferingRequest {
+    return {
+      offerings: Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => CreateOfferingRequest_Offering.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: CreateOfferingRequest): unknown {
+    const obj: any = {};
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings.map((e) => CreateOfferingRequest_Offering.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(base?: I): CreateOfferingRequest {
+    return CreateOfferingRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(object: I): CreateOfferingRequest {
+    const message = createBaseCreateOfferingRequest();
+    message.offerings = object.offerings?.map((e) => CreateOfferingRequest_Offering.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseCreateOfferingRequest_Offering(): CreateOfferingRequest_Offering {
+  return { pontusxOffering: undefined, xfscOffering: undefined };
+}
+
+export const CreateOfferingRequest_Offering = {
+  encode(message: CreateOfferingRequest_Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pontusxOffering !== undefined) {
+      PontusxOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.xfscOffering !== undefined) {
+      XfscOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingRequest_Offering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateOfferingRequest_Offering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.pontusxOffering = PontusxOffering.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.xfscOffering = XfscOffering.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateOfferingRequest_Offering {
+    return {
+      pontusxOffering: isSet(object.pontusxOffering) ? PontusxOffering.fromJSON(object.pontusxOffering) : undefined,
+      xfscOffering: isSet(object.xfscOffering) ? XfscOffering.fromJSON(object.xfscOffering) : undefined,
+    };
+  },
+
+  toJSON(message: CreateOfferingRequest_Offering): unknown {
+    const obj: any = {};
+    if (message.pontusxOffering !== undefined) {
+      obj.pontusxOffering = PontusxOffering.toJSON(message.pontusxOffering);
+    }
+    if (message.xfscOffering !== undefined) {
+      obj.xfscOffering = XfscOffering.toJSON(message.xfscOffering);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateOfferingRequest_Offering>, I>>(base?: I): CreateOfferingRequest_Offering {
+    return CreateOfferingRequest_Offering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest_Offering>, I>>(
+    object: I,
+  ): CreateOfferingRequest_Offering {
+    const message = createBaseCreateOfferingRequest_Offering();
+    message.pontusxOffering = (object.pontusxOffering !== undefined && object.pontusxOffering !== null)
+      ? PontusxOffering.fromPartial(object.pontusxOffering)
+      : undefined;
+    message.xfscOffering = (object.xfscOffering !== undefined && object.xfscOffering !== null)
+      ? XfscOffering.fromPartial(object.xfscOffering)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseXfscOffering(): XfscOffering {
+  return { VP: "" };
+}
+
+export const XfscOffering = {
+  encode(message: XfscOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.VP !== "") {
+      writer.uint32(10).string(message.VP);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): XfscOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseXfscOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.VP = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): XfscOffering {
+    return { VP: isSet(object.VP) ? String(object.VP) : "" };
+  },
+
+  toJSON(message: XfscOffering): unknown {
+    const obj: any = {};
+    if (message.VP !== "") {
+      obj.VP = message.VP;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<XfscOffering>, I>>(base?: I): XfscOffering {
+    return XfscOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<XfscOffering>, I>>(object: I): XfscOffering {
+    const message = createBaseXfscOffering();
+    message.VP = object.VP ?? "";
+    return message;
+  },
+};
+
+function createBasePontusxOffering(): PontusxOffering {
+  return { metadata: undefined, additionalInformation: undefined, services: [] };
+}
+
+export const PontusxOffering = {
+  encode(message: PontusxOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.additionalInformation !== undefined) {
+      AdditionalInformation.encode(message.additionalInformation, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.services) {
+      Service.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.metadata = Metadata.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.services.push(Service.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxOffering {
+    return {
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
+      additionalInformation: isSet(object.additionalInformation)
+        ? AdditionalInformation.fromJSON(object.additionalInformation)
+        : undefined,
+      services: Array.isArray(object?.services) ? object.services.map((e: any) => Service.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: PontusxOffering): unknown {
+    const obj: any = {};
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
+    }
+    if (message.additionalInformation !== undefined) {
+      obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
+    }
+    if (message.services?.length) {
+      obj.services = message.services.map((e) => Service.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxOffering>, I>>(base?: I): PontusxOffering {
+    return PontusxOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxOffering>, I>>(object: I): PontusxOffering {
+    const message = createBasePontusxOffering();
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
+    message.additionalInformation =
+      (object.additionalInformation !== undefined && object.additionalInformation !== null)
+        ? AdditionalInformation.fromPartial(object.additionalInformation)
+        : undefined;
+    message.services = object.services?.map((e) => Service.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseCreateOfferingResponse(): CreateOfferingResponse {
+  return { id: [], DebugInformation: undefined };
+}
+
+export const CreateOfferingResponse = {
+  encode(message: CreateOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.id) {
+      writer.uint32(10).string(v!);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateOfferingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id.push(reader.string());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateOfferingResponse {
+    return {
+      id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: CreateOfferingResponse): unknown {
+    const obj: any = {};
+    if (message.id?.length) {
+      obj.id = message.id;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(base?: I): CreateOfferingResponse {
+    return CreateOfferingResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(object: I): CreateOfferingResponse {
+    const message = createBaseCreateOfferingResponse();
+    message.id = object.id?.map((e) => e) || [];
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
+  return { offerings: [] };
+}
+
+export const UpdateOfferingRequest = {
+  encode(message: UpdateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.offerings) {
+      UpdateOfferingRequest_UpdateOffering.encode(v!, writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.offerings.push(UpdateOfferingRequest_UpdateOffering.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingRequest {
+    return {
+      offerings: Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => UpdateOfferingRequest_UpdateOffering.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: UpdateOfferingRequest): unknown {
+    const obj: any = {};
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings.map((e) => UpdateOfferingRequest_UpdateOffering.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(base?: I): UpdateOfferingRequest {
+    return UpdateOfferingRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(object: I): UpdateOfferingRequest {
+    const message = createBaseUpdateOfferingRequest();
+    message.offerings = object.offerings?.map((e) => UpdateOfferingRequest_UpdateOffering.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingRequest_UpdateOffering(): UpdateOfferingRequest_UpdateOffering {
+  return { pontusxUpdateOffering: undefined, xfscUpdateOffering: undefined, publishInfo: undefined };
+}
+
+export const UpdateOfferingRequest_UpdateOffering = {
+  encode(message: UpdateOfferingRequest_UpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pontusxUpdateOffering !== undefined) {
+      PontusxUpdateOffering.encode(message.pontusxUpdateOffering, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.xfscUpdateOffering !== undefined) {
+      XfscUpdateOffering.encode(message.xfscUpdateOffering, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.publishInfo !== undefined) {
+      PublishInfo.encode(message.publishInfo, writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingRequest_UpdateOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingRequest_UpdateOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.pontusxUpdateOffering = PontusxUpdateOffering.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.xfscUpdateOffering = XfscUpdateOffering.decode(reader, reader.uint32());
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.publishInfo = PublishInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingRequest_UpdateOffering {
+    return {
+      pontusxUpdateOffering: isSet(object.pontusxUpdateOffering)
+        ? PontusxUpdateOffering.fromJSON(object.pontusxUpdateOffering)
+        : undefined,
+      xfscUpdateOffering: isSet(object.xfscUpdateOffering)
+        ? XfscUpdateOffering.fromJSON(object.xfscUpdateOffering)
+        : undefined,
+      publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
+    };
+  },
+
+  toJSON(message: UpdateOfferingRequest_UpdateOffering): unknown {
+    const obj: any = {};
+    if (message.pontusxUpdateOffering !== undefined) {
+      obj.pontusxUpdateOffering = PontusxUpdateOffering.toJSON(message.pontusxUpdateOffering);
+    }
+    if (message.xfscUpdateOffering !== undefined) {
+      obj.xfscUpdateOffering = XfscUpdateOffering.toJSON(message.xfscUpdateOffering);
+    }
+    if (message.publishInfo !== undefined) {
+      obj.publishInfo = PublishInfo.toJSON(message.publishInfo);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingRequest_UpdateOffering>, I>>(
+    base?: I,
+  ): UpdateOfferingRequest_UpdateOffering {
+    return UpdateOfferingRequest_UpdateOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest_UpdateOffering>, I>>(
+    object: I,
+  ): UpdateOfferingRequest_UpdateOffering {
+    const message = createBaseUpdateOfferingRequest_UpdateOffering();
+    message.pontusxUpdateOffering =
+      (object.pontusxUpdateOffering !== undefined && object.pontusxUpdateOffering !== null)
+        ? PontusxUpdateOffering.fromPartial(object.pontusxUpdateOffering)
+        : undefined;
+    message.xfscUpdateOffering = (object.xfscUpdateOffering !== undefined && object.xfscUpdateOffering !== null)
+      ? XfscUpdateOffering.fromPartial(object.xfscUpdateOffering)
+      : undefined;
+    message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
+      ? PublishInfo.fromPartial(object.publishInfo)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseXfscUpdateOffering(): XfscUpdateOffering {
+  return { hash: "", VP: "" };
+}
+
+export const XfscUpdateOffering = {
+  encode(message: XfscUpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.hash !== "") {
+      writer.uint32(10).string(message.hash);
+    }
+    if (message.VP !== "") {
+      writer.uint32(18).string(message.VP);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): XfscUpdateOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseXfscUpdateOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.hash = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.VP = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): XfscUpdateOffering {
+    return { hash: isSet(object.hash) ? String(object.hash) : "", VP: isSet(object.VP) ? String(object.VP) : "" };
+  },
+
+  toJSON(message: XfscUpdateOffering): unknown {
+    const obj: any = {};
+    if (message.hash !== "") {
+      obj.hash = message.hash;
+    }
+    if (message.VP !== "") {
+      obj.VP = message.VP;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(base?: I): XfscUpdateOffering {
+    return XfscUpdateOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(object: I): XfscUpdateOffering {
+    const message = createBaseXfscUpdateOffering();
+    message.hash = object.hash ?? "";
+    message.VP = object.VP ?? "";
+    return message;
+  },
+};
+
+function createBasePontusxUpdateOffering(): PontusxUpdateOffering {
+  return { did: "", metadata: undefined, additionalInformation: undefined, updateServices: [] };
+}
+
+export const PontusxUpdateOffering = {
+  encode(message: PontusxUpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.metadata !== undefined) {
+      Metadata.encode(message.metadata, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.additionalInformation !== undefined) {
+      AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.updateServices) {
+      PontusxUpdateOffering_UpdateService.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxUpdateOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.metadata = Metadata.decode(reader, reader.uint32());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.updateServices.push(PontusxUpdateOffering_UpdateService.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxUpdateOffering {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
+      additionalInformation: isSet(object.additionalInformation)
+        ? AdditionalInformation.fromJSON(object.additionalInformation)
+        : undefined,
+      updateServices: Array.isArray(object?.updateServices)
+        ? object.updateServices.map((e: any) => PontusxUpdateOffering_UpdateService.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: PontusxUpdateOffering): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.metadata !== undefined) {
+      obj.metadata = Metadata.toJSON(message.metadata);
+    }
+    if (message.additionalInformation !== undefined) {
+      obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
+    }
+    if (message.updateServices?.length) {
+      obj.updateServices = message.updateServices.map((e) => PontusxUpdateOffering_UpdateService.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(base?: I): PontusxUpdateOffering {
+    return PontusxUpdateOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(object: I): PontusxUpdateOffering {
+    const message = createBasePontusxUpdateOffering();
+    message.did = object.did ?? "";
+    message.metadata = (object.metadata !== undefined && object.metadata !== null)
+      ? Metadata.fromPartial(object.metadata)
+      : undefined;
+    message.additionalInformation =
+      (object.additionalInformation !== undefined && object.additionalInformation !== null)
+        ? AdditionalInformation.fromPartial(object.additionalInformation)
+        : undefined;
+    message.updateServices = object.updateServices?.map((e) => PontusxUpdateOffering_UpdateService.fromPartial(e)) ||
+      [];
+    return message;
+  },
+};
+
+function createBasePontusxUpdateOffering_UpdateService(): PontusxUpdateOffering_UpdateService {
+  return { service: undefined, index: undefined };
+}
+
+export const PontusxUpdateOffering_UpdateService = {
+  encode(message: PontusxUpdateOffering_UpdateService, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.service !== undefined) {
+      Service.encode(message.service, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.index !== undefined) {
+      writer.uint32(72).int32(message.index);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOffering_UpdateService {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxUpdateOffering_UpdateService();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.service = Service.decode(reader, reader.uint32());
+          continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.index = reader.int32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxUpdateOffering_UpdateService {
+    return {
+      service: isSet(object.service) ? Service.fromJSON(object.service) : undefined,
+      index: isSet(object.index) ? Number(object.index) : undefined,
+    };
+  },
+
+  toJSON(message: PontusxUpdateOffering_UpdateService): unknown {
+    const obj: any = {};
+    if (message.service !== undefined) {
+      obj.service = Service.toJSON(message.service);
+    }
+    if (message.index !== undefined) {
+      obj.index = Math.round(message.index);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxUpdateOffering_UpdateService>, I>>(
+    base?: I,
+  ): PontusxUpdateOffering_UpdateService {
+    return PontusxUpdateOffering_UpdateService.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOffering_UpdateService>, I>>(
+    object: I,
+  ): PontusxUpdateOffering_UpdateService {
+    const message = createBasePontusxUpdateOffering_UpdateService();
+    message.service = (object.service !== undefined && object.service !== null)
+      ? Service.fromPartial(object.service)
+      : undefined;
+    message.index = object.index ?? undefined;
+    return message;
+  },
+};
+
+function createBasePublishInfo(): PublishInfo {
+  return { source: "", data: "" };
+}
+
+export const PublishInfo = {
+  encode(message: PublishInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.source !== "") {
+      writer.uint32(10).string(message.source);
+    }
+    if (message.data !== "") {
+      writer.uint32(18).string(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PublishInfo {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePublishInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.source = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.data = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PublishInfo {
+    return {
+      source: isSet(object.source) ? String(object.source) : "",
+      data: isSet(object.data) ? String(object.data) : "",
+    };
+  },
+
+  toJSON(message: PublishInfo): unknown {
+    const obj: any = {};
+    if (message.source !== "") {
+      obj.source = message.source;
+    }
+    if (message.data !== "") {
+      obj.data = message.data;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PublishInfo>, I>>(base?: I): PublishInfo {
+    return PublishInfo.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PublishInfo>, I>>(object: I): PublishInfo {
+    const message = createBasePublishInfo();
+    message.source = object.source ?? "";
+    message.data = object.data ?? "";
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingResponse(): UpdateOfferingResponse {
+  return { id: [], locations: [], DebugInformation: undefined };
+}
+
+export const UpdateOfferingResponse = {
+  encode(message: UpdateOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.id) {
+      writer.uint32(10).string(v!);
+    }
+    for (const v of message.locations) {
+      writer.uint32(34).string(v!);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id.push(reader.string());
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.locations.push(reader.string());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingResponse {
+    return {
+      id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
+      locations: Array.isArray(object?.locations) ? object.locations.map((e: any) => String(e)) : [],
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: UpdateOfferingResponse): unknown {
+    const obj: any = {};
+    if (message.id?.length) {
+      obj.id = message.id;
+    }
+    if (message.locations?.length) {
+      obj.locations = message.locations;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(base?: I): UpdateOfferingResponse {
+    return UpdateOfferingResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(object: I): UpdateOfferingResponse {
+    const message = createBaseUpdateOfferingResponse();
+    message.id = object.id?.map((e) => e) || [];
+    message.locations = object.locations?.map((e) => e) || [];
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingLifecycleRequest(): UpdateOfferingLifecycleRequest {
+  return { offerings: [] };
+}
+
+export const UpdateOfferingLifecycleRequest = {
+  encode(message: UpdateOfferingLifecycleRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.offerings) {
+      UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.encode(v!, writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingLifecycleRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.offerings.push(
+            UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.decode(reader, reader.uint32()),
+          );
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingLifecycleRequest {
+    return {
+      offerings: Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: UpdateOfferingLifecycleRequest): unknown {
+    const obj: any = {};
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings.map((e) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(base?: I): UpdateOfferingLifecycleRequest {
+    return UpdateOfferingLifecycleRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleRequest {
+    const message = createBaseUpdateOfferingLifecycleRequest();
+    message.offerings =
+      object.offerings?.map((e) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle(): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+  return { pontusxUpdateOfferingLifecycle: undefined, xfscUpdateOfferingLifecycle: undefined };
+}
+
+export const UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle = {
+  encode(
+    message: UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.pontusxUpdateOfferingLifecycle !== undefined) {
+      PontusxUpdateOfferingLifecycle.encode(message.pontusxUpdateOfferingLifecycle, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.xfscUpdateOfferingLifecycle !== undefined) {
+      XfscUpdateOfferingLifecycle.encode(message.xfscUpdateOfferingLifecycle, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.pontusxUpdateOfferingLifecycle = PontusxUpdateOfferingLifecycle.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.xfscUpdateOfferingLifecycle = XfscUpdateOfferingLifecycle.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    return {
+      pontusxUpdateOfferingLifecycle: isSet(object.pontusxUpdateOfferingLifecycle)
+        ? PontusxUpdateOfferingLifecycle.fromJSON(object.pontusxUpdateOfferingLifecycle)
+        : undefined,
+      xfscUpdateOfferingLifecycle: isSet(object.xfscUpdateOfferingLifecycle)
+        ? XfscUpdateOfferingLifecycle.fromJSON(object.xfscUpdateOfferingLifecycle)
+        : undefined,
+    };
+  },
+
+  toJSON(message: UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle): unknown {
+    const obj: any = {};
+    if (message.pontusxUpdateOfferingLifecycle !== undefined) {
+      obj.pontusxUpdateOfferingLifecycle = PontusxUpdateOfferingLifecycle.toJSON(
+        message.pontusxUpdateOfferingLifecycle,
+      );
+    }
+    if (message.xfscUpdateOfferingLifecycle !== undefined) {
+      obj.xfscUpdateOfferingLifecycle = XfscUpdateOfferingLifecycle.toJSON(message.xfscUpdateOfferingLifecycle);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>, I>>(
+    base?: I,
+  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    return UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    const message = createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
+    message.pontusxUpdateOfferingLifecycle =
+      (object.pontusxUpdateOfferingLifecycle !== undefined && object.pontusxUpdateOfferingLifecycle !== null)
+        ? PontusxUpdateOfferingLifecycle.fromPartial(object.pontusxUpdateOfferingLifecycle)
+        : undefined;
+    message.xfscUpdateOfferingLifecycle =
+      (object.xfscUpdateOfferingLifecycle !== undefined && object.xfscUpdateOfferingLifecycle !== null)
+        ? XfscUpdateOfferingLifecycle.fromPartial(object.xfscUpdateOfferingLifecycle)
+        : undefined;
+    return message;
+  },
+};
+
+function createBasePontusxUpdateOfferingLifecycle(): PontusxUpdateOfferingLifecycle {
+  return { did: "", to: 0 };
+}
+
+export const PontusxUpdateOfferingLifecycle = {
+  encode(message: PontusxUpdateOfferingLifecycle, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.to !== 0) {
+      writer.uint32(16).int32(message.to);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOfferingLifecycle {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxUpdateOfferingLifecycle();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.to = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxUpdateOfferingLifecycle {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      to: isSet(object.to) ? pontusxLifecycleStatesFromJSON(object.to) : 0,
+    };
+  },
+
+  toJSON(message: PontusxUpdateOfferingLifecycle): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.to !== 0) {
+      obj.to = pontusxLifecycleStatesToJSON(message.to);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxUpdateOfferingLifecycle>, I>>(base?: I): PontusxUpdateOfferingLifecycle {
+    return PontusxUpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOfferingLifecycle>, I>>(
+    object: I,
+  ): PontusxUpdateOfferingLifecycle {
+    const message = createBasePontusxUpdateOfferingLifecycle();
+    message.did = object.did ?? "";
+    message.to = object.to ?? 0;
+    return message;
+  },
+};
+
+function createBaseXfscUpdateOfferingLifecycle(): XfscUpdateOfferingLifecycle {
+  return { hash: "", to: 0 };
+}
+
+export const XfscUpdateOfferingLifecycle = {
+  encode(message: XfscUpdateOfferingLifecycle, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.hash !== "") {
+      writer.uint32(10).string(message.hash);
+    }
+    if (message.to !== 0) {
+      writer.uint32(16).int32(message.to);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): XfscUpdateOfferingLifecycle {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseXfscUpdateOfferingLifecycle();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.hash = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.to = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): XfscUpdateOfferingLifecycle {
+    return {
+      hash: isSet(object.hash) ? String(object.hash) : "",
+      to: isSet(object.to) ? xfscUpdateOfferingLifecycle_XfscLifecycleStatesFromJSON(object.to) : 0,
+    };
+  },
+
+  toJSON(message: XfscUpdateOfferingLifecycle): unknown {
+    const obj: any = {};
+    if (message.hash !== "") {
+      obj.hash = message.hash;
+    }
+    if (message.to !== 0) {
+      obj.to = xfscUpdateOfferingLifecycle_XfscLifecycleStatesToJSON(message.to);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(base?: I): XfscUpdateOfferingLifecycle {
+    return XfscUpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(object: I): XfscUpdateOfferingLifecycle {
+    const message = createBaseXfscUpdateOfferingLifecycle();
+    message.hash = object.hash ?? "";
+    message.to = object.to ?? 0;
+    return message;
+  },
+};
+
+function createBaseUpdateOfferingLifecycleResponse(): UpdateOfferingLifecycleResponse {
+  return { id: [], DebugInformation: undefined };
+}
+
+export const UpdateOfferingLifecycleResponse = {
+  encode(message: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.id) {
+      writer.uint32(10).string(v!);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateOfferingLifecycleResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id.push(reader.string());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateOfferingLifecycleResponse {
+    return {
+      id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: UpdateOfferingLifecycleResponse): unknown {
+    const obj: any = {};
+    if (message.id?.length) {
+      obj.id = message.id;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(base?: I): UpdateOfferingLifecycleResponse {
+    return UpdateOfferingLifecycleResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(
+    object: I,
+  ): UpdateOfferingLifecycleResponse {
+    const message = createBaseUpdateOfferingLifecycleResponse();
+    message.id = object.id?.map((e) => e) || [];
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
+function createBaseMetadata(): Metadata {
+  return { type: "", name: "", description: "", author: "", licence: "", tags: [], algorithm: undefined };
+}
+
+export const Metadata = {
+  encode(message: Metadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.type !== "") {
+      writer.uint32(10).string(message.type);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.author !== "") {
+      writer.uint32(34).string(message.author);
+    }
+    if (message.licence !== "") {
+      writer.uint32(42).string(message.licence);
+    }
+    for (const v of message.tags) {
+      writer.uint32(50).string(v!);
+    }
+    if (message.algorithm !== undefined) {
+      AlgorithmMetadata.encode(message.algorithm, writer.uint32(58).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Metadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.type = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.author = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.licence = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.tags.push(reader.string());
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.algorithm = AlgorithmMetadata.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Metadata {
+    return {
+      type: isSet(object.type) ? String(object.type) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      author: isSet(object.author) ? String(object.author) : "",
+      licence: isSet(object.licence) ? String(object.licence) : "",
+      tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
+      algorithm: isSet(object.algorithm) ? AlgorithmMetadata.fromJSON(object.algorithm) : undefined,
+    };
+  },
+
+  toJSON(message: Metadata): unknown {
+    const obj: any = {};
+    if (message.type !== "") {
+      obj.type = message.type;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.author !== "") {
+      obj.author = message.author;
+    }
+    if (message.licence !== "") {
+      obj.licence = message.licence;
+    }
+    if (message.tags?.length) {
+      obj.tags = message.tags;
+    }
+    if (message.algorithm !== undefined) {
+      obj.algorithm = AlgorithmMetadata.toJSON(message.algorithm);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Metadata>, I>>(base?: I): Metadata {
+    return Metadata.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Metadata>, I>>(object: I): Metadata {
+    const message = createBaseMetadata();
+    message.type = object.type ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.author = object.author ?? "";
+    message.licence = object.licence ?? "";
+    message.tags = object.tags?.map((e) => e) || [];
+    message.algorithm = (object.algorithm !== undefined && object.algorithm !== null)
+      ? AlgorithmMetadata.fromPartial(object.algorithm)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAlgorithmMetadata(): AlgorithmMetadata {
+  return { language: undefined, version: undefined, consumerParameters: [], container: undefined };
+}
+
+export const AlgorithmMetadata = {
+  encode(message: AlgorithmMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.language !== undefined) {
+      writer.uint32(10).string(message.language);
+    }
+    if (message.version !== undefined) {
+      writer.uint32(18).string(message.version);
+    }
+    for (const v of message.consumerParameters) {
+      ConsumerParameter.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.container !== undefined) {
+      Container.encode(message.container, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AlgorithmMetadata {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAlgorithmMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.language = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.version = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.consumerParameters.push(ConsumerParameter.decode(reader, reader.uint32()));
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.container = Container.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AlgorithmMetadata {
+    return {
+      language: isSet(object.language) ? String(object.language) : undefined,
+      version: isSet(object.version) ? String(object.version) : undefined,
+      consumerParameters: Array.isArray(object?.consumerParameters)
+        ? object.consumerParameters.map((e: any) => ConsumerParameter.fromJSON(e))
+        : [],
+      container: isSet(object.container) ? Container.fromJSON(object.container) : undefined,
+    };
+  },
+
+  toJSON(message: AlgorithmMetadata): unknown {
+    const obj: any = {};
+    if (message.language !== undefined) {
+      obj.language = message.language;
+    }
+    if (message.version !== undefined) {
+      obj.version = message.version;
+    }
+    if (message.consumerParameters?.length) {
+      obj.consumerParameters = message.consumerParameters.map((e) => ConsumerParameter.toJSON(e));
+    }
+    if (message.container !== undefined) {
+      obj.container = Container.toJSON(message.container);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(base?: I): AlgorithmMetadata {
+    return AlgorithmMetadata.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(object: I): AlgorithmMetadata {
+    const message = createBaseAlgorithmMetadata();
+    message.language = object.language ?? undefined;
+    message.version = object.version ?? undefined;
+    message.consumerParameters = object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) || [];
+    message.container = (object.container !== undefined && object.container !== null)
+      ? Container.fromPartial(object.container)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseContainer(): Container {
+  return { entrypoint: "", image: "", tag: "", checksum: "" };
+}
+
+export const Container = {
+  encode(message: Container, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.entrypoint !== "") {
+      writer.uint32(10).string(message.entrypoint);
+    }
+    if (message.image !== "") {
+      writer.uint32(18).string(message.image);
+    }
+    if (message.tag !== "") {
+      writer.uint32(26).string(message.tag);
+    }
+    if (message.checksum !== "") {
+      writer.uint32(34).string(message.checksum);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Container {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseContainer();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.entrypoint = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.image = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.tag = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.checksum = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Container {
+    return {
+      entrypoint: isSet(object.entrypoint) ? String(object.entrypoint) : "",
+      image: isSet(object.image) ? String(object.image) : "",
+      tag: isSet(object.tag) ? String(object.tag) : "",
+      checksum: isSet(object.checksum) ? String(object.checksum) : "",
+    };
+  },
+
+  toJSON(message: Container): unknown {
+    const obj: any = {};
+    if (message.entrypoint !== "") {
+      obj.entrypoint = message.entrypoint;
+    }
+    if (message.image !== "") {
+      obj.image = message.image;
+    }
+    if (message.tag !== "") {
+      obj.tag = message.tag;
+    }
+    if (message.checksum !== "") {
+      obj.checksum = message.checksum;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Container>, I>>(base?: I): Container {
+    return Container.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Container>, I>>(object: I): Container {
+    const message = createBaseContainer();
+    message.entrypoint = object.entrypoint ?? "";
+    message.image = object.image ?? "";
+    message.tag = object.tag ?? "";
+    message.checksum = object.checksum ?? "";
+    return message;
+  },
+};
+
+function createBaseService(): Service {
+  return {
+    name: undefined,
+    description: undefined,
+    type: "",
+    pricing: undefined,
+    files: [],
+    timeout: undefined,
+    tokenName: undefined,
+    tokenSymbol: undefined,
+    computeOptions: undefined,
+    consumerParameters: [],
+  };
+}
+
+export const Service = {
+  encode(message: Service, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== undefined) {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.description !== undefined) {
+      writer.uint32(18).string(message.description);
+    }
+    if (message.type !== "") {
+      writer.uint32(26).string(message.type);
+    }
+    if (message.pricing !== undefined) {
+      Pricing.encode(message.pricing, writer.uint32(82).fork()).ldelim();
+    }
+    for (const v of message.files) {
+      Files.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.timeout !== undefined) {
+      writer.uint32(40).uint32(message.timeout);
+    }
+    if (message.tokenName !== undefined) {
+      writer.uint32(50).string(message.tokenName);
+    }
+    if (message.tokenSymbol !== undefined) {
+      writer.uint32(58).string(message.tokenSymbol);
+    }
+    if (message.computeOptions !== undefined) {
+      ComputeOptions.encode(message.computeOptions, writer.uint32(66).fork()).ldelim();
+    }
+    for (const v of message.consumerParameters) {
+      ConsumerParameter.encode(v!, writer.uint32(74).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Service {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseService();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.type = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.pricing = Pricing.decode(reader, reader.uint32());
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.files.push(Files.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.timeout = reader.uint32();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.tokenName = reader.string();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.tokenSymbol = reader.string();
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.computeOptions = ComputeOptions.decode(reader, reader.uint32());
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.consumerParameters.push(ConsumerParameter.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Service {
+    return {
+      name: isSet(object.name) ? String(object.name) : undefined,
+      description: isSet(object.description) ? String(object.description) : undefined,
+      type: isSet(object.type) ? String(object.type) : "",
+      pricing: isSet(object.pricing) ? Pricing.fromJSON(object.pricing) : undefined,
+      files: Array.isArray(object?.files) ? object.files.map((e: any) => Files.fromJSON(e)) : [],
+      timeout: isSet(object.timeout) ? Number(object.timeout) : undefined,
+      tokenName: isSet(object.tokenName) ? String(object.tokenName) : undefined,
+      tokenSymbol: isSet(object.tokenSymbol) ? String(object.tokenSymbol) : undefined,
+      computeOptions: isSet(object.computeOptions) ? ComputeOptions.fromJSON(object.computeOptions) : undefined,
+      consumerParameters: Array.isArray(object?.consumerParameters)
+        ? object.consumerParameters.map((e: any) => ConsumerParameter.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: Service): unknown {
+    const obj: any = {};
+    if (message.name !== undefined) {
+      obj.name = message.name;
+    }
+    if (message.description !== undefined) {
+      obj.description = message.description;
+    }
+    if (message.type !== "") {
+      obj.type = message.type;
+    }
+    if (message.pricing !== undefined) {
+      obj.pricing = Pricing.toJSON(message.pricing);
+    }
+    if (message.files?.length) {
+      obj.files = message.files.map((e) => Files.toJSON(e));
+    }
+    if (message.timeout !== undefined) {
+      obj.timeout = Math.round(message.timeout);
+    }
+    if (message.tokenName !== undefined) {
+      obj.tokenName = message.tokenName;
+    }
+    if (message.tokenSymbol !== undefined) {
+      obj.tokenSymbol = message.tokenSymbol;
+    }
+    if (message.computeOptions !== undefined) {
+      obj.computeOptions = ComputeOptions.toJSON(message.computeOptions);
+    }
+    if (message.consumerParameters?.length) {
+      obj.consumerParameters = message.consumerParameters.map((e) => ConsumerParameter.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Service>, I>>(base?: I): Service {
+    return Service.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Service>, I>>(object: I): Service {
+    const message = createBaseService();
+    message.name = object.name ?? undefined;
+    message.description = object.description ?? undefined;
+    message.type = object.type ?? "";
+    message.pricing = (object.pricing !== undefined && object.pricing !== null)
+      ? Pricing.fromPartial(object.pricing)
+      : undefined;
+    message.files = object.files?.map((e) => Files.fromPartial(e)) || [];
+    message.timeout = object.timeout ?? undefined;
+    message.tokenName = object.tokenName ?? undefined;
+    message.tokenSymbol = object.tokenSymbol ?? undefined;
+    message.computeOptions = (object.computeOptions !== undefined && object.computeOptions !== null)
+      ? ComputeOptions.fromPartial(object.computeOptions)
+      : undefined;
+    message.consumerParameters = object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBasePricing(): Pricing {
+  return { pricingType: 0, fixedRate: undefined };
+}
+
+export const Pricing = {
+  encode(message: Pricing, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pricingType !== 0) {
+      writer.uint32(8).int32(message.pricingType);
+    }
+    if (message.fixedRate !== undefined) {
+      writer.uint32(16).uint32(message.fixedRate);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Pricing {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePricing();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.pricingType = reader.int32() as any;
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.fixedRate = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Pricing {
+    return {
+      pricingType: isSet(object.pricingType) ? pricing_PricingTypeFromJSON(object.pricingType) : 0,
+      fixedRate: isSet(object.fixedRate) ? Number(object.fixedRate) : undefined,
+    };
+  },
+
+  toJSON(message: Pricing): unknown {
+    const obj: any = {};
+    if (message.pricingType !== 0) {
+      obj.pricingType = pricing_PricingTypeToJSON(message.pricingType);
+    }
+    if (message.fixedRate !== undefined) {
+      obj.fixedRate = Math.round(message.fixedRate);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Pricing>, I>>(base?: I): Pricing {
+    return Pricing.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Pricing>, I>>(object: I): Pricing {
+    const message = createBasePricing();
+    message.pricingType = object.pricingType ?? 0;
+    message.fixedRate = object.fixedRate ?? undefined;
+    return message;
+  },
+};
+
+function createBaseFiles(): Files {
+  return { url: "", method: "", headers: undefined };
+}
+
+export const Files = {
+  encode(message: Files, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.method !== "") {
+      writer.uint32(34).string(message.method);
+    }
+    if (message.headers !== undefined) {
+      Struct.encode(Struct.wrap(message.headers), writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Files {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFiles();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.method = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.headers = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Files {
+    return {
+      url: isSet(object.url) ? String(object.url) : "",
+      method: isSet(object.method) ? String(object.method) : "",
+      headers: isObject(object.headers) ? object.headers : undefined,
+    };
+  },
+
+  toJSON(message: Files): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.method !== "") {
+      obj.method = message.method;
+    }
+    if (message.headers !== undefined) {
+      obj.headers = message.headers;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Files>, I>>(base?: I): Files {
+    return Files.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Files>, I>>(object: I): Files {
+    const message = createBaseFiles();
+    message.url = object.url ?? "";
+    message.method = object.method ?? "";
+    message.headers = object.headers ?? undefined;
+    return message;
+  },
+};
+
+function createBaseComputeOptions(): ComputeOptions {
+  return { allowRawAlgorithm: undefined, allowNetworkAccess: undefined, trustedAlgorithms: [], trustedPublishers: [] };
+}
+
+export const ComputeOptions = {
+  encode(message: ComputeOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.allowRawAlgorithm !== undefined) {
+      writer.uint32(8).bool(message.allowRawAlgorithm);
+    }
+    if (message.allowNetworkAccess !== undefined) {
+      writer.uint32(16).bool(message.allowNetworkAccess);
+    }
+    for (const v of message.trustedAlgorithms) {
+      TrustedAlgorihm.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.trustedPublishers) {
+      writer.uint32(34).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ComputeOptions {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseComputeOptions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.allowRawAlgorithm = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.allowNetworkAccess = reader.bool();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.trustedAlgorithms.push(TrustedAlgorihm.decode(reader, reader.uint32()));
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.trustedPublishers.push(reader.string());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ComputeOptions {
+    return {
+      allowRawAlgorithm: isSet(object.allowRawAlgorithm) ? Boolean(object.allowRawAlgorithm) : undefined,
+      allowNetworkAccess: isSet(object.allowNetworkAccess) ? Boolean(object.allowNetworkAccess) : undefined,
+      trustedAlgorithms: Array.isArray(object?.trustedAlgorithms)
+        ? object.trustedAlgorithms.map((e: any) => TrustedAlgorihm.fromJSON(e))
+        : [],
+      trustedPublishers: Array.isArray(object?.trustedPublishers)
+        ? object.trustedPublishers.map((e: any) => String(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ComputeOptions): unknown {
+    const obj: any = {};
+    if (message.allowRawAlgorithm !== undefined) {
+      obj.allowRawAlgorithm = message.allowRawAlgorithm;
+    }
+    if (message.allowNetworkAccess !== undefined) {
+      obj.allowNetworkAccess = message.allowNetworkAccess;
+    }
+    if (message.trustedAlgorithms?.length) {
+      obj.trustedAlgorithms = message.trustedAlgorithms.map((e) => TrustedAlgorihm.toJSON(e));
+    }
+    if (message.trustedPublishers?.length) {
+      obj.trustedPublishers = message.trustedPublishers;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ComputeOptions>, I>>(base?: I): ComputeOptions {
+    return ComputeOptions.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ComputeOptions>, I>>(object: I): ComputeOptions {
+    const message = createBaseComputeOptions();
+    message.allowRawAlgorithm = object.allowRawAlgorithm ?? undefined;
+    message.allowNetworkAccess = object.allowNetworkAccess ?? undefined;
+    message.trustedAlgorithms = object.trustedAlgorithms?.map((e) => TrustedAlgorihm.fromPartial(e)) || [];
+    message.trustedPublishers = object.trustedPublishers?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseTrustedAlgorihm(): TrustedAlgorihm {
+  return { did: "", filesChecksum: undefined, containerSectionChecksum: undefined };
+}
+
+export const TrustedAlgorihm = {
+  encode(message: TrustedAlgorihm, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.filesChecksum !== undefined) {
+      writer.uint32(18).string(message.filesChecksum);
+    }
+    if (message.containerSectionChecksum !== undefined) {
+      writer.uint32(26).string(message.containerSectionChecksum);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TrustedAlgorihm {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTrustedAlgorihm();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.filesChecksum = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.containerSectionChecksum = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TrustedAlgorihm {
+    return {
+      did: isSet(object.did) ? String(object.did) : "",
+      filesChecksum: isSet(object.filesChecksum) ? String(object.filesChecksum) : undefined,
+      containerSectionChecksum: isSet(object.containerSectionChecksum)
+        ? String(object.containerSectionChecksum)
+        : undefined,
+    };
+  },
+
+  toJSON(message: TrustedAlgorihm): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.filesChecksum !== undefined) {
+      obj.filesChecksum = message.filesChecksum;
+    }
+    if (message.containerSectionChecksum !== undefined) {
+      obj.containerSectionChecksum = message.containerSectionChecksum;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(base?: I): TrustedAlgorihm {
+    return TrustedAlgorihm.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(object: I): TrustedAlgorihm {
+    const message = createBaseTrustedAlgorihm();
+    message.did = object.did ?? "";
+    message.filesChecksum = object.filesChecksum ?? undefined;
+    message.containerSectionChecksum = object.containerSectionChecksum ?? undefined;
+    return message;
+  },
+};
+
+function createBaseAdditionalInformation(): AdditionalInformation {
+  return { termsAndConditions: false, gaiaXInformation: undefined };
+}
+
+export const AdditionalInformation = {
+  encode(message: AdditionalInformation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.termsAndConditions === true) {
+      writer.uint32(32).bool(message.termsAndConditions);
+    }
+    if (message.gaiaXInformation !== undefined) {
+      gaiaX.encode(message.gaiaXInformation, writer.uint32(42).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AdditionalInformation {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAdditionalInformation();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.termsAndConditions = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.gaiaXInformation = gaiaX.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdditionalInformation {
+    return {
+      termsAndConditions: isSet(object.termsAndConditions) ? Boolean(object.termsAndConditions) : false,
+      gaiaXInformation: isSet(object.gaiaXInformation) ? gaiaX.fromJSON(object.gaiaXInformation) : undefined,
+    };
+  },
+
+  toJSON(message: AdditionalInformation): unknown {
+    const obj: any = {};
+    if (message.termsAndConditions === true) {
+      obj.termsAndConditions = message.termsAndConditions;
+    }
+    if (message.gaiaXInformation !== undefined) {
+      obj.gaiaXInformation = gaiaX.toJSON(message.gaiaXInformation);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AdditionalInformation>, I>>(base?: I): AdditionalInformation {
+    return AdditionalInformation.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AdditionalInformation>, I>>(object: I): AdditionalInformation {
+    const message = createBaseAdditionalInformation();
+    message.termsAndConditions = object.termsAndConditions ?? false;
+    message.gaiaXInformation = (object.gaiaXInformation !== undefined && object.gaiaXInformation !== null)
+      ? gaiaX.fromPartial(object.gaiaXInformation)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasegaiaX(): gaiaX {
+  return { containsPII: false, termsAndConditions: [], serviceSD: undefined };
+}
+
+export const gaiaX = {
+  encode(message: gaiaX, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.containsPII === true) {
+      writer.uint32(8).bool(message.containsPII);
+    }
+    for (const v of message.termsAndConditions) {
+      Terms.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.serviceSD !== undefined) {
+      gaiaX_ServiceSelfDescription.encode(message.serviceSD, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasegaiaX();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.containsPII = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.termsAndConditions.push(Terms.decode(reader, reader.uint32()));
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.serviceSD = gaiaX_ServiceSelfDescription.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): gaiaX {
+    return {
+      containsPII: isSet(object.containsPII) ? Boolean(object.containsPII) : false,
+      termsAndConditions: Array.isArray(object?.termsAndConditions)
+        ? object.termsAndConditions.map((e: any) => Terms.fromJSON(e))
+        : [],
+      serviceSD: isSet(object.serviceSD) ? gaiaX_ServiceSelfDescription.fromJSON(object.serviceSD) : undefined,
+    };
+  },
+
+  toJSON(message: gaiaX): unknown {
+    const obj: any = {};
+    if (message.containsPII === true) {
+      obj.containsPII = message.containsPII;
+    }
+    if (message.termsAndConditions?.length) {
+      obj.termsAndConditions = message.termsAndConditions.map((e) => Terms.toJSON(e));
+    }
+    if (message.serviceSD !== undefined) {
+      obj.serviceSD = gaiaX_ServiceSelfDescription.toJSON(message.serviceSD);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<gaiaX>, I>>(base?: I): gaiaX {
+    return gaiaX.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<gaiaX>, I>>(object: I): gaiaX {
+    const message = createBasegaiaX();
+    message.containsPII = object.containsPII ?? false;
+    message.termsAndConditions = object.termsAndConditions?.map((e) => Terms.fromPartial(e)) || [];
+    message.serviceSD = (object.serviceSD !== undefined && object.serviceSD !== null)
+      ? gaiaX_ServiceSelfDescription.fromPartial(object.serviceSD)
+      : undefined;
+    return message;
+  },
+};
+
+function createBasegaiaX_ServiceSelfDescription(): gaiaX_ServiceSelfDescription {
+  return { url: "", isVerified: undefined };
+}
+
+export const gaiaX_ServiceSelfDescription = {
+  encode(message: gaiaX_ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    if (message.isVerified !== undefined) {
+      writer.uint32(16).bool(message.isVerified);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX_ServiceSelfDescription {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasegaiaX_ServiceSelfDescription();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.isVerified = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): gaiaX_ServiceSelfDescription {
+    return {
+      url: isSet(object.url) ? String(object.url) : "",
+      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : undefined,
+    };
+  },
+
+  toJSON(message: gaiaX_ServiceSelfDescription): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.isVerified !== undefined) {
+      obj.isVerified = message.isVerified;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(base?: I): gaiaX_ServiceSelfDescription {
+    return gaiaX_ServiceSelfDescription.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(object: I): gaiaX_ServiceSelfDescription {
+    const message = createBasegaiaX_ServiceSelfDescription();
+    message.url = object.url ?? "";
+    message.isVerified = object.isVerified ?? undefined;
+    return message;
+  },
+};
+
+function createBaseTerms(): Terms {
+  return { url: "" };
+}
+
+export const Terms = {
+  encode(message: Terms, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.url !== "") {
+      writer.uint32(10).string(message.url);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Terms {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTerms();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Terms {
+    return { url: isSet(object.url) ? String(object.url) : "" };
+  },
+
+  toJSON(message: Terms): unknown {
+    const obj: any = {};
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Terms>, I>>(base?: I): Terms {
+    return Terms.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Terms>, I>>(object: I): Terms {
+    const message = createBaseTerms();
+    message.url = object.url ?? "";
+    return message;
+  },
+};
+
+function createBaseConsumerParameter(): ConsumerParameter {
+  return { name: "", type: "", label: "", required: false, description: "", default: "", options: [] };
+}
+
+export const ConsumerParameter = {
+  encode(message: ConsumerParameter, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    if (message.type !== "") {
+      writer.uint32(18).string(message.type);
+    }
+    if (message.label !== "") {
+      writer.uint32(26).string(message.label);
+    }
+    if (message.required === true) {
+      writer.uint32(32).bool(message.required);
+    }
+    if (message.description !== "") {
+      writer.uint32(42).string(message.description);
+    }
+    if (message.default !== "") {
+      writer.uint32(50).string(message.default);
+    }
+    for (const v of message.options) {
+      Struct.encode(Struct.wrap(v!), writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ConsumerParameter {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerParameter();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.type = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.label = reader.string();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.required = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.default = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.options.push(Struct.unwrap(Struct.decode(reader, reader.uint32())));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerParameter {
+    return {
+      name: isSet(object.name) ? String(object.name) : "",
+      type: isSet(object.type) ? String(object.type) : "",
+      label: isSet(object.label) ? String(object.label) : "",
+      required: isSet(object.required) ? Boolean(object.required) : false,
+      description: isSet(object.description) ? String(object.description) : "",
+      default: isSet(object.default) ? String(object.default) : "",
+      options: Array.isArray(object?.options) ? [...object.options] : [],
+    };
+  },
+
+  toJSON(message: ConsumerParameter): unknown {
+    const obj: any = {};
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.type !== "") {
+      obj.type = message.type;
+    }
+    if (message.label !== "") {
+      obj.label = message.label;
+    }
+    if (message.required === true) {
+      obj.required = message.required;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.default !== "") {
+      obj.default = message.default;
+    }
+    if (message.options?.length) {
+      obj.options = message.options;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerParameter>, I>>(base?: I): ConsumerParameter {
+    return ConsumerParameter.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerParameter>, I>>(object: I): ConsumerParameter {
+    const message = createBaseConsumerParameter();
+    message.name = object.name ?? "";
+    message.type = object.type ?? "";
+    message.label = object.label ?? "";
+    message.required = object.required ?? false;
+    message.description = object.description ?? "";
+    message.default = object.default ?? "";
+    message.options = object.options?.map((e) => e) || [];
+    return message;
+  },
+};
+
+/** service definition for publisher */
+export interface serviceofferingPublisher {
+  CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse>;
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
+  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
+}
+
+export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
+export class serviceofferingPublisherClientImpl implements serviceofferingPublisher {
+  private readonly rpc: Rpc;
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: { service?: string }) {
+    this.service = opts?.service || serviceofferingPublisherServiceName;
+    this.rpc = rpc;
+    this.CreateOffering = this.CreateOffering.bind(this);
+    this.UpdateOffering = this.UpdateOffering.bind(this);
+    this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
+  }
+  CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
+    const data = CreateOfferingRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "CreateOffering", data);
+    return promise.then((data) => CreateOfferingResponse.decode(_m0.Reader.create(data)));
+  }
+
+  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse> {
+    const data = UpdateOfferingRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "UpdateOffering", data);
+    return promise.then((data) => UpdateOfferingResponse.decode(_m0.Reader.create(data)));
+  }
+
+  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse> {
+    const data = UpdateOfferingLifecycleRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "UpdateOfferingLifecycle", data);
+    return promise.then((data) => UpdateOfferingLifecycleResponse.decode(_m0.Reader.create(data)));
+  }
+}
+
+interface Rpc {
+  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+}
+
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
+}
