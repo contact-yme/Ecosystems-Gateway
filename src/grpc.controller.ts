@@ -23,8 +23,8 @@ export class GrpcController {
   async createOffering(
     data: CreateOfferingRequest,
   ): Promise<CreateOfferingResponse> {
-    this.logger.debug('grpc method CreateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method CreateOffering called')
+    this.logger.debug(data)
 
     const results = [];
     for (const offering of data.offerings) {
@@ -58,8 +58,8 @@ export class GrpcController {
   async updateOffering(
     data: UpdateOfferingRequest,
   ): Promise<UpdateOfferingResponse> {
-    this.logger.debug('grpc method UpdateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method UpdateOffering called')
+    this.logger.debug(data)
 
     const ces_results: Array<string> = [];
     const results = [];
