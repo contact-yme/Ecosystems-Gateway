@@ -133,4 +133,6 @@ describe('Xfsc service', () => {
     })
 
     it.todo('update VC succesfully with the use of the Bearer token')
+
+    it.todo('publish VC succesfully with the use of the Bearer token')
 }) 
