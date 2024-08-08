@@ -30,7 +30,8 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    async publish(token: string, data: CreateOfferingRequest): Promise<JSON> {
+    async publish(token: string, data: JSON): Promise<string> {
+        // returns ID
         let response: AxiosResponse<JSON>
 
         
@@ -58,28 +59,70 @@ export class XfscService {
 
         console.log('Published successfully in XFSC CAT.')
 
-        return response['data']
+        return response.data['id']
     }
 
-    update(token: string, hash: string, data: CreateOfferingRequest): void {
-        const del = async (): Promise<void> => {
-                let response: JSON
-            try {
-                response = await axios.delete(this.xfscCatAddr + hash)
-            }
-            catch (error) {
-                console.error('Error occured while trying to delete SD (${hash})')
-                throw error
-            }
-        }
+    async update(token: string, hash: string, data: JSON): Promise<string> {
+        // returns ID
+        this.delete(token, hash)
 
-        del()
-        console.log('Deleted SD (${hash}) successfully.')
-
-        this.publish(token, data)
+        const response: string = await this.publish(token, data)  // Publish function already returns the SD's ID
         console.log('Published updated SD successfully.')
         console.log('Updating was successfull.')
+
+        return response
     }
+
+    async delete(token: string, hash: string): Promise<void> {
+        // returns nothing, because there's no body in the Cat's response
+        let config = {
+            method: 'delete',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr + hash,
+            headers: { 
+              'accept': 'application/json', 
+              'Authorization': 'Bearer ' + token
+            }
+          }
+          
+          axios.request(config)
+          .catch(error => {
+            console.error(error)
+
+            throw error
+            })  
+        console.log('Successfully deleted SD (${hash})')
+    }
+
+    async revoke(token: string, hash: string): Promise<string> {
+        // returns ID
+
+        let response: AxiosResponse<JSON>
+
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr + hash + '/revoke',
+            headers: { 
+              'accept': 'application/json',
+              'Authorization': 'Bearer ' + token
+            }
+          }
+          
+          axios.request(config)
+          .then((result) => {
+            response = result
+          })
+          .catch(error => {
+            console.error(error)
+
+            throw error
+            })
+
+          console.log('Successfully revoked SD (${hash}).')  
+
+          return response.data['id']
+        }
 
     async getToken(): Promise<string> { 
         const axios = require('axios')
