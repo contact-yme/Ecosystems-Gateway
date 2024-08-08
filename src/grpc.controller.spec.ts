@@ -4,7 +4,7 @@ import { PontusxService } from './pontusx/pontusx.service';
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
-
+ 
   const mockPontusXService = {
     publishComputeAsset: jest.fn(() => ({
       ddo: { id: 'test-id' },
