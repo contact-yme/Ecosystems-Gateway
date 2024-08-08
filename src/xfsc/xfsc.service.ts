@@ -50,7 +50,7 @@ export class XfscService {
 
         console.log('Published successfully in XFSC CAT.')
 
-        return response['data']
+        return response.data['id']
     }
 
     revoke(token: string, data: CreateOfferingRequest, vcHash: string): Promise<JSON> {
