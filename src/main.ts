@@ -12,7 +12,7 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: '0.0.0.0:5000',
+      url: '0.0.0.0:5001',
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
 
