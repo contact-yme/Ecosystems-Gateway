@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { XfscService } from './xfsc/xfsc.service';
-import { CreateOfferingRequest } from './generated/src/_proto/spp';
+import { CreateOfferingRequest } from './generated/src/_proto/spp_v2';
 
 @Controller()
 export class RestController {

@@ -17,7 +17,7 @@ import { LifecycleStates } from '@deltadao/nautilus';
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
-  constructor(private readonly pontusxService: PontusxService) {}
+  constructor(private readonly pontusxService: PontusxService, private readonly xfscService: XfscService) {}
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(
@@ -48,10 +48,30 @@ export class GrpcController {
       };
     }
 
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
+        throw new RpcException({
+          code: GrpcStatusCode.INTERNAL,
+          message: 'Internal Error',
+        });
+      } else{
+        // XFSC
+
+        const VP = JSON.parse(offering.xfscOffering.VP)
+
+        this.xfscService.getToken()
+        .then(token => {
+          this.xfscService.publish(token, data=VP).then(result => {
+            return {
+              id: [result]
+            }
+          })
+        })
+        .catch(error => {
+          this.logger.error('Error occured when trying to get the Token needed for the XFSC catalogue: ', error)
+
+          throw error
+        })
+      }
+    }
   }
 
   @GrpcMethod('serviceofferingPublisher')
@@ -86,10 +106,25 @@ export class GrpcController {
       };
     }
 
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
+        throw new RpcException({
+          code: GrpcStatusCode.INTERNAL,
+          message: 'Internal Error',
+        })
+      } else {
+        // XFSC
+        const token = await this.xfscService.getToken()
+        const hash = offering.xfscUpdateOffering.hash
+        const VP = JSON.parse(offering.xfscUpdateOffering.VP)
+
+        const result = await this.xfscService.update(token, hash, VP)
+
+        return {
+          id: [result],
+          locations: undefined,
+          DebugInformation: undefined
+        }
+      }
+    }
   }
 
   @GrpcMethod('serviceofferingPublisher')
