@@ -35,7 +35,7 @@ export class XfscService {
               'Content-Type': 'application/json', 
               'Authorization': 'Bearer ' + token
             },
-            data : data
+            data : VP
           }
         
           console.log('Publishing in XFSC CAT ...')

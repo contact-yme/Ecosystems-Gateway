@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 import { XfscService } from './xfsc.service'
 jest.mock('axios')
-import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp'
+import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp_v2'
 
 
 jest.mock('axios')
