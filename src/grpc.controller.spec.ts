@@ -46,7 +46,7 @@ describe('Grpc Controller', () => {
       additionalInformation: undefined,
       token: '',
       name: '',
-    });
+    })
 
     expect(mockPontusXService.publishComputeAsset.mock.calls).toHaveLength(1);
     expect(result.did).toEqual('test-id');

@@ -3,15 +3,6 @@ import axios, { AxiosResponse } from 'axios'
 import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
-import {
-    CreateOfferingRequest,
-    CreateOfferingResponse,
-    UpdateOfferingRequest,
-    UpdateOfferingResponse,
-    UpdateOfferingLifecycleRequest,
-    UpdateOfferingLifecycleResponse,
-  } from '../generated/src/_proto/spp';
-
 
 export class XfscService {
     
@@ -19,7 +10,7 @@ export class XfscService {
     private password: string
     private credentials: string
     private readonly xfscCatAddr: string
-    private readonly xfscTokenEndpoint: string
+    private readonly xfscTokenEndpoint: string  
     
     constructor() {
         this.username = XFSC_USERNAME  // read .env vars here
@@ -30,7 +21,7 @@ export class XfscService {
         this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
-    async publish(token: string, data: CreateOfferingRequest): Promise<string> {
+    async publish(token: string, VP: JSON): Promise<string> {
         // returns ID
         let response: AxiosResponse<JSON>
 
@@ -44,7 +35,7 @@ export class XfscService {
               'Content-Type': 'application/json', 
               'Authorization': 'Bearer ' + token
             },
-            data : data
+            data : VP
           }
         
           console.log('Publishing in XFSC CAT ...')
@@ -62,11 +53,11 @@ export class XfscService {
         return response.data['id']
     }
 
-    async update(token: string, hash: string, data: CreateOfferingRequest): Promise<string> {
+    async update(token: string, hash: string, VP: JSON): Promise<string> {
         // returns ID
         this.delete(token, hash)
 
-        const response: string = await this.publish(token, data)  // Publish function already returns the SD's ID
+        const response: string = await this.publish(token, VP)  // Publish function already returns the SD's ID
         console.log('Published updated SD successfully.')
         console.log('Updating was successfull.')
 
