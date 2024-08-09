@@ -12,7 +12,7 @@ async function bootstrap() {
     options: {
       url: '0.0.0.0:5000',
       package: 'eupg.serviceofferingpublisher',
-      protoPath: join(__dirname, './_proto/spp_v2_full.proto'),
+      protoPath: join(__dirname, './_proto/spp_v2.proto'),
     },
   });
 
