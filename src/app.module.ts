@@ -6,12 +6,19 @@ import { AppService } from './app.service';
 import { CredentialEventServiceModule } from './credential-event-service/credential-event-service.module';
 import { PontusxModule } from './pontusx/pontusx.module';
 import { XfscModule } from './xfsc/xfsc.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    RedisModule.forRoot({
+      type: 'single',
+      url: 'redis://127.0.0.1:6379',
+    }),
+    ScheduleModule.forRoot(),
     CredentialEventServiceModule,
     PontusxModule,
     XfscModule,

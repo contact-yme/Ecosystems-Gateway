@@ -8,6 +8,10 @@ import {
   UpdateOfferingResponse,
   UpdateOfferingLifecycleRequest,
   UpdateOfferingLifecycleResponse,
+  CreateComputeToDataRequest,
+  ComputeToDataResponse,
+  GetOfferingRequest,
+  GetOfferingResponse,
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
@@ -118,6 +122,44 @@ export class GrpcController {
       return {
         id: ids,
         DebugInformation: { results },
+      };
+    }
+
+    throw new RpcException({
+      code: GrpcStatusCode.INTERNAL,
+      message: 'Internal Error',
+    });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async runComputeToData(
+    data: CreateComputeToDataRequest,
+  ): Promise<ComputeToDataResponse> {
+    // TODO: Get service by grpc request
+    return await this.pontusxService.requestComputeToData(
+      data.did, data.algorithm
+    ).then((result) => {
+      return {
+        jobId: result
+      }
+    }).catch((err) => {
+      throw new RpcException({
+        code: GrpcStatusCode.INTERNAL,
+        message: err,
+      });
+    });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async getOffering(
+    data: GetOfferingRequest
+  ): Promise<GetOfferingResponse> {
+    const result = await this.pontusxService.getOffering(
+      data.did
+    );
+    if(result) {
+      return {
+        did: result.id
       };
     }
 

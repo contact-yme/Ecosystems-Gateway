@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, Module, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Network,
@@ -17,8 +17,12 @@ import {
   ServiceTypes,
   UrlFile,
   LifecycleStates,
+  ComputeConfig,
   MetadataConfig,
 } from '@deltadao/nautilus';
+import {
+  type Asset
+} from '@oceanprotocol/lib';
 import { ConsumerParameter } from '@oceanprotocol/lib';
 import {
   PontusxOffering,
@@ -30,6 +34,10 @@ import {
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import axios, { AxiosResponse } from 'axios';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -38,12 +46,14 @@ export class PontusxService implements OnModuleInit {
   private readonly networkConfig: NetworkConfig;
   private readonly pricingConfig: PricingConfig;
   private readonly wallet: Wallet;
+  private readonly provider: providers.JsonRpcProvider;
   private nautilus: Nautilus;
-  private logLevel: LogLevel = LogLevel.Verbose;
+  private logLevel: LogLevel = LogLevel.Warn;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly credentialEventService: CredentialEventServiceService,
+    @InjectRedis() private readonly redis: Redis,
   ) {
     this.selectedNetwork = this.configService
       .getOrThrow('NETWORK')
@@ -59,23 +69,27 @@ export class PontusxService implements OnModuleInit {
         this.selectedNetwork
       }. Supported networks are ${Object.values(Network).join(', ')}.`;
     }
-    this.networkConfig = NETWORK_CONFIGS[this.selectedNetwork];
-    this.pricingConfig = PRICING_CONFIGS[this.selectedNetwork];
-    const provider = new providers.JsonRpcProvider(this.networkConfig.nodeUri);
+    this.networkConfig = NETWORK_CONFIGS[this.getSelectedNetwork()];
+    this.pricingConfig = PRICING_CONFIGS[this.getSelectedNetwork()];
+    this.provider = new providers.JsonRpcProvider(this.networkConfig.nodeUri);
 
     this.wallet = new Wallet(
       this.configService.getOrThrow('PRIVATE_KEY'),
-      provider,
+      this.provider,
     );
   }
 
   async onModuleInit(): Promise<void> {
-    this.nautilus = await Nautilus.create(this.wallet, this.networkConfig);
+    this.nautilus = await Nautilus.create(this.wallet, this.getSelectedNetworkConfig());
     Nautilus.setLogLevel(this.logLevel);
   }
 
   getSelectedNetwork() {
     return this.selectedNetwork;
+  }
+
+  getSelectedNetworkConfig() {
+    return this.networkConfig;
   }
 
   setLogLevel(level: LogLevel) {
@@ -421,5 +435,89 @@ export class PontusxService implements OnModuleInit {
     const NautilusService = serviceBuilder.build();
 
     return NautilusService;
+  }
+
+  async getOffering(did: string): Promise<Asset> {
+    const asset = await this.nautilus.getAquariusAsset(did);
+    return asset;
+  }
+
+  async requestComputeToData(did: string, algo: string): Promise<string[]> {
+    const computeConfig: Omit<ComputeConfig, 'signer' | 'chainConfig'> = {
+      dataset: { did: did },
+      algorithm: { did: algo},
+    }
+
+    // TODO: Verify if did and algo are correct
+    const dataset = await this.getOffering(computeConfig.dataset.did).catch((_reason) => {
+      throw new NotFoundException('Asset not found');
+    });
+
+    // verify that requested asset has compute jobs available
+    const compute_objects = dataset.services.filter((obj) => { return obj.type === 'compute' });
+    if(compute_objects.length < 1) {
+      throw new NotFoundException('No algorithms are available');
+    }
+
+    const computeJob = await this.nautilus.compute(computeConfig).catch((error) => {
+      console.log(error);
+      throw new NotFoundException(`Compute to Data job cant start: ${error}`);
+    });
+
+    let jobIds = [];
+    if(computeJob instanceof Array) {
+      computeJob.forEach(async (job) => {
+        await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, job.jobId);
+        jobIds.push(job.jobId);
+      });
+    } else {
+      await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, computeJob.jobId);
+      jobIds.push(computeJob.jobId);
+    }
+
+    return jobIds;
+  }
+
+  async getComputeToDataStatus(jobId: string): Promise<number> {
+    let status = await this.nautilus.getComputeStatus({
+      jobId: jobId,
+      providerUri: this.getSelectedNetworkConfig().providerUri
+    });
+
+    return status.status;
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async __periodicallyFetchComputeJobs() {
+    let pendingJobs = await this.redis.lrange(`${this.getSelectedNetworkConfig().network}:ctd:pending`, 0, -1);
+    pendingJobs.forEach(async (jobId, _i, _arr) => {
+      // Check if compute to data is finished
+      if(await this.getComputeToDataStatus(jobId) != 70) {
+        return;
+      }
+
+      // get compute to data result
+      const ResultUrl = await this.nautilus.getComputeResult({
+        jobId: jobId,
+        providerUri: this.getSelectedNetworkConfig().providerUri
+      });
+      const FetchedData: AxiosResponse = (await axios.get(ResultUrl).catch((error) => {
+        // TODO: Add proper error handling, maybe re-try logic?
+        return undefined;
+      }));
+
+      // Do nothing if we cant fetch the result, maybe next iteration
+      if(FetchedData === undefined) {
+        return;
+      }
+
+      let redisTransaction = this.redis.multi();
+      redisTransaction.set(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`, Buffer.from(FetchedData.data).toString('base64'));
+      redisTransaction.expire(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`, 60 * 60);
+      redisTransaction.publish(`${this.getSelectedNetworkConfig().network}:ctd:finished`, jobId);
+      redisTransaction.lrem(`${this.getSelectedNetworkConfig().network}:ctd:pending`, 1, jobId);
+      this.logger.debug(`Executing ${redisTransaction.length} redis commands after successfull compute-to-data job`);
+      await redisTransaction.exec();
+    });
   }
 }
