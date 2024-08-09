@@ -1,12 +1,12 @@
 import axios from 'axios'
 import { XfscService } from './xfsc.service'
 jest.mock('axios')
-import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp'
+import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp_v2'
 
 
 describe('Xfsc service', () => {
     let xfscService = new XfscService()
-    let token :string
+    let token: string
 
     it('Initialize XfscService correctly', () => {
         expect(xfscService.getToken).toBeDefined()
