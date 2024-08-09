@@ -12,9 +12,13 @@ import {
   ComputeToDataResponse,
   GetOfferingRequest,
   GetOfferingResponse,
+<<<<<<< HEAD
   GetComputeToDataResultResponse,
   CreateComputeToDataResultRequest,
 } from './generated/src/_proto/spp_v2';
+=======
+} from './generated/src/_proto/spp';
+>>>>>>> 9e8eb39 (enh: add asset and compute-to-data (ctd / c2d) consumption)
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 import { error } from 'console';
@@ -146,6 +150,37 @@ export class GrpcController {
         jobId: result
       }
     }).catch((err) => {
+<<<<<<< HEAD
+=======
+      throw new RpcException({
+        code: GrpcStatusCode.INTERNAL,
+        message: err,
+      });
+    });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async getOffering(
+    data: GetOfferingRequest
+  ): Promise<GetOfferingResponse> {
+    const result = await this.pontusxService.getOffering(
+      data.did
+    );
+    if(result) {
+      return {
+        did: result.id
+      };
+    }
+
+    throw new RpcException({
+      code: GrpcStatusCode.INTERNAL,
+      message: 'Internal Error',
+    });
+  }
+
+  private ensureDatasetOrThrow(data: CreateOfferingRequest) {
+    if (data.main.type !== 'dataset') {
+>>>>>>> 9e8eb39 (enh: add asset and compute-to-data (ctd / c2d) consumption)
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
         message: err,
