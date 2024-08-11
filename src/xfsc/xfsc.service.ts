@@ -39,18 +39,15 @@ export class XfscService {
           }
         
           console.log('Publishing in XFSC CAT ...')
-          axios.request(config)
-          .then(result => {
-            response = result
-        })
-          .catch(error => {
-            console.error('Error occured while trying to Publish VP to XFSC Cat: ' + error)
+          try {
+            response = await axios.request(config)
+            console.log('Published successfully in XFSC CAT.')
+            return response.data['id']
+          } catch (error) {
+            console.error('Error occurred while trying to Publish VP to XFSC Cat: ' + error)
+            
             throw error
-        })
-
-        console.log('Published successfully in XFSC CAT.')
-
-        return response.data['id']
+          }
     }
 
     async update(token: string, hash: string, VP: JSON): Promise<string> {
