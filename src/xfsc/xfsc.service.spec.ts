@@ -1,23 +1,14 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { XfscService } from './xfsc.service'
+
 jest.mock('axios')
-import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp_v2'
-
-
 describe('Xfsc service', () => {
     let xfscService = new XfscService()
-    let token: string
 
-    it('Initialize XfscService correctly', () => {
-        expect(xfscService.getToken).toBeDefined()
-        expect(xfscService.publish).toBeDefined()
-        expect(xfscService.update).toBeDefined()
-    })
-
-    it('Return token', async () => {
+    it('Token function should return a string', async () => {
         const mockResponse = {
             data: {
-                access_token: 'testToken'
+                access_token: 'mockToken'
             }
         }
 
@@ -25,13 +16,42 @@ describe('Xfsc service', () => {
         .fn()
         .mockResolvedValue(mockResponse)
 
-        token = await xfscService.getToken()
+        const token = await xfscService.getToken()
 
-
-        expect(mockResponse.data.access_token).toEqual(token)
+        expect(mockResponse.data.access_token).toBe(token)
     })
 
-    it.todo('update VC succesfully with the use of the Bearer token')
+    it('Publish function should return ID', async () => {
+        const mockVP = {
+            key: 'value'
+        } as unknown as JSON
+        const mockToken = 'mockToken'
 
-    it.todo('publish VC succesfully with the use of the Bearer token')
+        const response: AxiosResponse<JSON> = {
+            data: { id: 'mockID' } as unknown as JSON,
+            status: 200,
+            statusText: 'OK',
+            headers: {}, 
+            config: {
+                headers: undefined
+            }
+        }
+
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(response)
+
+        const result = await xfscService.publish(mockToken, mockVP)
+        expect(result).toBe('mockID')
+
+        expect(axios.request).toHaveBeenCalledWith(expect.objectContaining({
+            method: 'post',
+            headers: expect.objectContaining({
+                'Authorization': `Bearer ${mockToken}`
+            }),
+            data: mockVP
+        }))
+    })
+
+    it.todo('Update function should return the ID')
 }) 
