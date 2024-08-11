@@ -97,20 +97,18 @@ export class XfscService {
             }
           }
           
-          axios.request(config)
-          .then((result) => {
-            response = result
-          })
-          .catch(error => {
-            console.error(error)
+          try {
+            response = await axios.request(config)
+
+            console.log('Successfully revoked SD (${hash}).')  
+            
+            return response.data['id']
+          } catch(error) {
+            console.log('Error ocuured while processing the request: ')
 
             throw error
-            })
-
-          console.log('Successfully revoked SD (${hash}).')  
-
-          return response.data['id']
-        }
+          }
+    }
 
     async getToken(): Promise<string> { 
         const axios = require('axios')
