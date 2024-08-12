@@ -12,9 +12,12 @@ import {
   ComputeToDataResponse,
   GetOfferingRequest,
   GetOfferingResponse,
+  GetComputeToDataResultResponse,
+  CreateComputeToDataResultRequest,
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
+import { error } from 'console';
 
 @Controller('grpc')
 export class GrpcController {
@@ -148,6 +151,30 @@ export class GrpcController {
         message: err,
       });
     });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async getComputeToDataResult(
+    data: CreateComputeToDataResultRequest
+  ): Promise<GetComputeToDataResultResponse> {
+    return await this.pontusxService.getComputeToDataResult(data.JobId).then((res) => {
+      if(res == null) {
+        throw new RpcException({
+          code: GrpcStatusCode.UNAVAILABLE,
+          message: "Result is not available"
+        })
+      }
+
+      return {
+        JobId: data.JobId,
+        result: res
+      }
+    }).catch((err) => {
+      throw new RpcException({
+        code: GrpcStatusCode.INTERNAL,
+        message: err,
+      });
+    })
   }
 
   @GrpcMethod('serviceofferingPublisher')
