@@ -6,7 +6,7 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // sadly needed to boot nautilus up, otherwise onModuleInit doesnt get trigger :(
+  // sadly needed to boot nautilus up, otherwise onModuleInit doesnt get triggered :(
   app.init();
 
   app.connectMicroservice<MicroserviceOptions>({
