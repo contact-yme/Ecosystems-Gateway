@@ -13,10 +13,15 @@ import {
   GetOfferingRequest,
   GetOfferingResponse,
 <<<<<<< HEAD
+<<<<<<< HEAD
   GetComputeToDataResultResponse,
   CreateComputeToDataResultRequest,
 } from './generated/src/_proto/spp_v2';
 =======
+=======
+  GetComputeToDataResultResponse,
+  CreateComputeToDataResultRequest,
+>>>>>>> ffe4fe9 (enh: add getResult via grpc)
 } from './generated/src/_proto/spp';
 >>>>>>> 9e8eb39 (enh: add asset and compute-to-data (ctd / c2d) consumption)
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
@@ -157,6 +162,30 @@ export class GrpcController {
         message: err,
       });
     });
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async getComputeToDataResult(
+    data: CreateComputeToDataResultRequest
+  ): Promise<GetComputeToDataResultResponse> {
+    return await this.pontusxService.getComputeToDataResult(data.JobId).then((res) => {
+      if(res == null) {
+        throw new RpcException({
+          code: GrpcStatusCode.UNAVAILABLE,
+          message: "Result is not available"
+        })
+      }
+
+      return {
+        JobId: data.JobId,
+        result: res
+      }
+    }).catch((err) => {
+      throw new RpcException({
+        code: GrpcStatusCode.INTERNAL,
+        message: err,
+      });
+    })
   }
 
   @GrpcMethod('serviceofferingPublisher')
