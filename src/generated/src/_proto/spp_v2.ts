@@ -430,6 +430,13 @@ export interface Service {
     | string
     | undefined;
   /**
+   * URL (schema + host) of the Provider responsible for provisioning of the data service
+   * If no value is given the standard provider given in the network config is used (i.e. deltaDAO provider)
+   */
+  serviceEndpoint?:
+    | string
+    | undefined;
+  /**
    * Compute options for a compute asset/service
    * Only optional if the offering is of type 'access' and not 'compute'
    */
@@ -2332,6 +2339,7 @@ function createBaseService(): Service {
     timeout: undefined,
     tokenName: undefined,
     tokenSymbol: undefined,
+    serviceEndpoint: undefined,
     computeOptions: undefined,
     consumerParameters: [],
   };
@@ -2362,6 +2370,9 @@ export const Service = {
     }
     if (message.tokenSymbol !== undefined) {
       writer.uint32(58).string(message.tokenSymbol);
+    }
+    if (message.serviceEndpoint !== undefined) {
+      writer.uint32(90).string(message.serviceEndpoint);
     }
     if (message.computeOptions !== undefined) {
       ComputeOptions.encode(message.computeOptions, writer.uint32(66).fork()).ldelim();
@@ -2435,6 +2446,13 @@ export const Service = {
 
           message.tokenSymbol = reader.string();
           continue;
+        case 11:
+          if (tag !== 90) {
+            break;
+          }
+
+          message.serviceEndpoint = reader.string();
+          continue;
         case 8:
           if (tag !== 66) {
             break;
@@ -2468,6 +2486,7 @@ export const Service = {
       timeout: isSet(object.timeout) ? Number(object.timeout) : undefined,
       tokenName: isSet(object.tokenName) ? String(object.tokenName) : undefined,
       tokenSymbol: isSet(object.tokenSymbol) ? String(object.tokenSymbol) : undefined,
+      serviceEndpoint: isSet(object.serviceEndpoint) ? String(object.serviceEndpoint) : undefined,
       computeOptions: isSet(object.computeOptions) ? ComputeOptions.fromJSON(object.computeOptions) : undefined,
       consumerParameters: Array.isArray(object?.consumerParameters)
         ? object.consumerParameters.map((e: any) => ConsumerParameter.fromJSON(e))
@@ -2501,6 +2520,9 @@ export const Service = {
     if (message.tokenSymbol !== undefined) {
       obj.tokenSymbol = message.tokenSymbol;
     }
+    if (message.serviceEndpoint !== undefined) {
+      obj.serviceEndpoint = message.serviceEndpoint;
+    }
     if (message.computeOptions !== undefined) {
       obj.computeOptions = ComputeOptions.toJSON(message.computeOptions);
     }
@@ -2525,6 +2547,7 @@ export const Service = {
     message.timeout = object.timeout ?? undefined;
     message.tokenName = object.tokenName ?? undefined;
     message.tokenSymbol = object.tokenSymbol ?? undefined;
+    message.serviceEndpoint = object.serviceEndpoint ?? undefined;
     message.computeOptions = (object.computeOptions !== undefined && object.computeOptions !== null)
       ? ComputeOptions.fromPartial(object.computeOptions)
       : undefined;
