@@ -27,6 +27,7 @@ See the example `.env.example` for enviroments variables that can be set.
 |NETWORK|GENX, PONTUSX, MUMBAI||
 |PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
 |CES_URL|https://ces-development.lab.gaia-x.eu/credentials-events|Is used for the CredentialEventService|
+|ENABLE_GRPC_REFLECTION|true/false|Enables the gRPC reflection for automated rpc discovery|
 
 ## Running the app
 
