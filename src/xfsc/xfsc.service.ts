@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import axios, { AxiosRequestConfig } from 'axios';
 
 @Injectable()
 export class XfscService {
@@ -10,6 +11,21 @@ export class XfscService {
   publish(vc: any) {
     // do stuff here
     console.log('VC from credentialEventService publishing:', vc);
+  }
+
+  async getOffering(hash: string): Promise<string> {
+    const RequestConfig: AxiosRequestConfig = {
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      }
+    }
+
+    return await axios.get(`/self-descriptions/${hash}`, RequestConfig).then((data) => {
+      return data.data;
+    }).catch((error) => {
+      return error;
+    });
   }
 
   async getToken(): Promise<string> {
