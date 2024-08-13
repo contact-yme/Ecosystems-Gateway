@@ -487,7 +487,11 @@ export class PontusxService implements OnModuleInit {
   }
 
   async getComputeToDataResult(jobId: string): Promise<string> {
-    return await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
+    let cached = await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
+    if(cached == undefined) {
+      await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
+    }
+    return cached;
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
