@@ -438,8 +438,7 @@ export class PontusxService implements OnModuleInit {
   }
 
   async getOffering(did: string): Promise<Asset> {
-    const asset = await this.nautilus.getAquariusAsset(did);
-    return asset;
+    return await this.nautilus.getAquariusAsset(did);
   }
 
   async requestComputeToData(did: string, algo: string): Promise<string[]> {
@@ -487,9 +486,8 @@ export class PontusxService implements OnModuleInit {
     return status.status;
   }
 
-  async getComputeToDataResult(jobId: string): Promise<any> {
-    const result = await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
-    return result;
+  async getComputeToDataResult(jobId: string): Promise<string> {
+    return await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
