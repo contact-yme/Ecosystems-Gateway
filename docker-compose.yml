@@ -1,0 +1,34 @@
+services:
+  so-publisher:
+    build:
+      context: .
+    container_name: so-publisher
+    restart: unless-stopped
+    environment:
+      - PRIVATE_KEY= # Create your own via https://gchq.github.io/CyberChef/#recipe=Generate_ECDSA_Key_Pair('P-256','DER')
+      - NETWORK=GENX
+    ports:
+      - "3000:3000"
+      - "5001:5000"
+    networks:
+      - gaia-x
+      - proxy
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+
+      # https redirect
+      traefik.http.routers.publishingconnector.rule: Host(`publishing-connector.localhost`)
+      traefik.http.routers.publishingconnector.entrypoints: web
+      traefik.http.routers.publishingconnector.middlewares: https-redirectscheme@file
+
+      traefik.http.routers.publishingconnector-secure.rule: Host(`publishing-connector.localhost`)
+      traefik.http.routers.publishingconnector-secure.entrypoints: websecure
+      traefik.http.services.publishingconnector-secure.loadbalancer.server.port: 5000
+
+
+networks:
+  gaia-x:
+    external: true
+  proxy:
+    external: true

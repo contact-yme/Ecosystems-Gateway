@@ -1,3 +1,6 @@
 [submodule "src/_proto"]
 	path = src/_proto
 	url = https://gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
+[submodule "external/gfsx"]
+	path = external/gfsx
+	url = https://gitlab.eclipse.org/eclipse/xfsc/cat/fc-service.git
