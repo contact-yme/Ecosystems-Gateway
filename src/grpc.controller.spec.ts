@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GrpcController } from './grpc.controller';
 import { PontusxService } from './pontusx/pontusx.service';
+import {
+  PontusxOffering,
+  Pricing_PricingType,
+} from './generated/src/_proto/spp_v2';
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
 
   const mockPontusXService = {
-    publishComputeAsset: jest.fn(() => ({
+    publishAsset: jest.fn(() => ({
       ddo: { id: 'test-id' },
     })),
     updateOffering: jest.fn(),
@@ -33,22 +37,39 @@ describe('Grpc Controller', () => {
 
   it('Create offering', async () => {
     const result = await controller.createOffering({
-      main: {
-        type: 'dataset',
-        author: '',
-        licence: '',
-        dateCreated: '',
-        files: [],
-        tags: [],
-        description: '',
-        allowedAlgorithm: [],
-      },
-      additionalInformation: undefined,
-      token: '',
-      name: '',
+      offerings: [
+        {
+          pontusxOffering: {
+            metadata: {
+              type: 'dataset',
+              name: '',
+              author: '',
+              licence: '',
+              tags: [],
+              description: '',
+            },
+            services: [
+              {
+                type: 'access',
+                files: [
+                  {
+                    url: '',
+                    method: '',
+                  },
+                ],
+                pricing: {
+                  pricingType: Pricing_PricingType.FREE,
+                },
+                consumerParameters: [],
+              },
+            ],
+            additionalInformation: undefined,
+          },
+        },
+      ],
     });
 
-    expect(mockPontusXService.publishComputeAsset.mock.calls).toHaveLength(1);
-    expect(result.did).toEqual('test-id');
+    expect(mockPontusXService.publishAsset.mock.calls).toHaveLength(1);
+    expect(result.id[0]).toEqual('test-id');
   });
 });

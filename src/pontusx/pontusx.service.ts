@@ -17,11 +17,16 @@ import {
   ServiceTypes,
   UrlFile,
   LifecycleStates,
+  MetadataConfig,
 } from '@deltadao/nautilus';
+import { ConsumerParameter } from '@oceanprotocol/lib';
 import {
-  CreateOfferingRequest,
-  UpdateOfferingRequest,
-} from '../generated/src/_proto/spp';
+  PontusxOffering,
+  pricing_PricingTypeToJSON,
+  PontusxUpdateOffering,
+  Service,
+  UpdateOfferingRequest_UpdateOffering,
+} from '../generated/src/_proto/spp_v2';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
@@ -77,162 +82,102 @@ export class PontusxService implements OnModuleInit {
     this.logLevel = level;
   }
 
-  async publishComputeAsset(offering: CreateOfferingRequest) {
-    this.logger.debug('VC from pontusx publishing:', offering);
+  async publishAsset(offering: PontusxOffering) {
+    //this.logger.debug('VC from pontusx publishing:', offering);
 
     const owner = await this.wallet.getAddress();
     this.logger.debug(`Your address is ${owner}`);
 
-    const serviceBuilder = new ServiceBuilder({
-      serviceType: ServiceTypes.COMPUTE,
-      fileType: FileTypes.URL,
-    }); // compute type dataset with URL data source
-
-    serviceBuilder
-      .setServiceEndpoint(this.networkConfig.providerUri)
-      .setTimeout(86400)
-      .setPricing(this.pricingConfig['FIXED_EUROE'])
-      .setDatatokenNameAndSymbol(offering.name, offering.token) // important for following access token transactions in the explorer
-      .allowRawAlgorithms(false);
-    //.addConsumerParameter(cunsumerParameter) // optional
-
-    offering.main.files?.forEach((file) => {
-      const urlFile: UrlFile = {
-        type: 'url',
-        url: file.url, // link to your file or api
-        method: file.method,
-        index: file.index,
-        // headers: {
-        //     Authorization: 'Basic XXX' // optional headers field e.g. for basic access control
-        // }
-      };
-      serviceBuilder.addFile(urlFile);
-    });
-    if (offering.main.allowedAlgorithm?.length) {
-      serviceBuilder.addTrustedAlgorithms(
-        offering.main.allowedAlgorithm.map((algo) => ({ did: algo.did })),
-      );
-    }
-    const service = serviceBuilder.build();
-
-    if (offering.main.type !== 'dataset') {
-      throw new Error('Incompatible type of offering!');
-    }
-
     const assetBuilder = new AssetBuilder();
-    const asset = assetBuilder
-      .setType(<'dataset'>offering.main.type)
-      .setName(offering.name)
-      .setDescription(offering.main.description)
-      .setAuthor(offering.main.author)
-      .setLicense(offering.main.licence)
-      .setContentLanguage('de')
-      .addTags(offering.main.tags)
-      .addService(service)
-      .setOwner(owner)
-      .addAdditionalInformation(offering.additionalInformation)
-      .build();
+
+    const filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
+
+    for (const service of offering.services) {
+      const serviceBuilder = new ServiceBuilder({
+        serviceType: service.type as ServiceTypes,
+        fileType: FileTypes.URL,
+      }); // only URL data source supported
+
+      const NautilusService = this.buildService(
+        serviceBuilder,
+        offering,
+        service,
+      );
+
+      assetBuilder.addService(NautilusService);
+    }
+
+    const asset = filled_assetBuilder.build();
 
     const result = await this.nautilus.publish(asset);
     return result;
   }
 
-  async updateOffering(offeringRequest: UpdateOfferingRequest) {
-    const aquariusAsset = await this.nautilus.getAquariusAsset(
-      offeringRequest.did,
-    );
+  async updateOffering(UpdateOffering: UpdateOfferingRequest_UpdateOffering) {
+    const offering = UpdateOffering.pontusxUpdateOffering;
+    const aquariusAsset = await this.nautilus.getAquariusAsset(offering.did);
 
-    const assetBuilder = new AssetBuilder(aquariusAsset);
-
-    const services: Array<number> = [];
-    offeringRequest.index?.forEach((ind) => {
-      if (ind in aquariusAsset.services) {
-        services.push(ind);
-      } else {
-        throw new RpcException({
-          code: GrpcStatusCode.OUT_OF_RANGE,
-          message: `The requested service index ${ind} is out of range of the existing services of the asset`,
-        });
-      }
-    });
-    if (!services.length) {
-      for (let i = 0; i < aquariusAsset.services.length; i++) {
-        services.push(i);
-      }
-      this.logger.debug(
-        `Updating all services of asset ${offeringRequest.did} ...`,
-      );
+    let filled_assetBuilder: AssetBuilder;
+    if (offering.metadata !== undefined) {
+      const assetBuilder = new AssetBuilder(aquariusAsset);
+      this.logger.debug('Updating metadata of Pontus-X asset');
+      const owner = await this.wallet.getAddress();
+      filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
     } else {
-      this.logger.debug(
-        `Updating services with indices ${services} of asset ${offeringRequest.did} ...`,
-      );
+      filled_assetBuilder = new AssetBuilder(aquariusAsset);
     }
 
-    for (const ind of services) {
-      const serviceBuilder = new ServiceBuilder({
-        aquariusAsset,
-        serviceId: aquariusAsset.services[ind].id,
-      });
+    let updatedInd: Array<Number> = [];
 
-      serviceBuilder.setDatatokenNameAndSymbol(
-        offeringRequest.name,
-        offeringRequest.token,
-      ); // important for following access token transactions in the explorer
+    offering.updateServices?.forEach((updateService) => {
+      let serviceInd: number = 0;
+      if (updateService.index !== undefined) {
+        if (updateService.index in aquariusAsset.services) {
+          serviceInd = updateService.index;
+        } else {
+          throw new RpcException({
+            code: GrpcStatusCode.OUT_OF_RANGE,
+            message: `The requested service index ${updateService.index} is out of range of the existing services of the asset`,
+          });
+        }
+      }
+      if (updatedInd.includes(serviceInd)) {
+        if (serviceInd === 0) {
+          this.logger.debug(
+            `Updating only first service of asset ${offering.did} ...`,
+          );
+        } else {
+          this.logger.debug(
+            `Updating service with index ${serviceInd} of asset ${offering.did} ...`,
+          );
+        }
 
-      offeringRequest.main.files?.forEach((file) => {
-        const urlFile: UrlFile = {
-          type: 'url',
-          url: file.url, // link to your file or api
-          method: file.method,
-          index: file.index,
-          // headers: {
-          //     Authorization: 'Basic XXX' // optional headers field e.g. for basic access control
-          // }
-        };
-        serviceBuilder.addFile(urlFile);
-      });
-
-      if (offeringRequest.main.allowedAlgorithm?.length) {
-        serviceBuilder.addTrustedAlgorithms(
-          offeringRequest.main.allowedAlgorithm.map((algo) => ({
-            did: algo.did,
-          })),
+        const serviceBuilder = new ServiceBuilder({
+          aquariusAsset,
+          serviceId: aquariusAsset.services[serviceInd].id,
+        });
+        const NautilusService = this.buildService(
+          serviceBuilder,
+          offering,
+          updateService.service,
+        );
+        filled_assetBuilder.addService(NautilusService);
+        updatedInd.push(serviceInd);
+      } else {
+        this.logger.warn(
+          `Skipping repeated update of service with index ${serviceInd}`,
         );
       }
+    });
 
-      const service = serviceBuilder.build();
-      assetBuilder.addService(service);
-    }
-
-    if (offeringRequest.main.type !== 'dataset') {
-      throw new RpcException({
-        code: GrpcStatusCode.UNIMPLEMENTED,
-        message: 'We can only handle datasets for now',
-      });
-    }
-
-    if (offeringRequest?.main) {
-      assetBuilder
-        .setType(<'dataset'>offeringRequest.main.type)
-        .setDescription(offeringRequest.main.description)
-        .setAuthor(offeringRequest.main.author)
-        .setLicense(offeringRequest.main.licence)
-        .addTags(offeringRequest.main.tags);
-    }
-    if (offeringRequest?.additionalInformation) {
-      assetBuilder.addAdditionalInformation(
-        offeringRequest.additionalInformation,
-      );
-    }
-    const asset = assetBuilder.build();
-
+    const asset = filled_assetBuilder.build();
     const result = await this.nautilus.edit(asset);
 
     let cesResult;
-    if (offeringRequest.publishInfo) {
+    if (UpdateOffering.publishInfo !== undefined) {
       cesResult = await this.credentialEventService.publish(
-        offeringRequest.publishInfo.source,
-        JSON.parse(offeringRequest.publishInfo.data),
+        UpdateOffering.publishInfo.source,
+        JSON.parse(UpdateOffering.publishInfo.data),
       );
     }
 
@@ -251,5 +196,230 @@ export class PontusxService implements OnModuleInit {
     );
 
     return result;
+  }
+
+  fillAsset(
+    assetBuilder: AssetBuilder,
+    offering: PontusxOffering | PontusxUpdateOffering,
+    owner: string,
+  ) {
+    const assetType = <'dataset' | 'algorithm'>offering.metadata.type;
+    assetBuilder
+      .setType(assetType)
+      .setName(offering.metadata.name)
+      .setDescription(offering.metadata.description)
+      .setAuthor(offering.metadata.author)
+      .setLicense(offering.metadata.licence)
+      .addTags(offering.metadata.tags)
+      .setOwner(owner)
+      .addAdditionalInformation(offering.additionalInformation);
+
+    if (assetType === 'algorithm') {
+      if (offering.metadata.algorithm !== undefined) {
+        const algo: MetadataConfig['algorithm'] = {
+          container: offering.metadata.algorithm.container,
+        };
+        if (offering.metadata.algorithm.language !== undefined) {
+          algo.language = offering.metadata.algorithm.language;
+        }
+        if (offering.metadata.algorithm.version !== undefined) {
+          algo.version = offering.metadata.algorithm.version;
+        }
+        offering.metadata.algorithm.consumerParameters?.forEach((par) => {
+          let param: ConsumerParameter = {
+            type: par.type as ConsumerParameter['type'],
+            name: par.name, // link to your file or api
+            label: par.label,
+            required: par.required,
+            default: par.default,
+            description: par.description,
+          };
+          if (par.options !== undefined) {
+            param.options = par.options.toString();
+          }
+          algo.consumerParameters.push(param);
+        });
+        assetBuilder.setAlgorithm(algo);
+      } else {
+        if (
+          this.isPontusxOffering(offering) &&
+          !this.isPontusxUpdateOffering(offering)
+        ) {
+          this.logger.error(
+            `Algorithm Metadata is missing for asset ${offering.metadata.name} of type algorithm`,
+          );
+        } else if (this.isPontusxUpdateOffering(offering)) {
+          this.logger.debug(
+            `Not updating Algorithm Metadata as it is missing in the request`,
+          );
+        } else {
+          throw new RpcException({
+            code: GrpcStatusCode.INTERNAL,
+            message: 'The message type does not fit a known Pontus-X request',
+          });
+        }
+      }
+    }
+    return assetBuilder;
+  }
+
+  isPontusxOffering(message: any): message is PontusxOffering {
+    return (
+      'metadata' in message &&
+      'additionalInformation' in message &&
+      'services' in message
+    );
+  }
+  isPontusxUpdateOffering(message: any): message is PontusxUpdateOffering {
+    return (
+      'did' in message &&
+      'metadata' in message &&
+      'additionalInformation' in message &&
+      'updateServices' in message
+    );
+  }
+
+  buildService(
+    serviceBuilder: ServiceBuilder<ServiceTypes, FileTypes>,
+    offering: PontusxOffering | PontusxUpdateOffering,
+    service: Service,
+  ) {
+    serviceBuilder
+      .setServiceEndpoint(this.networkConfig.providerUri)
+      .setTimeout(service.timeout ?? 86400);
+
+    if (service.name !== undefined) {
+      serviceBuilder.setName(service.name);
+    }
+    if (service.description !== undefined) {
+      serviceBuilder.setName(service.description);
+    }
+    if (service.tokenName && service.tokenSymbol) {
+      serviceBuilder.setDatatokenNameAndSymbol(
+        service.tokenName,
+        service.tokenSymbol,
+      ); // important for following access token transactions in the explorer
+    }
+    const pxOffering = this.isPontusxOffering(offering);
+    const pxUpdateOffering = this.isPontusxUpdateOffering(offering);
+    const servType = service.type as ServiceTypes;
+    if (servType === ServiceTypes.COMPUTE) {
+      if (service.computeOptions !== undefined) {
+        if (service.computeOptions.allowRawAlgorithm !== undefined) {
+          serviceBuilder.allowRawAlgorithms(
+            service.computeOptions.allowRawAlgorithm,
+          );
+        } else {
+          if (pxOffering && !pxUpdateOffering) {
+            this.logger.debug(
+              `Using default value 'false' for allowRawAlgorithm in computeOptions`,
+            );
+            serviceBuilder.allowRawAlgorithms(false);
+          } else if (pxUpdateOffering) {
+            this.logger.debug(
+              'Not updating allowRawAlgorithm as it is missing in the request',
+            );
+          } else {
+            throw new RpcException({
+              code: GrpcStatusCode.INTERNAL,
+              message: 'The message type does not fit a known Pontus-X request',
+            });
+          }
+        }
+        if (service.computeOptions.allowNetworkAccess !== undefined) {
+          serviceBuilder.allowAlgorithmNetworkAccess(
+            service.computeOptions.allowNetworkAccess,
+          );
+        } else {
+          if (pxOffering && !pxUpdateOffering) {
+            this.logger.debug(
+              `Using default value 'false' for allowNetworkAccess in computeOptions`,
+            );
+            serviceBuilder.allowAlgorithmNetworkAccess(false);
+          } else if (pxUpdateOffering) {
+            this.logger.debug(
+              'Not updating allowNetworkAccess as it is missing in the request',
+            );
+          } else {
+            throw new RpcException({
+              code: GrpcStatusCode.INTERNAL,
+              message: 'The message type does not fit a known Pontus-X request',
+            });
+          }
+        }
+        if (service.computeOptions.trustedAlgorithms !== undefined) {
+          serviceBuilder.addTrustedAlgorithms(
+            service.computeOptions.trustedAlgorithms,
+          );
+        }
+
+        service.computeOptions.trustedPublishers?.forEach((trustedPub) => {
+          serviceBuilder.addTrustedAlgorithmPublisher(trustedPub);
+        });
+      } else {
+        if (pxOffering && !pxUpdateOffering) {
+          this.logger.error(
+            `Compute Options are missing in service for asset ${offering.metadata.name} of type algorithm`,
+          );
+        } else if (pxUpdateOffering) {
+          this.logger.debug(
+            `Not updating Compute options of service for asset ${offering.did} as they are missing in the request`,
+          );
+        } else {
+          throw new RpcException({
+            code: GrpcStatusCode.INTERNAL,
+            message: 'The message type does not fit a known Pontus-X request',
+          });
+        }
+      }
+    }
+    let pricing =
+      this.pricingConfig[
+        pricing_PricingTypeToJSON(service.pricing.pricingType)
+      ];
+    if (pricing.type !== 'free') {
+      pricing.freCreationParams.fixedRate =
+        service.pricing.fixedRate.toString() ??
+        pricing.freCreationParams.fixedRate;
+      this.logger.debug(
+        `Setting ${pricing_PricingTypeToJSON(
+          service.pricing.pricingType,
+        )} pricing with fixed Rate ${pricing.freCreationParams.fixedRate}`,
+      );
+    } else {
+      this.logger.debug('Setting free pricing for service');
+    }
+    serviceBuilder.setPricing(pricing);
+
+    service.files.forEach((file) => {
+      const urlFile: UrlFile = {
+        type: 'url',
+        url: file.url,
+        method: file.method,
+      };
+      if (file.headers !== undefined) {
+        urlFile.headers = file.headers;
+      }
+      serviceBuilder.addFile(urlFile);
+    });
+
+    service.consumerParameters?.forEach((par) => {
+      let param: ConsumerParameter = {
+        type: par.type as ConsumerParameter['type'],
+        name: par.name, // link to your file or api
+        label: par.label,
+        required: par.required,
+        default: par.default,
+        description: par.description,
+      };
+      if (par.options !== undefined) {
+        param.options = par.options.toString();
+      }
+      serviceBuilder.addConsumerParameter(param);
+    });
+
+    const NautilusService = serviceBuilder.build();
+
+    return NautilusService;
   }
 }
