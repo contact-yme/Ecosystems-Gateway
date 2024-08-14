@@ -329,6 +329,15 @@ export interface GetOfferingResponse {
   did: string;
 }
 
+export interface CreateComputeToDataResultRequest {
+  JobId: string;
+}
+
+export interface GetComputeToDataResultResponse {
+  JobId: string;
+  result: string;
+}
+
 function createBaseCreateOfferingRequest(): CreateOfferingRequest {
   return { main: undefined, additionalInformation: undefined, token: "", name: "" };
 }
@@ -1936,11 +1945,149 @@ export const GetOfferingResponse = {
   },
 };
 
+function createBaseCreateComputeToDataResultRequest(): CreateComputeToDataResultRequest {
+  return { JobId: "" };
+}
+
+export const CreateComputeToDataResultRequest = {
+  encode(message: CreateComputeToDataResultRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.JobId !== "") {
+      writer.uint32(10).string(message.JobId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataResultRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateComputeToDataResultRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.JobId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateComputeToDataResultRequest {
+    return { JobId: isSet(object.JobId) ? globalThis.String(object.JobId) : "" };
+  },
+
+  toJSON(message: CreateComputeToDataResultRequest): unknown {
+    const obj: any = {};
+    if (message.JobId !== "") {
+      obj.JobId = message.JobId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>>(
+    base?: I,
+  ): CreateComputeToDataResultRequest {
+    return CreateComputeToDataResultRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>>(
+    object: I,
+  ): CreateComputeToDataResultRequest {
+    const message = createBaseCreateComputeToDataResultRequest();
+    message.JobId = object.JobId ?? "";
+    return message;
+  },
+};
+
+function createBaseGetComputeToDataResultResponse(): GetComputeToDataResultResponse {
+  return { JobId: "", result: "" };
+}
+
+export const GetComputeToDataResultResponse = {
+  encode(message: GetComputeToDataResultResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.JobId !== "") {
+      writer.uint32(10).string(message.JobId);
+    }
+    if (message.result !== "") {
+      writer.uint32(18).string(message.result);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetComputeToDataResultResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetComputeToDataResultResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.JobId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.result = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetComputeToDataResultResponse {
+    return {
+      JobId: isSet(object.JobId) ? globalThis.String(object.JobId) : "",
+      result: isSet(object.result) ? globalThis.String(object.result) : "",
+    };
+  },
+
+  toJSON(message: GetComputeToDataResultResponse): unknown {
+    const obj: any = {};
+    if (message.JobId !== "") {
+      obj.JobId = message.JobId;
+    }
+    if (message.result !== "") {
+      obj.result = message.result;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(base?: I): GetComputeToDataResultResponse {
+    return GetComputeToDataResultResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(
+    object: I,
+  ): GetComputeToDataResultResponse {
+    const message = createBaseGetComputeToDataResultResponse();
+    message.JobId = object.JobId ?? "";
+    message.result = object.result ?? "";
+    return message;
+  },
+};
+
 export interface serviceofferingPublisher {
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse>;
   UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
   UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
   RunComputeToData(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse>;
+  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse>;
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse>;
 }
 
@@ -1955,6 +2102,7 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.UpdateOffering = this.UpdateOffering.bind(this);
     this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
     this.RunComputeToData = this.RunComputeToData.bind(this);
+    this.GetComputeToDataResult = this.GetComputeToDataResult.bind(this);
     this.GetOffering = this.GetOffering.bind(this);
   }
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
@@ -1979,6 +2127,12 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     const data = CreateComputeToDataRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "RunComputeToData", data);
     return promise.then((data) => ComputeToDataResponse.decode(_m0.Reader.create(data)));
+  }
+
+  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse> {
+    const data = CreateComputeToDataResultRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetComputeToDataResult", data);
+    return promise.then((data) => GetComputeToDataResultResponse.decode(_m0.Reader.create(data)));
   }
 
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse> {

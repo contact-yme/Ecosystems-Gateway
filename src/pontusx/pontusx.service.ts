@@ -459,7 +459,6 @@ export class PontusxService implements OnModuleInit {
     }
 
     const computeJob = await this.nautilus.compute(computeConfig).catch((error) => {
-      console.log(error);
       throw new NotFoundException(`Compute to Data job cant start: ${error}`);
     });
 
