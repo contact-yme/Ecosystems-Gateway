@@ -38,6 +38,7 @@ import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import axios, { AxiosResponse } from 'axios';
+import { ConsumerParameter, PontusxOffering, PontusxUpdateOffering, pricing_PricingTypeToJSON, Service, UpdateOfferingRequest_UpdateOffering } from 'src/generated/src/_proto/spp_v2';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -247,6 +248,7 @@ export class PontusxService implements OnModuleInit {
             required: par.required,
             default: par.default,
             description: par.description,
+            options: []
           };
           if (par.options !== undefined) {
             param.options = par.options.toString();
@@ -425,6 +427,7 @@ export class PontusxService implements OnModuleInit {
         required: par.required,
         default: par.default,
         description: par.description,
+        options: []
       };
       if (par.options !== undefined) {
         param.options = par.options.toString();
