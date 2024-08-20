@@ -36,25 +36,7 @@ export class GrpcController {
           results.push(result.ddo.id);
         }
       } else {
-        //xfscOffering because of oneof
-        //missing
-      }
-    }
-
-    if (results.length) {
-      return {
-        id: results,
-        DebugInformation: undefined,
-      };
-    }
-
-        throw new RpcException({
-          code: GrpcStatusCode.INTERNAL,
-          message: 'Internal Error',
-        });
-      } else{
-        // XFSC
-
+        
         const VP = JSON.parse(offering.xfscOffering.VP)
 
         this.xfscService.getToken()
@@ -72,6 +54,13 @@ export class GrpcController {
         })
       }
     }
+
+    if (results.length) {
+      return {
+        id: results,
+        DebugInformation: undefined,
+      };
+    }      
   }
 
   @GrpcMethod('serviceofferingPublisher')
@@ -93,8 +82,18 @@ export class GrpcController {
           results.push(result.pontus);
         }
       } else {
-        //xfscUpdateOffering because of oneof
-        //missing
+        // XFSC
+        const token = await this.xfscService.getToken()
+        const hash = offering.xfscUpdateOffering.hash
+        const VP = JSON.parse(offering.xfscUpdateOffering.VP)
+
+        const result = await this.xfscService.update(token, hash, VP)
+
+        return {
+          id: [result],
+          locations: undefined,
+          DebugInformation: undefined
+        }
       }
     }
 
@@ -110,22 +109,7 @@ export class GrpcController {
           code: GrpcStatusCode.INTERNAL,
           message: 'Internal Error',
         })
-      } else {
-        // XFSC
-        const token = await this.xfscService.getToken()
-        const hash = offering.xfscUpdateOffering.hash
-        const VP = JSON.parse(offering.xfscUpdateOffering.VP)
-
-        const result = await this.xfscService.update(token, hash, VP)
-
-        return {
-          id: [result],
-          locations: undefined,
-          DebugInformation: undefined
-        }
-      }
-    }
-  }
+  } 
 
   @GrpcMethod('serviceofferingPublisher')
   async updateOfferingLifecycle(

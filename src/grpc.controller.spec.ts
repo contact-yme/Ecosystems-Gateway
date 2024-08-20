@@ -15,7 +15,17 @@ describe('Grpc Controller', () => {
     })),
     updateOffering: jest.fn(),
     updateOfferingLifecycle: jest.fn(),
-  };
+  }
+
+  const mockXFSCService = {
+    publish: jest.fn()
+    .mockResolvedValue('test-id'),
+    update: jest.fn()
+    .mockResolvedValue('test-id'),
+    delete: jest.fn(),
+    revoke: jest.fn()
+    .mockResolvedValue('test-id')  
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,15 +35,19 @@ describe('Grpc Controller', () => {
           provide: PontusxService,
           useValue: mockPontusXService,
         },
+        {
+          provide: XfscService,
+          useValue: mockXFSCService
+        }
       ],
-    }).compile();
+    }).compile()
 
-    controller = module.get<GrpcController>(GrpcController);
-  });
+    controller = module.get<GrpcController>(GrpcController)
+  })
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
+  })
 
   it('Create offering', async () => {
     const result = await controller.createOffering({
