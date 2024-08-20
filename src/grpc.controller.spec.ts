@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GrpcController } from './grpc.controller';
 import { PontusxService } from './pontusx/pontusx.service';
+import { CreateOfferingRequest } from './generated/src/_proto/spp_v2';
+import { XfscService } from './xfsc/xfsc.service';
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
@@ -11,7 +13,17 @@ describe('Grpc Controller', () => {
     })),
     updateOffering: jest.fn(),
     updateOfferingLifecycle: jest.fn(),
-  };
+  }
+
+  const mockXFSCService = {
+    publish: jest.fn()
+    .mockResolvedValue('test-id'),
+    update: jest.fn()
+    .mockResolvedValue('test-id'),
+    delete: jest.fn(),
+    revoke: jest.fn()
+    .mockResolvedValue('test-id')  
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,34 +33,37 @@ describe('Grpc Controller', () => {
           provide: PontusxService,
           useValue: mockPontusXService,
         },
+        {
+          provide: XfscService,
+          useValue: mockXFSCService
+        }
       ],
-    }).compile();
+    }).compile()
 
-    controller = module.get<GrpcController>(GrpcController);
-  });
+    controller = module.get<GrpcController>(GrpcController)
+  })
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
+  })
 
   it('Create offering', async () => {
-    const result = await controller.createOffering({
-      main: {
-        type: 'dataset',
-        author: '',
-        licence: '',
-        dateCreated: '',
-        files: [],
-        tags: [],
-        description: '',
-        allowedAlgorithm: [],
-      },
-      additionalInformation: undefined,
-      token: '',
-      name: '',
-    })
+    const OfferingRequest = {
+      "offerings": [
+          {
+          "xfscOffering":
+              {
+                  "mockVP": "mokcVP"
+              }
+          }
+        ]
+    } as unknown as CreateOfferingRequest
 
-    expect(mockPontusXService.publishComputeAsset.mock.calls).toHaveLength(1);
-    expect(result.did).toEqual('test-id');
-  });
-});
+    // PONTUS-X
+    
+    // XFSC
+    const result = await controller.createOffering(OfferingRequest)
+    expect(result).toBe('test-id')
+    expect(mockXFSCService.publish).lastCalledWith(OfferingRequest)
+  })
+})
