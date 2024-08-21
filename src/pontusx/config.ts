@@ -48,15 +48,12 @@ export const NETWORK_CONFIGS: {
 // These are example pricing configurations with prefilled contract addresses of the payment tokens
 export const PRICING_CONFIGS: PricingConfig = {
   [Network.PONTUSXTEST]: {
-  [Network.PONTUSXTEST]: {
     FREE: {
       type: 'free',
     },
     FIXED_OCEAN: {
       type: 'fixed',
       freCreationParams: {
-        fixedRateAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',
-        baseTokenAddress: '0x5B190F9E2E721f8c811E4d584383E3d57b865C69',
         fixedRateAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',
         baseTokenAddress: '0x5B190F9E2E721f8c811E4d584383E3d57b865C69',
         baseTokenDecimals: 18,
@@ -71,8 +68,6 @@ export const PRICING_CONFIGS: PricingConfig = {
       freCreationParams: {
         fixedRateAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',
         baseTokenAddress: '0xdd0a0278f6BAF167999ccd8Aa6C11A9e2fA37F0a',
-        fixedRateAddress: '0xcE0F39abB6DA2aE4d072DA78FA0A711cBB62764E',
-        baseTokenAddress: '0xdd0a0278f6BAF167999ccd8Aa6C11A9e2fA37F0a',
         baseTokenDecimals: 6, // adapted for EUROe decimals
         datatokenDecimals: 18,
         fixedRate: '1',
@@ -81,7 +76,6 @@ export const PRICING_CONFIGS: PricingConfig = {
       },
     },
   },
-  [Network.PONTUSXDEV]: {
   [Network.PONTUSXDEV]: {
     FREE: {
       type: 'free',
@@ -93,7 +87,6 @@ export const PRICING_CONFIGS: PricingConfig = {
         baseTokenAddress: '0xdF171F74a8d3f4e2A789A566Dce9Fa4945196112',
         baseTokenDecimals: 18,
         datatokenDecimals: 18,
-        fixedRate: '1', // this is the price
         fixedRate: '1', // this is the price
         marketFee: '0',
         marketFeeCollector: '0x0000000000000000000000000000000000000000',
@@ -112,7 +105,8 @@ export const PRICING_CONFIGS: PricingConfig = {
       },
     },
   },
-};
+}
+
 
 export type NetworkConfig = {
   chainId: number;

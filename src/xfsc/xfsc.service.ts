@@ -4,12 +4,6 @@ import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
 
-import axios, { AxiosResponse } from 'axios'
-
-import encodeBase64 from './base64'
-import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
-
-
 export class XfscService {
     
     private username: string
@@ -36,34 +30,6 @@ export class XfscService {
             method: 'post',
             maxBodyLength: Infinity,
             url: this.xfscCatAddr,
-            headers: { 
-              'accept': 'application/json', 
-              'Content-Type': 'application/json', 
-              'Authorization': 'Bearer ' + token
-            },
-            data : VP
-          }
-        
-          console.log('Publishing in XFSC CAT ...')
-          try {
-            response = await axios.request(config)
-            console.log('Published successfully in XFSC CAT.')
-            return response.data['id']
-          } catch (error) {
-            console.error('Error occurred while trying to Publish VP to XFSC Cat: ' + error)
-            
-            throw error
-          }
-    }
-
-    revoke(token: string, data: CreateOfferingRequest, vcHash: string): Promise<JSON> {
-        const axios = require('axios')
-        let response: Promise<JSON>
-
-        let config = { 
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: this.xfscCatAddr + '/self-descriptions/' + vcHash + '/revoke',
             headers: { 
               'accept': 'application/json', 
               'Content-Type': 'application/json', 
@@ -163,29 +129,7 @@ export class XfscService {
         }
 
         const response: Promise<JSON> = await axios.request(config)
-
-        return response['data']['access_token']
-    }
-    async getToken(): Promise<string> { 
-        const axios = require('axios')
-        const qs = require('qs')
-        let data = qs.stringify({
-        'grant_type': 'client_credentials' 
-        })
-
-        let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: this.xfscTokenEndpoint,
-        headers: { 
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Authorization': 'Basic ' + this.credentials
-        },
-        data : data
-        }
-
-        const response: Promise<JSON> = await axios.request(config)
-
+        
         return response['data']['access_token']
     }
 }

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GrpcController } from './grpc.controller';
 import { PontusxService } from './pontusx/pontusx.service';
+import { XfscService } from './xfsc/xfsc.service';
 import {
   PontusxOffering,
   Pricing_PricingType,
@@ -27,17 +28,7 @@ describe('Grpc Controller', () => {
     revoke: jest.fn()
     .mockResolvedValue('test-id')  
   }
-  }
 
-  const mockXFSCService = {
-    publish: jest.fn()
-    .mockResolvedValue('test-id'),
-    update: jest.fn()
-    .mockResolvedValue('test-id'),
-    delete: jest.fn(),
-    revoke: jest.fn()
-    .mockResolvedValue('test-id')  
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,22 +42,13 @@ describe('Grpc Controller', () => {
           provide: XfscService,
           useValue: mockXFSCService
         }
-        {
-          provide: XfscService,
-          useValue: mockXFSCService
-        }
       ],
     }).compile()
-    }).compile()
 
     controller = module.get<GrpcController>(GrpcController)
   })
-    controller = module.get<GrpcController>(GrpcController)
-  })
-
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  })
   })
 
   it('Create offering', async () => {
@@ -105,5 +87,5 @@ describe('Grpc Controller', () => {
 
     expect(mockPontusXService.publishAsset.mock.calls).toHaveLength(1);
     expect(result.id[0]).toEqual('test-id');
-  });
-});
+  })
+})
