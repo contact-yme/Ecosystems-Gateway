@@ -105,8 +105,7 @@ export const PRICING_CONFIGS: PricingConfig = {
       },
     },
   },
-}
-
+};
 
 export type NetworkConfig = {
   chainId: number;
