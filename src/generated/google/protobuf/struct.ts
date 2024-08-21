@@ -15,7 +15,7 @@ export enum NullValue {
   UNRECOGNIZED = -1,
 }
 
-export function nullValueFromJSON(object: any): NullValue {"C:\Users\julia\OneDrive\Desk\Work\Brinkhaus\Gaia-x\protoc-27.0-rc-2-win64\bin\protoc.exe"
+export function nullValueFromJSON(object: any): NullValue {
   switch (object) {
     case 0:
     case "NULL_VALUE":
