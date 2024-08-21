@@ -9,12 +9,24 @@ import {
 describe('Grpc Controller', () => {
   let controller: GrpcController;
  
+ 
   const mockPontusXService = {
     publishAsset: jest.fn(() => ({
       ddo: { id: 'test-id' },
     })),
     updateOffering: jest.fn(),
     updateOfferingLifecycle: jest.fn(),
+  }
+
+  const mockXFSCService = {
+    publish: jest.fn()
+    .mockResolvedValue('test-id'),
+    update: jest.fn()
+    .mockResolvedValue('test-id'),
+    delete: jest.fn(),
+    revoke: jest.fn()
+    .mockResolvedValue('test-id')  
+  }
   }
 
   const mockXFSCService = {
@@ -39,14 +51,22 @@ describe('Grpc Controller', () => {
           provide: XfscService,
           useValue: mockXFSCService
         }
+        {
+          provide: XfscService,
+          useValue: mockXFSCService
+        }
       ],
     }).compile()
+    }).compile()
 
+    controller = module.get<GrpcController>(GrpcController)
+  })
     controller = module.get<GrpcController>(GrpcController)
   })
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  })
   })
 
   it('Create offering', async () => {

@@ -2,6 +2,7 @@ import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { PontusxService } from './pontusx/pontusx.service';
 import { XfscService } from './xfsc/xfsc.service';
+import { XfscService } from './xfsc/xfsc.service';
 import {
   CreateOfferingRequest,
   CreateOfferingResponse,
@@ -10,6 +11,7 @@ import {
   UpdateOfferingLifecycleRequest,
   UpdateOfferingLifecycleResponse,
 } from './generated/src/_proto/spp_v2';
+} from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 
@@ -17,6 +19,7 @@ import { LifecycleStates } from '@deltadao/nautilus';
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
+  constructor(private readonly pontusxService: PontusxService, private readonly xfscService: XfscService) {}
   constructor(private readonly pontusxService: PontusxService, private readonly xfscService: XfscService) {}
 
   @GrpcMethod('serviceofferingPublisher')

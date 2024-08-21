@@ -4,6 +4,12 @@ import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
 
 
+import axios, { AxiosResponse } from 'axios'
+
+import encodeBase64 from './base64'
+import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
+
+
 export class XfscService {
     
     private username: string
@@ -138,6 +144,28 @@ export class XfscService {
           }
     }
 
+    async getToken(): Promise<string> { 
+        const axios = require('axios')
+        const qs = require('qs')
+        let data = qs.stringify({
+        'grant_type': 'client_credentials' 
+        })
+
+        let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: this.xfscTokenEndpoint,
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Authorization': 'Basic ' + this.credentials
+        },
+        data : data
+        }
+
+        const response: Promise<JSON> = await axios.request(config)
+
+        return response['data']['access_token']
+    }
     async getToken(): Promise<string> { 
         const axios = require('axios')
         const qs = require('qs')
