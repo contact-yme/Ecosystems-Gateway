@@ -9,15 +9,14 @@ import {
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
- 
- 
+
   const mockPontusXService = {
     publishAsset: jest.fn(() => ({
       ddo: { id: 'test-id' },
     })),
     updateOffering: jest.fn(),
     updateOfferingLifecycle: jest.fn(),
-  }
+  };
 
   const mockXFSCService = {
     publish: jest.fn()

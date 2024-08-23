@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
+import { Logger } from '@nestjs/common'
 
 import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
@@ -11,8 +12,10 @@ export class XfscService {
     private credentials: string
     private readonly xfscCatAddr: string
     private readonly xfscTokenEndpoint: string  
+    private readonly logger: Logger
     
     constructor() {
+        this.logger = new Logger(XfscService.name)
         this.username = XFSC_USERNAME  // read .env vars here
         this.password = XFSC_PASSWORD  
         this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT
@@ -38,16 +41,16 @@ export class XfscService {
             data : VP
           }
         
-          console.log('Publishing in XFSC CAT ...')
-          try {
-            response = await axios.request(config)
-            console.log('Published successfully in XFSC CAT.')
-            return response.data['id']
-          } catch (error) {
-            console.error('Error occurred while trying to Publish VP to XFSC Cat: ' + error)
-            
-            throw error
-          }
+        this.logger.log('Publishing in XFSC CAT ...')
+        try {
+          response = await axios.request(config)
+          this.logger.log('Published successfully in XFSC CAT.')
+          return response.data['id']
+        } catch (error) {
+          this.logger.error('Error occurred while trying to Publish VP to XFSC Cat: ' + error)
+          
+          throw error
+        }
     }
 
     async update(token: string, hash: string, VP: JSON): Promise<string> {
@@ -55,8 +58,7 @@ export class XfscService {
         this.delete(token, hash)
 
         const response: string = await this.publish(token, VP)  // Publish function already returns the SD's ID
-        console.log('Published updated SD successfully.')
-        console.log('Updating was successfull.')
+        this.logger.log('Published updated SD successfully.')
 
         return response
     }
@@ -75,11 +77,11 @@ export class XfscService {
           
           axios.request(config)
           .catch(error => {
-            console.error(error)
+            this.logger.error(error)
 
             throw error
             })  
-        console.log('Successfully deleted SD (${hash})')
+        this.logger.log('Successfully deleted SD (${hash})')
     }
 
     async revoke(token: string, hash: string): Promise<string> {
@@ -100,11 +102,11 @@ export class XfscService {
           try {
             response = await axios.request(config)
 
-            console.log('Successfully revoked SD (${hash}).')  
+            this.logger.log('Successfully revoked SD (${hash}).')  
             
             return response.data['id']
           } catch(error) {
-            console.log('Error ocuured while processing the request: ')
+            this.logger.error('Error occurred while processing the request: ')
 
             throw error
           }
