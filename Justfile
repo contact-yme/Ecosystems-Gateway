@@ -14,7 +14,7 @@ build-protobuf:
         --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
         --ts_proto_opt=esModuleInterop=true \
         --ts_proto_out="./src/generated" \
-        src/_proto/spp.proto
+        src/_proto/spp_v2.proto
 
 grpc-call:
     grpc_cli ls 127.0.0.1:5001 -l
