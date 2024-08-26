@@ -8,22 +8,11 @@ import {
   UpdateOfferingResponse,
   UpdateOfferingLifecycleRequest,
   UpdateOfferingLifecycleResponse,
-  CreateComputeToDataRequest,
-  ComputeToDataResponse,
   GetOfferingRequest,
   GetOfferingResponse,
-<<<<<<< HEAD
-<<<<<<< HEAD
   GetComputeToDataResultResponse,
   CreateComputeToDataResultRequest,
 } from './generated/src/_proto/spp_v2';
-=======
-=======
-  GetComputeToDataResultResponse,
-  CreateComputeToDataResultRequest,
->>>>>>> ffe4fe9 (enh: add getResult via grpc)
-} from './generated/src/_proto/spp';
->>>>>>> 9e8eb39 (enh: add asset and compute-to-data (ctd / c2d) consumption)
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 import { error } from 'console';
@@ -149,14 +138,12 @@ export class GrpcController {
   ): Promise<ComputeToDataResponse> {
     // TODO: Get service by grpc request
     return await this.pontusxService.requestComputeToData(
-      data.did, data.algorithm
+      data.did, data.algorithm, {}
     ).then((result) => {
       return {
         jobId: result
       }
     }).catch((err) => {
-<<<<<<< HEAD
-=======
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
         message: err,
@@ -197,7 +184,8 @@ export class GrpcController {
     );
     if(result) {
       return {
-        did: result.id
+        id: ids,
+        DebugInformation: { results },
       };
     }
 
@@ -209,7 +197,6 @@ export class GrpcController {
 
   private ensureDatasetOrThrow(data: CreateOfferingRequest) {
     if (data.main.type !== 'dataset') {
->>>>>>> 9e8eb39 (enh: add asset and compute-to-data (ctd / c2d) consumption)
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
         message: err,
@@ -259,4 +246,21 @@ export class GrpcController {
       message: 'Internal Error',
     });
   }
+}
+
+
+function getOneofField<T extends object>(message: T): T[keyof T] | null {
+  for (const key of Object.keys(message)) {
+      const getterName = `get${capitalizeFirstLetter(key)}`;
+      const hasMethod = `has${capitalizeFirstLetter(key)}`;
+
+      if (typeof (message as any)[hasMethod] === 'function' && (message as any)[hasMethod]()) {
+          return (message as any)[getterName]();
+      }
+  }
+  return null;
+}
+
+function capitalizeFirstLetter(string: string): string {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }

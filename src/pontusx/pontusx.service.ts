@@ -444,13 +444,15 @@ export class PontusxService implements OnModuleInit {
     return await this.nautilus.getAquariusAsset(did);
   }
 
-  async requestComputeToData(did: string, algo: string): Promise<string[]> {
+  async requestComputeToData(did: string, algo: string, userdata: {}): Promise<string[]> {
     const computeConfig: Omit<ComputeConfig, 'signer' | 'chainConfig'> = {
-      dataset: { did: did },
+      dataset: {
+        did: did, 
+        userdata: userdata,
+      },
       algorithm: { did: algo},
     }
 
-    // TODO: Verify if did and algo are correct
     const dataset = await this.getOffering(computeConfig.dataset.did).catch((_reason) => {
       throw new NotFoundException('Asset not found');
     });
@@ -492,6 +494,7 @@ export class PontusxService implements OnModuleInit {
     let cached = await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
     if(cached == undefined) {
       await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
+      return undefined;
     }
     return cached;
   }

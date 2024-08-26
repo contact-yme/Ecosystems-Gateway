@@ -13,7 +13,7 @@ export class XfscService {
     console.log('VC from credentialEventService publishing:', vc);
   }
 
-  async getOffering(hash: string): Promise<string> {
+  async getOffering(did: string): Promise<string> {
     const RequestConfig: AxiosRequestConfig = {
       headers: {
         'accept': 'application/json',
@@ -21,11 +21,24 @@ export class XfscService {
       }
     }
 
-    return await axios.get(`/self-descriptions/${hash}`, RequestConfig).then((data) => {
-      return data.data;
+    // offset=0&withContent=true&withMeta=false&limit=1000
+    return await axios.get(`/self-descriptions?id=${did}`, RequestConfig).then((response) => {
+      try {
+        let resp = JSON.parse(response.data);
+        if(resp.items) {
+          return resp.items[0].content;
+        }
+      } catch(Exception) {
+        return undefined;
+      }
     }).catch((error) => {
       return error;
     });
+  }
+
+  async searchOffering(did: string)
+  {
+
   }
 
   async getToken(): Promise<string> {

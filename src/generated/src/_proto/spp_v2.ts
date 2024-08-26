@@ -323,6 +323,30 @@ export interface UpdateOfferingLifecycleResponse {
 }
 
 /**
+ * Create message to publish a Offering with the given information to different ecosystems
+ * At the moment Pontus-X and XFSC are supported
+ */
+export interface GetOfferingRequest {
+  offerings: GetOfferingRequest_Offering[];
+}
+
+export interface GetOfferingRequest_Offering {
+  pontusxOffering?: PontusxOffering | undefined;
+  xfscOffering?: XfscOffering | undefined;
+}
+
+/** Response to CreateOfferingRequest */
+export interface GetOfferingResponse {
+  /**
+   * List of identifier of the successfully published offering(s)
+   * example: did:op:123 in Pontus-X ecosystem
+   */
+  id: string[];
+  /** Debug information */
+  DebugInformation: { [key: string]: any } | undefined;
+}
+
+/**
  * Main metadata information for the asset used in CreateOfferingRequest and UpdateOfferingRequest
  * in the Pontus-X Ecosystem (Ocean Protocol)
  */
@@ -1970,6 +1994,219 @@ export const UpdateOfferingLifecycleResponse = {
   },
 };
 
+function createBaseGetOfferingRequest(): GetOfferingRequest {
+  return { offerings: [] };
+}
+
+export const GetOfferingRequest = {
+  encode(message: GetOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.offerings) {
+      GetOfferingRequest_Offering.encode(v!, writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetOfferingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.offerings.push(GetOfferingRequest_Offering.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetOfferingRequest {
+    return {
+      offerings: globalThis.Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => GetOfferingRequest_Offering.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: GetOfferingRequest): unknown {
+    const obj: any = {};
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings.map((e) => GetOfferingRequest_Offering.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(base?: I): GetOfferingRequest {
+    return GetOfferingRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(object: I): GetOfferingRequest {
+    const message = createBaseGetOfferingRequest();
+    message.offerings = object.offerings?.map((e) => GetOfferingRequest_Offering.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseGetOfferingRequest_Offering(): GetOfferingRequest_Offering {
+  return { pontusxOffering: undefined, xfscOffering: undefined };
+}
+
+export const GetOfferingRequest_Offering = {
+  encode(message: GetOfferingRequest_Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pontusxOffering !== undefined) {
+      PontusxOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.xfscOffering !== undefined) {
+      XfscOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingRequest_Offering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetOfferingRequest_Offering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.pontusxOffering = PontusxOffering.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.xfscOffering = XfscOffering.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetOfferingRequest_Offering {
+    return {
+      pontusxOffering: isSet(object.pontusxOffering) ? PontusxOffering.fromJSON(object.pontusxOffering) : undefined,
+      xfscOffering: isSet(object.xfscOffering) ? XfscOffering.fromJSON(object.xfscOffering) : undefined,
+    };
+  },
+
+  toJSON(message: GetOfferingRequest_Offering): unknown {
+    const obj: any = {};
+    if (message.pontusxOffering !== undefined) {
+      obj.pontusxOffering = PontusxOffering.toJSON(message.pontusxOffering);
+    }
+    if (message.xfscOffering !== undefined) {
+      obj.xfscOffering = XfscOffering.toJSON(message.xfscOffering);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(base?: I): GetOfferingRequest_Offering {
+    return GetOfferingRequest_Offering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(object: I): GetOfferingRequest_Offering {
+    const message = createBaseGetOfferingRequest_Offering();
+    message.pontusxOffering = (object.pontusxOffering !== undefined && object.pontusxOffering !== null)
+      ? PontusxOffering.fromPartial(object.pontusxOffering)
+      : undefined;
+    message.xfscOffering = (object.xfscOffering !== undefined && object.xfscOffering !== null)
+      ? XfscOffering.fromPartial(object.xfscOffering)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseGetOfferingResponse(): GetOfferingResponse {
+  return { id: [], DebugInformation: undefined };
+}
+
+export const GetOfferingResponse = {
+  encode(message: GetOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.id) {
+      writer.uint32(10).string(v!);
+    }
+    if (message.DebugInformation !== undefined) {
+      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetOfferingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id.push(reader.string());
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetOfferingResponse {
+    return {
+      id: globalThis.Array.isArray(object?.id) ? object.id.map((e: any) => globalThis.String(e)) : [],
+      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+    };
+  },
+
+  toJSON(message: GetOfferingResponse): unknown {
+    const obj: any = {};
+    if (message.id?.length) {
+      obj.id = message.id;
+    }
+    if (message.DebugInformation !== undefined) {
+      obj.DebugInformation = message.DebugInformation;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(base?: I): GetOfferingResponse {
+    return GetOfferingResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(object: I): GetOfferingResponse {
+    const message = createBaseGetOfferingResponse();
+    message.id = object.id?.map((e) => e) || [];
+    message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
 function createBaseMetadata(): Metadata {
   return { type: "", name: "", description: "", author: "", licence: "", tags: [], algorithm: undefined };
 }
@@ -3359,6 +3596,7 @@ export const ConsumerParameter = {
 export interface serviceofferingPublisher {
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse>;
   UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
+  GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse>;
   UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
 }
 
@@ -3371,6 +3609,7 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.rpc = rpc;
     this.CreateOffering = this.CreateOffering.bind(this);
     this.UpdateOffering = this.UpdateOffering.bind(this);
+    this.GetOffering = this.GetOffering.bind(this);
     this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
   }
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
@@ -3383,6 +3622,12 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     const data = UpdateOfferingRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "UpdateOffering", data);
     return promise.then((data) => UpdateOfferingResponse.decode(_m0.Reader.create(data)));
+  }
+
+  GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse> {
+    const data = GetOfferingRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetOffering", data);
+    return promise.then((data) => GetOfferingResponse.decode(_m0.Reader.create(data)));
   }
 
   UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse> {
