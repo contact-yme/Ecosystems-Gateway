@@ -1,6 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { PontusxService } from './pontusx/pontusx.service';
+import { XfscService } from './xfsc/xfsc.service';
 import {
   CreateOfferingRequest,
   CreateOfferingResponse,
@@ -16,14 +17,14 @@ import { LifecycleStates } from '@deltadao/nautilus';
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
-  constructor(private readonly pontusxService: PontusxService) {}
+  constructor(private readonly pontusxService: PontusxService, private readonly xfscService: XfscService) {}
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(
     data: CreateOfferingRequest,
   ): Promise<CreateOfferingResponse> {
-    this.logger.debug('grpc method CreateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method CreateOffering called')
+    this.logger.debug(data)
 
     const results = [];
     for (const offering of data.offerings) {
@@ -35,8 +36,22 @@ export class GrpcController {
           results.push(result.ddo.id);
         }
       } else {
-        //xfscOffering because of oneof
-        //missing
+        
+        const VP = JSON.parse(offering.xfscOffering.VP)
+
+        this.xfscService.getToken()
+        .then(token => {
+          this.xfscService.publish(token, data=VP).then(result => {
+            return {
+              id: [result]
+            }
+          })
+        })
+        .catch(error => {
+          this.logger.error('Error occured when trying to get the Token needed for the XFSC catalogue: ', error)
+
+          throw error
+        })
       }
     }
 
@@ -45,20 +60,15 @@ export class GrpcController {
         id: results,
         DebugInformation: undefined,
       };
-    }
-
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
+    }      
   }
 
   @GrpcMethod('serviceofferingPublisher')
   async updateOffering(
     data: UpdateOfferingRequest,
   ): Promise<UpdateOfferingResponse> {
-    this.logger.debug('grpc method UpdateOffering called');
-    this.logger.debug(data);
+    this.logger.debug('grpc method UpdateOffering called')
+    this.logger.debug(data)
 
     const ces_results: Array<string> = [];
     const results = [];
@@ -72,8 +82,18 @@ export class GrpcController {
           results.push(result.pontus);
         }
       } else {
-        //xfscUpdateOffering because of oneof
-        //missing
+        // XFSC
+        const token = await this.xfscService.getToken()
+        const hash = offering.xfscUpdateOffering.hash
+        const VP = JSON.parse(offering.xfscUpdateOffering.VP)
+
+        const result = await this.xfscService.update(token, hash, VP)
+
+        return {
+          id: [result],
+          locations: undefined,
+          DebugInformation: undefined
+        }
       }
     }
 
@@ -85,11 +105,11 @@ export class GrpcController {
       };
     }
 
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
-  }
+        throw new RpcException({
+          code: GrpcStatusCode.INTERNAL,
+          message: 'Internal Error',
+        })
+  } 
 
   @GrpcMethod('serviceofferingPublisher')
   async updateOfferingLifecycle(
