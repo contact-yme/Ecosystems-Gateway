@@ -16,12 +16,13 @@ import {
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 import { error } from 'console';
+import { XfscService } from './xfsc/xfsc.service';
 
 @Controller('grpc')
 export class GrpcController {
   private readonly logger = new Logger(GrpcController.name);
 
-  constructor(private readonly pontusxService: PontusxService) {}
+  constructor(private readonly pontusxService: PontusxService, private readonly xsfcService: XfscService) {}
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(
@@ -128,25 +129,24 @@ export class GrpcController {
 
     throw new RpcException({
       code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
+      message: "Some Rpc error occured",
     });
   }
 
   @GrpcMethod('serviceofferingPublisher')
-  async runComputeToData(
-    data: CreateComputeToDataRequest,
-  ): Promise<ComputeToDataResponse> {
-    // TODO: Get service by grpc request
-    return await this.pontusxService.requestComputeToData(
-      data.did, data.algorithm, {}
-    ).then((result) => {
+  async getOffering(data: GetOfferingRequest): Promise<GetOfferingResponse> {
+    this.logger.debug('grpc method GetOffering called');
+
+    try {
+      const result = await this.fetchOfferings(data.offerings);
       return {
-        jobId: result
-      }
-    }).catch((err) => {
+        offerings: result,
+        DebugInformation: [],
+      };
+    } catch (error) {
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
-        message: err,
+        message: 'Seems like an error occurred',
       });
     });
   }
@@ -205,10 +205,10 @@ export class GrpcController {
   }
 
   @GrpcMethod('serviceofferingPublisher')
-  async getComputeToDataResult(
+  async GetComputeToDataResult(
     data: CreateComputeToDataResultRequest
   ): Promise<GetComputeToDataResultResponse> {
-    return await this.pontusxService.getComputeToDataResult(data.JobId).then((res) => {
+    return await this.pontusxService.getComputeToDataResult(data.jobId).then((res) => {
       if(res == null) {
         throw new RpcException({
           code: GrpcStatusCode.UNAVAILABLE,
@@ -217,8 +217,7 @@ export class GrpcController {
       }
 
       return {
-        JobId: data.JobId,
-        result: res
+        data: res
       }
     }).catch((err) => {
       throw new RpcException({
@@ -227,40 +226,4 @@ export class GrpcController {
       });
     })
   }
-
-  @GrpcMethod('serviceofferingPublisher')
-  async getOffering(
-    data: GetOfferingRequest
-  ): Promise<GetOfferingResponse> {
-    const result = await this.pontusxService.getOffering(
-      data.did
-    );
-    if(result) {
-      return {
-        did: result.id
-      };
-    }
-
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
-  }
-}
-
-
-function getOneofField<T extends object>(message: T): T[keyof T] | null {
-  for (const key of Object.keys(message)) {
-      const getterName = `get${capitalizeFirstLetter(key)}`;
-      const hasMethod = `has${capitalizeFirstLetter(key)}`;
-
-      if (typeof (message as any)[hasMethod] === 'function' && (message as any)[hasMethod]()) {
-          return (message as any)[getterName]();
-      }
-  }
-  return null;
-}
-
-function capitalizeFirstLetter(string: string): string {
-  return string.charAt(0).toUpperCase() + string.slice(1);
 }

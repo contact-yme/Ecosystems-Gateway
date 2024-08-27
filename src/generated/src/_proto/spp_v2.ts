@@ -331,8 +331,8 @@ export interface GetOfferingRequest {
 }
 
 export interface GetOfferingRequest_Offering {
-  pontusxOffering?: PontusxOffering | undefined;
-  xfscOffering?: XfscOffering | undefined;
+  pontusxOffering?: PontusxGetOffering | undefined;
+  xfscOffering?: XfscGetOffering | undefined;
 }
 
 /** Response to CreateOfferingRequest */
@@ -341,9 +341,42 @@ export interface GetOfferingResponse {
    * List of identifier of the successfully published offering(s)
    * example: did:op:123 in Pontus-X ecosystem
    */
-  id: string[];
+  offerings: string[];
   /** Debug information */
   DebugInformation: { [key: string]: any } | undefined;
+}
+
+export interface XfscGetOffering {
+  did: string;
+  issuer: string;
+  name: string;
+}
+
+export interface PontusxGetOffering {
+  did: string;
+}
+
+export interface CreateComputeToDataRequest {
+  did: string;
+  algorithm: string;
+  userData: { [key: string]: string };
+}
+
+export interface CreateComputeToDataRequest_UserDataEntry {
+  key: string;
+  value: string;
+}
+
+export interface ComputeToDataResponse {
+  jobId: string[];
+}
+
+export interface CreateComputeToDataResultRequest {
+  jobId: string;
+}
+
+export interface GetComputeToDataResultResponse {
+  data: string;
 }
 
 /**
@@ -2062,10 +2095,10 @@ function createBaseGetOfferingRequest_Offering(): GetOfferingRequest_Offering {
 export const GetOfferingRequest_Offering = {
   encode(message: GetOfferingRequest_Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.pontusxOffering !== undefined) {
-      PontusxOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
+      PontusxGetOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
     }
     if (message.xfscOffering !== undefined) {
-      XfscOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
+      XfscGetOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -2082,14 +2115,14 @@ export const GetOfferingRequest_Offering = {
             break;
           }
 
-          message.pontusxOffering = PontusxOffering.decode(reader, reader.uint32());
+          message.pontusxOffering = PontusxGetOffering.decode(reader, reader.uint32());
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.xfscOffering = XfscOffering.decode(reader, reader.uint32());
+          message.xfscOffering = XfscGetOffering.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2102,18 +2135,18 @@ export const GetOfferingRequest_Offering = {
 
   fromJSON(object: any): GetOfferingRequest_Offering {
     return {
-      pontusxOffering: isSet(object.pontusxOffering) ? PontusxOffering.fromJSON(object.pontusxOffering) : undefined,
-      xfscOffering: isSet(object.xfscOffering) ? XfscOffering.fromJSON(object.xfscOffering) : undefined,
+      pontusxOffering: isSet(object.pontusxOffering) ? PontusxGetOffering.fromJSON(object.pontusxOffering) : undefined,
+      xfscOffering: isSet(object.xfscOffering) ? XfscGetOffering.fromJSON(object.xfscOffering) : undefined,
     };
   },
 
   toJSON(message: GetOfferingRequest_Offering): unknown {
     const obj: any = {};
     if (message.pontusxOffering !== undefined) {
-      obj.pontusxOffering = PontusxOffering.toJSON(message.pontusxOffering);
+      obj.pontusxOffering = PontusxGetOffering.toJSON(message.pontusxOffering);
     }
     if (message.xfscOffering !== undefined) {
-      obj.xfscOffering = XfscOffering.toJSON(message.xfscOffering);
+      obj.xfscOffering = XfscGetOffering.toJSON(message.xfscOffering);
     }
     return obj;
   },
@@ -2124,22 +2157,22 @@ export const GetOfferingRequest_Offering = {
   fromPartial<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(object: I): GetOfferingRequest_Offering {
     const message = createBaseGetOfferingRequest_Offering();
     message.pontusxOffering = (object.pontusxOffering !== undefined && object.pontusxOffering !== null)
-      ? PontusxOffering.fromPartial(object.pontusxOffering)
+      ? PontusxGetOffering.fromPartial(object.pontusxOffering)
       : undefined;
     message.xfscOffering = (object.xfscOffering !== undefined && object.xfscOffering !== null)
-      ? XfscOffering.fromPartial(object.xfscOffering)
+      ? XfscGetOffering.fromPartial(object.xfscOffering)
       : undefined;
     return message;
   },
 };
 
 function createBaseGetOfferingResponse(): GetOfferingResponse {
-  return { id: [], DebugInformation: undefined };
+  return { offerings: [], DebugInformation: undefined };
 }
 
 export const GetOfferingResponse = {
   encode(message: GetOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.id) {
+    for (const v of message.offerings) {
       writer.uint32(10).string(v!);
     }
     if (message.DebugInformation !== undefined) {
@@ -2160,7 +2193,7 @@ export const GetOfferingResponse = {
             break;
           }
 
-          message.id.push(reader.string());
+          message.offerings.push(reader.string());
           continue;
         case 3:
           if (tag !== 26) {
@@ -2180,15 +2213,17 @@ export const GetOfferingResponse = {
 
   fromJSON(object: any): GetOfferingResponse {
     return {
-      id: globalThis.Array.isArray(object?.id) ? object.id.map((e: any) => globalThis.String(e)) : [],
+      offerings: globalThis.Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => globalThis.String(e))
+        : [],
       DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
     };
   },
 
   toJSON(message: GetOfferingResponse): unknown {
     const obj: any = {};
-    if (message.id?.length) {
-      obj.id = message.id;
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings;
     }
     if (message.DebugInformation !== undefined) {
       obj.DebugInformation = message.DebugInformation;
@@ -2201,8 +2236,517 @@ export const GetOfferingResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(object: I): GetOfferingResponse {
     const message = createBaseGetOfferingResponse();
-    message.id = object.id?.map((e) => e) || [];
+    message.offerings = object.offerings?.map((e) => e) || [];
     message.DebugInformation = object.DebugInformation ?? undefined;
+    return message;
+  },
+};
+
+function createBaseXfscGetOffering(): XfscGetOffering {
+  return { did: "", issuer: "", name: "" };
+}
+
+export const XfscGetOffering = {
+  encode(message: XfscGetOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.issuer !== "") {
+      writer.uint32(18).string(message.issuer);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): XfscGetOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseXfscGetOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.issuer = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): XfscGetOffering {
+    return {
+      did: isSet(object.did) ? globalThis.String(object.did) : "",
+      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+    };
+  },
+
+  toJSON(message: XfscGetOffering): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.issuer !== "") {
+      obj.issuer = message.issuer;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<XfscGetOffering>, I>>(base?: I): XfscGetOffering {
+    return XfscGetOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<XfscGetOffering>, I>>(object: I): XfscGetOffering {
+    const message = createBaseXfscGetOffering();
+    message.did = object.did ?? "";
+    message.issuer = object.issuer ?? "";
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBasePontusxGetOffering(): PontusxGetOffering {
+  return { did: "" };
+}
+
+export const PontusxGetOffering = {
+  encode(message: PontusxGetOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxGetOffering {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxGetOffering();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxGetOffering {
+    return { did: isSet(object.did) ? globalThis.String(object.did) : "" };
+  },
+
+  toJSON(message: PontusxGetOffering): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(base?: I): PontusxGetOffering {
+    return PontusxGetOffering.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(object: I): PontusxGetOffering {
+    const message = createBasePontusxGetOffering();
+    message.did = object.did ?? "";
+    return message;
+  },
+};
+
+function createBaseCreateComputeToDataRequest(): CreateComputeToDataRequest {
+  return { did: "", algorithm: "", userData: {} };
+}
+
+export const CreateComputeToDataRequest = {
+  encode(message: CreateComputeToDataRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.algorithm !== "") {
+      writer.uint32(18).string(message.algorithm);
+    }
+    Object.entries(message.userData).forEach(([key, value]) => {
+      CreateComputeToDataRequest_UserDataEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateComputeToDataRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.algorithm = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          const entry3 = CreateComputeToDataRequest_UserDataEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.userData[entry3.key] = entry3.value;
+          }
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateComputeToDataRequest {
+    return {
+      did: isSet(object.did) ? globalThis.String(object.did) : "",
+      algorithm: isSet(object.algorithm) ? globalThis.String(object.algorithm) : "",
+      userData: isObject(object.userData)
+        ? Object.entries(object.userData).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: CreateComputeToDataRequest): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.algorithm !== "") {
+      obj.algorithm = message.algorithm;
+    }
+    if (message.userData) {
+      const entries = Object.entries(message.userData);
+      if (entries.length > 0) {
+        obj.userData = {};
+        entries.forEach(([k, v]) => {
+          obj.userData[k] = v;
+        });
+      }
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(base?: I): CreateComputeToDataRequest {
+    return CreateComputeToDataRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(object: I): CreateComputeToDataRequest {
+    const message = createBaseCreateComputeToDataRequest();
+    message.did = object.did ?? "";
+    message.algorithm = object.algorithm ?? "";
+    message.userData = Object.entries(object.userData ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseCreateComputeToDataRequest_UserDataEntry(): CreateComputeToDataRequest_UserDataEntry {
+  return { key: "", value: "" };
+}
+
+export const CreateComputeToDataRequest_UserDataEntry = {
+  encode(message: CreateComputeToDataRequest_UserDataEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataRequest_UserDataEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateComputeToDataRequest_UserDataEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateComputeToDataRequest_UserDataEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: CreateComputeToDataRequest_UserDataEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>>(
+    base?: I,
+  ): CreateComputeToDataRequest_UserDataEntry {
+    return CreateComputeToDataRequest_UserDataEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>>(
+    object: I,
+  ): CreateComputeToDataRequest_UserDataEntry {
+    const message = createBaseCreateComputeToDataRequest_UserDataEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseComputeToDataResponse(): ComputeToDataResponse {
+  return { jobId: [] };
+}
+
+export const ComputeToDataResponse = {
+  encode(message: ComputeToDataResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.jobId) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ComputeToDataResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseComputeToDataResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.jobId.push(reader.string());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ComputeToDataResponse {
+    return { jobId: globalThis.Array.isArray(object?.jobId) ? object.jobId.map((e: any) => globalThis.String(e)) : [] };
+  },
+
+  toJSON(message: ComputeToDataResponse): unknown {
+    const obj: any = {};
+    if (message.jobId?.length) {
+      obj.jobId = message.jobId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(base?: I): ComputeToDataResponse {
+    return ComputeToDataResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(object: I): ComputeToDataResponse {
+    const message = createBaseComputeToDataResponse();
+    message.jobId = object.jobId?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseCreateComputeToDataResultRequest(): CreateComputeToDataResultRequest {
+  return { jobId: "" };
+}
+
+export const CreateComputeToDataResultRequest = {
+  encode(message: CreateComputeToDataResultRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.jobId !== "") {
+      writer.uint32(10).string(message.jobId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataResultRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateComputeToDataResultRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.jobId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateComputeToDataResultRequest {
+    return { jobId: isSet(object.jobId) ? globalThis.String(object.jobId) : "" };
+  },
+
+  toJSON(message: CreateComputeToDataResultRequest): unknown {
+    const obj: any = {};
+    if (message.jobId !== "") {
+      obj.jobId = message.jobId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>>(
+    base?: I,
+  ): CreateComputeToDataResultRequest {
+    return CreateComputeToDataResultRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>>(
+    object: I,
+  ): CreateComputeToDataResultRequest {
+    const message = createBaseCreateComputeToDataResultRequest();
+    message.jobId = object.jobId ?? "";
+    return message;
+  },
+};
+
+function createBaseGetComputeToDataResultResponse(): GetComputeToDataResultResponse {
+  return { data: "" };
+}
+
+export const GetComputeToDataResultResponse = {
+  encode(message: GetComputeToDataResultResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.data !== "") {
+      writer.uint32(10).string(message.data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetComputeToDataResultResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetComputeToDataResultResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.data = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetComputeToDataResultResponse {
+    return { data: isSet(object.data) ? globalThis.String(object.data) : "" };
+  },
+
+  toJSON(message: GetComputeToDataResultResponse): unknown {
+    const obj: any = {};
+    if (message.data !== "") {
+      obj.data = message.data;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(base?: I): GetComputeToDataResultResponse {
+    return GetComputeToDataResultResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(
+    object: I,
+  ): GetComputeToDataResultResponse {
+    const message = createBaseGetComputeToDataResultResponse();
+    message.data = object.data ?? "";
     return message;
   },
 };
@@ -3598,6 +4142,8 @@ export interface serviceofferingPublisher {
   UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse>;
   UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
+  runComputeToDataJob(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse>;
+  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse>;
 }
 
 export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
@@ -3611,6 +4157,8 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.UpdateOffering = this.UpdateOffering.bind(this);
     this.GetOffering = this.GetOffering.bind(this);
     this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
+    this.runComputeToDataJob = this.runComputeToDataJob.bind(this);
+    this.GetComputeToDataResult = this.GetComputeToDataResult.bind(this);
   }
   CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
     const data = CreateOfferingRequest.encode(request).finish();
@@ -3634,6 +4182,18 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     const data = UpdateOfferingLifecycleRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "UpdateOfferingLifecycle", data);
     return promise.then((data) => UpdateOfferingLifecycleResponse.decode(_m0.Reader.create(data)));
+  }
+
+  runComputeToDataJob(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse> {
+    const data = CreateComputeToDataRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "runComputeToDataJob", data);
+    return promise.then((data) => ComputeToDataResponse.decode(_m0.Reader.create(data)));
+  }
+
+  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse> {
+    const data = CreateComputeToDataResultRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetComputeToDataResult", data);
+    return promise.then((data) => GetComputeToDataResultResponse.decode(_m0.Reader.create(data)));
   }
 }
 
