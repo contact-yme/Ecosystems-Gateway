@@ -38,7 +38,7 @@ import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import axios, { AxiosResponse } from 'axios';
-import { ConsumerParameter, PontusxOffering, PontusxUpdateOffering, pricing_PricingTypeToJSON, Service, UpdateOfferingRequest_UpdateOffering } from 'src/generated/src/_proto/spp_v2';
+import { ComputeToDataResultType, ConsumerParameter, PontusxOffering, PontusxUpdateOffering, pricing_PricingTypeToJSON, Service, UpdateOfferingRequest_UpdateOffering } from 'src/generated/src/_proto/spp_v2';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -490,13 +490,21 @@ export class PontusxService implements OnModuleInit {
     return status.status;
   }
 
-  async getComputeToDataResult(jobId: string): Promise<string> {
-    let cached = await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
-    if(cached == undefined) {
-      await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
-      return undefined;
+  async getComputeToDataResult(jobId: string, return_type: ComputeToDataResultType): Promise<string> {
+    if(return_type === ComputeToDataResultType.C2D_DATA) {
+      let cached = await this.redis.get(`${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`);
+      if(cached == undefined) {
+        await this.redis.rpush(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
+        return undefined;
+      }
+      return cached;
+    } else if(return_type === ComputeToDataResultType.C2D_URI) {
+      return await this.nautilus.getComputeResult({
+        jobId: jobId,
+        providerUri: this.getSelectedNetworkConfig().providerUri
+      });
     }
-    return cached;
+    return undefined;
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)

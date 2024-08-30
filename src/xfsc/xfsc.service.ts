@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
 
 @Injectable()
@@ -60,11 +60,6 @@ export class XfscService {
         return undefined;
       });
     }
-  }
-
-  async searchOffering(did: string)
-  {
-
   }
 
   async getToken(): Promise<string> {
