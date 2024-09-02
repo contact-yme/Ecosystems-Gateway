@@ -15,7 +15,6 @@ import {
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
-import { error } from 'console';
 import { XfscService } from './xfsc/xfsc.service';
 
 @Controller('grpc')
@@ -134,28 +133,10 @@ export class GrpcController {
   }
 
   @GrpcMethod('serviceofferingPublisher')
-  async getOffering(data: GetOfferingRequest): Promise<GetOfferingResponse> {
-    this.logger.debug('grpc method GetOffering called');
-
-    try {
-      const result = await this.fetchOfferings(data.offerings);
-      return {
-        offerings: result,
-        DebugInformation: [],
-      };
-    } catch (error) {
-      throw new RpcException({
-        code: GrpcStatusCode.INTERNAL,
-        message: 'Seems like an error occurred',
-      });
-    });
-  }
-
-  @GrpcMethod('serviceofferingPublisher')
   async getComputeToDataResult(
     data: CreateComputeToDataResultRequest
   ): Promise<GetComputeToDataResultResponse> {
-    return await this.pontusxService.getComputeToDataResult(data.JobId).then((res) => {
+    return await this.pontusxService.getComputeToDataResult(data.jobId, data.computeToDataReturnType).then((res) => {
       if(res == null) {
         throw new RpcException({
           code: GrpcStatusCode.UNAVAILABLE,
@@ -164,8 +145,7 @@ export class GrpcController {
       }
 
       return {
-        JobId: data.JobId,
-        result: res
+        data: data.jobId
       }
     }).catch((err) => {
       throw new RpcException({
@@ -179,20 +159,30 @@ export class GrpcController {
   async getOffering(
     data: GetOfferingRequest
   ): Promise<GetOfferingResponse> {
-    const result = await this.pontusxService.getOffering(
-      data.did
-    );
-    if(result) {
-      return {
-        id: ids,
-        DebugInformation: { results },
-      };
-    }
+    this.logger.debug('grpc method GetOffering called');
 
-    throw new RpcException({
-      code: GrpcStatusCode.INTERNAL,
-      message: 'Internal Error',
-    });
+    let result = [];
+    try {
+      data.offerings.forEach((offering) => {
+        if(offering.pontusxOffering) {
+          result.push(await this.pontusxService.getOffering(offering.pontusxOffering.did));
+        }
+
+        if(offering.xfscOffering) {
+          result.push(await this.xsfcService.getOffering(offering.xfscOffering.did, offering.xfscOffering.issuer, offering.xfscOffering.name));
+        }
+      })
+      
+      return {
+        offerings: result,
+        DebugInformation: [],
+      };
+    } catch (error) {
+      throw new RpcException({
+        code: GrpcStatusCode.INTERNAL,
+        message: 'Seems like an error occurred',
+      });
+    };
   }
 
   private ensureDatasetOrThrow(data: CreateOfferingRequest) {
@@ -202,28 +192,5 @@ export class GrpcController {
         message: err,
       });
     });
-  }
-
-  @GrpcMethod('serviceofferingPublisher')
-  async GetComputeToDataResult(
-    data: CreateComputeToDataResultRequest
-  ): Promise<GetComputeToDataResultResponse> {
-    return await this.pontusxService.getComputeToDataResult(data.jobId).then((res) => {
-      if(res == null) {
-        throw new RpcException({
-          code: GrpcStatusCode.UNAVAILABLE,
-          message: "Result is not available"
-        })
-      }
-
-      return {
-        data: res
-      }
-    }).catch((err) => {
-      throw new RpcException({
-        code: GrpcStatusCode.INTERNAL,
-        message: err,
-      });
-    })
   }
 }

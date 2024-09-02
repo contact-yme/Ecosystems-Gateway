@@ -355,10 +355,7 @@ export interface UpdateOfferingLifecycleResponse {
   DebugInformation: { [key: string]: any } | undefined;
 }
 
-/**
- * Create message to publish a Offering with the given information to different ecosystems
- * At the moment Pontus-X and XFSC are supported
- */
+/** ---------------------------------------------- GetOffering ---------------------------------------------- */
 export interface GetOfferingRequest {
   offerings: GetOfferingRequest_Offering[];
 }
@@ -368,12 +365,7 @@ export interface GetOfferingRequest_Offering {
   xfscOffering?: XfscGetOffering | undefined;
 }
 
-/** Response to CreateOfferingRequest */
 export interface GetOfferingResponse {
-  /**
-   * List of identifier of the successfully published offering(s)
-   * example: did:op:123 in Pontus-X ecosystem
-   */
   offerings: string[];
   /** Debug information */
   DebugInformation: { [key: string]: any } | undefined;
@@ -404,11 +396,13 @@ export interface ComputeToDataResponse {
   jobId: string[];
 }
 
+/** The compute to data result request can be used to get the results from a job. You can fetch */
 export interface CreateComputeToDataResultRequest {
   jobId: string;
   computeToDataReturnType: ComputeToDataResultType;
 }
 
+/** The result can either be a URL or a full data, see CreateComputeToDataResultRequest */
 export interface GetComputeToDataResultResponse {
   data: string;
 }
