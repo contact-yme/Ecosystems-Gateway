@@ -30,6 +30,7 @@ import {
   PontusxUpdateOffering,
   Service,
   UpdateOfferingRequest_UpdateOffering,
+  ComputeToDataResultType,
 } from '../generated/src/_proto/spp_v2';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
@@ -38,7 +39,6 @@ import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import axios, { AxiosResponse } from 'axios';
-import { ComputeToDataResultType, ConsumerParameter, PontusxOffering, PontusxUpdateOffering, pricing_PricingTypeToJSON, Service, UpdateOfferingRequest_UpdateOffering } from 'src/generated/src/_proto/spp_v2';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {

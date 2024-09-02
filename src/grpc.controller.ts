@@ -163,7 +163,7 @@ export class GrpcController {
 
     let result = [];
     try {
-      data.offerings.forEach((offering) => {
+      data.offerings.forEach(async (offering) => {
         if(offering.pontusxOffering) {
           result.push(await this.pontusxService.getOffering(offering.pontusxOffering.did));
         }
@@ -183,14 +183,5 @@ export class GrpcController {
         message: 'Seems like an error occurred',
       });
     };
-  }
-
-  private ensureDatasetOrThrow(data: CreateOfferingRequest) {
-    if (data.main.type !== 'dataset') {
-      throw new RpcException({
-        code: GrpcStatusCode.INTERNAL,
-        message: err,
-      });
-    });
   }
 }
