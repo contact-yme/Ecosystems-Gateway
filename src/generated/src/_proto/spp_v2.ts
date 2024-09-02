@@ -10,6 +10,39 @@ import { Struct } from "../../google/protobuf/struct";
 
 export const protobufPackage = "eupg.serviceofferingpublisher";
 
+export enum ComputeToDataResultType {
+  C2D_DATA = 0,
+  C2D_URI = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function computeToDataResultTypeFromJSON(object: any): ComputeToDataResultType {
+  switch (object) {
+    case 0:
+    case "C2D_DATA":
+      return ComputeToDataResultType.C2D_DATA;
+    case 1:
+    case "C2D_URI":
+      return ComputeToDataResultType.C2D_URI;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return ComputeToDataResultType.UNRECOGNIZED;
+  }
+}
+
+export function computeToDataResultTypeToJSON(object: ComputeToDataResultType): string {
+  switch (object) {
+    case ComputeToDataResultType.C2D_DATA:
+      return "C2D_DATA";
+    case ComputeToDataResultType.C2D_URI:
+      return "C2D_URI";
+    case ComputeToDataResultType.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 /** Possible lifecycle states of asset in the pontus-x ecosystem */
 export enum PontusxLifecycleStates {
   /**
@@ -373,6 +406,7 @@ export interface ComputeToDataResponse {
 
 export interface CreateComputeToDataResultRequest {
   jobId: string;
+  computeToDataReturnType: ComputeToDataResultType;
 }
 
 export interface GetComputeToDataResultResponse {
@@ -2632,13 +2666,16 @@ export const ComputeToDataResponse = {
 };
 
 function createBaseCreateComputeToDataResultRequest(): CreateComputeToDataResultRequest {
-  return { jobId: "" };
+  return { jobId: "", computeToDataReturnType: 0 };
 }
 
 export const CreateComputeToDataResultRequest = {
   encode(message: CreateComputeToDataResultRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.jobId !== "") {
       writer.uint32(10).string(message.jobId);
+    }
+    if (message.computeToDataReturnType !== 0) {
+      writer.uint32(16).int32(message.computeToDataReturnType);
     }
     return writer;
   },
@@ -2657,6 +2694,13 @@ export const CreateComputeToDataResultRequest = {
 
           message.jobId = reader.string();
           continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.computeToDataReturnType = reader.int32() as any;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2667,13 +2711,21 @@ export const CreateComputeToDataResultRequest = {
   },
 
   fromJSON(object: any): CreateComputeToDataResultRequest {
-    return { jobId: isSet(object.jobId) ? globalThis.String(object.jobId) : "" };
+    return {
+      jobId: isSet(object.jobId) ? globalThis.String(object.jobId) : "",
+      computeToDataReturnType: isSet(object.computeToDataReturnType)
+        ? computeToDataResultTypeFromJSON(object.computeToDataReturnType)
+        : 0,
+    };
   },
 
   toJSON(message: CreateComputeToDataResultRequest): unknown {
     const obj: any = {};
     if (message.jobId !== "") {
       obj.jobId = message.jobId;
+    }
+    if (message.computeToDataReturnType !== 0) {
+      obj.computeToDataReturnType = computeToDataResultTypeToJSON(message.computeToDataReturnType);
     }
     return obj;
   },
@@ -2688,6 +2740,7 @@ export const CreateComputeToDataResultRequest = {
   ): CreateComputeToDataResultRequest {
     const message = createBaseCreateComputeToDataResultRequest();
     message.jobId = object.jobId ?? "";
+    message.computeToDataReturnType = object.computeToDataReturnType ?? 0;
     return message;
   },
 };
