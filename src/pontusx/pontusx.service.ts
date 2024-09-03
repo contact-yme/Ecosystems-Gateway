@@ -253,7 +253,7 @@ export class PontusxService implements OnModuleInit {
           if (par.options !== undefined) {
             param.options = par.options;
           }
-          //algo.consumerParameters.push(param);
+          algo.consumerParameters.push(param);
         });
         assetBuilder.setAlgorithm(algo);
       } else {
@@ -432,7 +432,7 @@ export class PontusxService implements OnModuleInit {
       if (par.options !== undefined) {
         param.options = par.options;
       }
-      //serviceBuilder.addConsumerParameter(param);
+      serviceBuilder.addConsumerParameter(param);
     });
 
     const NautilusService = serviceBuilder.build();
