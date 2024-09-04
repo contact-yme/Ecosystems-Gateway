@@ -16,6 +16,7 @@ import {
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 import { XfscService } from './xfsc/xfsc.service';
+import { stringify } from 'querystring';
 
 @Controller('grpc')
 export class GrpcController {
@@ -156,23 +157,29 @@ export class GrpcController {
   }
 
   @GrpcMethod('serviceofferingPublisher')
-  async getOffering(
-    data: GetOfferingRequest
-  ): Promise<GetOfferingResponse> {
+  async getOffering(data: GetOfferingRequest): Promise<GetOfferingResponse> {
     this.logger.debug('grpc method GetOffering called');
-
-    let result = [];
+  
+    const result: string[] = [];
     try {
-      data.offerings.forEach(async (offering) => {
-        if(offering.pontusxOffering) {
-          result.push(await this.pontusxService.getOffering(offering.pontusxOffering.did));
-        }
+      await Promise.all(
+        data.offerings.map(async (offering) => {
+          if (offering.pontusxOffering) {
+            const pontusxResult = await this.pontusxService.getOffering(offering.pontusxOffering.did);
+            result.push(JSON.stringify(pontusxResult));
+          }
+  
+          if (offering.xfscOffering) {
+            const xfscResult = await this.xsfcService.getOffering(
+              offering.xfscOffering.did,
+              offering.xfscOffering.issuer,
+              offering.xfscOffering.name,
+            );
+            result.push(xfscResult);
+          }
+        }),
+      );
 
-        if(offering.xfscOffering) {
-          result.push(await this.xsfcService.getOffering(offering.xfscOffering.did, offering.xfscOffering.issuer, offering.xfscOffering.name));
-        }
-      })
-      
       return {
         offerings: result,
         DebugInformation: [],
@@ -182,6 +189,6 @@ export class GrpcController {
         code: GrpcStatusCode.INTERNAL,
         message: 'Seems like an error occurred',
       });
-    };
-  }
+    }
+  }  
 }

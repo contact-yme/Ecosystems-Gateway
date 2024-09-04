@@ -8,6 +8,7 @@ import { PontusxModule } from './pontusx/pontusx.module';
 import { XfscModule } from './xfsc/xfsc.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { GrpcGatewayController } from './grpc-gateway.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     PontusxModule,
     XfscModule,
   ],
-  controllers: [GrpcController],
+  controllers: [GrpcController, GrpcGatewayController],
   providers: [AppService],
 })
 export class AppModule {}

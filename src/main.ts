@@ -5,10 +5,6 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  // sadly needed to boot nautilus up, otherwise onModuleInit doesn't get triggered :(
-  app.init();
-
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
@@ -28,5 +24,6 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
+  await app.listen(5001);
 }
 bootstrap();
