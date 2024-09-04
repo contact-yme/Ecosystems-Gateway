@@ -2,22 +2,28 @@ import axios, { AxiosResponse } from 'axios'
 import { Logger } from '@nestjs/common'
 
 import encodeBase64 from './base64'
-import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
+import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, CLIENT_SECRET, CLIENT_ID } from './config'
 
 
 export class XfscService {
     
-    private username: string
-    private password: string
-    private credentials: string
+    private readonly username: string
+    private readonly password: string
+    private readonly credentials: string
+    private readonly client_secret: string
+    private readonly client_id: string
     private readonly xfscCatAddr: string
     private readonly xfscTokenEndpoint: string  
     private readonly logger: Logger
     
     constructor() {
         this.logger = new Logger(XfscService.name)
-        this.username = XFSC_USERNAME  // read .env vars here
-        this.password = XFSC_PASSWORD  
+        this.username = XFSC_USERNAME  
+        this.password = XFSC_PASSWORD
+
+        this.client_id = CLIENT_ID
+        this.client_secret = CLIENT_SECRET
+
         this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT
         this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT
 
@@ -34,12 +40,16 @@ export class XfscService {
             maxBodyLength: Infinity,
             url: this.xfscCatAddr,
             headers: { 
-              'accept': 'application/json', 
+              'accept': '*/*', 
               'Content-Type': 'application/json', 
               'Authorization': 'Bearer ' + token
             },
             data : VP
           }
+        
+          this.logger.debug('Request URL:', this.xfscCatAddr)
+          this.logger.debug('Request Data:', JSON.stringify(VP))
+          this.logger.debug('Request Headers:', config.headers)
         
         this.logger.log('Publishing in XFSC CAT ...')
         try {
@@ -116,7 +126,12 @@ export class XfscService {
         const axios = require('axios')
         const qs = require('qs')
         let data = qs.stringify({
-        'grant_type': 'client_credentials' 
+          'grant_type': 'password',
+          'username': this.username,
+          'password': this.password,
+          'client_id': this.client_id,
+          'scope': 'openid',
+          'client_secret': this.client_secret 
         })
 
         let config = {
