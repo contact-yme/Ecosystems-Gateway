@@ -47,10 +47,6 @@ export class XfscService {
             data : VP
           }
         
-          this.logger.debug('Request URL:', this.xfscCatAddr)
-          this.logger.debug('Request Data:', JSON.stringify(VP))
-          this.logger.debug('Request Headers:', config.headers)
-        
         this.logger.log('Publishing in XFSC CAT ...')
         try {
           response = await axios.request(config)
