@@ -16,7 +16,6 @@ import {
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
 import { XfscService } from './xfsc/xfsc.service';
-import { stringify } from 'querystring';
 
 @Controller('grpc')
 export class GrpcController {

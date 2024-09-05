@@ -17,7 +17,7 @@ export function loadGrpcServiceDefinition(protoPath: string, packageName: string
     throw new Error(`gRPC service '${serviceName}' not found in package '${packageName}'`);
   }
 
-  return grpcPackage[serviceName];
+  return grpcPackage;
 }
 
 function getGrpcPackage(protoDescriptor: any, packageName: string): any {
