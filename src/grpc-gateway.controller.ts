@@ -1,5 +1,8 @@
 import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
-import { loadGrpcClient, loadGrpcServiceDefinition } from './grpc-client.loader';
+import {
+  loadGrpcClient,
+  loadGrpcServiceDefinition,
+} from './grpc-client.loader';
 
 @Controller('grpc')
 export class GrpcGatewayController {
@@ -11,12 +14,18 @@ export class GrpcGatewayController {
       './_proto/spp_v2.proto',
       'eupg.serviceofferingpublisher',
       'serviceofferingPublisher',
-      '0.0.0.0:5002'
+      '0.0.0.0:5002',
     );
 
-    this.grpcDefinitions = loadGrpcServiceDefinition('./_proto/spp_v2.proto', 'eupg.serviceofferingpublisher', 'serviceofferingPublisher');
+    this.grpcDefinitions = loadGrpcServiceDefinition(
+      './_proto/spp_v2.proto',
+      'eupg.serviceofferingpublisher',
+      'serviceofferingPublisher',
+    );
 
-    console.log(`Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`)
+    console.log(
+      `Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`,
+    );
   }
 
   @Get('list')
@@ -27,8 +36,11 @@ export class GrpcGatewayController {
 
   private generateOpenApiSpec() {
     const paths: any = {};
-    Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).forEach((methodName) => {
-      const method = this.grpcDefinitions['serviceofferingPublisher'].service[methodName];
+    Object.keys(
+      this.grpcDefinitions['serviceofferingPublisher'].service,
+    ).forEach((methodName) => {
+      const method =
+        this.grpcDefinitions['serviceofferingPublisher'].service[methodName];
       paths[`/grpc/${methodName}`] = {
         post: {
           summary: `Invoke ${methodName} method`,
@@ -113,10 +125,12 @@ export class GrpcGatewayController {
       case 'TYPE_ENUM':
         return {
           type: 'string',
-          enum: this.grpcDefinitions[field.typeName].type.value ? Object.values(this.grpcDefinitions[field.typeName].type.value) : [],
+          enum: this.grpcDefinitions[field.typeName].type.value
+            ? Object.values(this.grpcDefinitions[field.typeName].type.value)
+            : [],
         };
       default:
-        console.log("Not implemented: ", field);
+        console.log('Not implemented: ', field);
         return { type: 'string' }; // Default fallback
     }
   }
@@ -134,7 +148,9 @@ export class GrpcGatewayController {
   private callGrpcMethod(method: string, params: any) {
     return new Promise((resolve, reject) => {
       if (typeof this.grpcClient[method] !== 'function') {
-        return reject(new Error(`Method ${method} does not exist on the gRPC service`));
+        return reject(
+          new Error(`Method ${method} does not exist on the gRPC service`),
+        );
       }
       this.grpcClient[method](params, (error, response) => {
         if (error) {

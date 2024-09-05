@@ -1,8 +1,8 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal";
-import { Struct } from "../../google/protobuf/struct";
+import _m0 from 'protobufjs/minimal';
+import { Struct } from '../../google/protobuf/struct';
 
-export const protobufPackage = "eupg.serviceofferingpublisher";
+export const protobufPackage = 'eupg.serviceofferingpublisher';
 
 export enum ComputeToDataResultType {
   C2D_DATA = 0,
@@ -10,30 +10,34 @@ export enum ComputeToDataResultType {
   UNRECOGNIZED = -1,
 }
 
-export function computeToDataResultTypeFromJSON(object: any): ComputeToDataResultType {
+export function computeToDataResultTypeFromJSON(
+  object: any,
+): ComputeToDataResultType {
   switch (object) {
     case 0:
-    case "C2D_DATA":
+    case 'C2D_DATA':
       return ComputeToDataResultType.C2D_DATA;
     case 1:
-    case "C2D_URI":
+    case 'C2D_URI':
       return ComputeToDataResultType.C2D_URI;
     case -1:
-    case "UNRECOGNIZED":
+    case 'UNRECOGNIZED':
     default:
       return ComputeToDataResultType.UNRECOGNIZED;
   }
 }
 
-export function computeToDataResultTypeToJSON(object: ComputeToDataResultType): string {
+export function computeToDataResultTypeToJSON(
+  object: ComputeToDataResultType,
+): string {
   switch (object) {
     case ComputeToDataResultType.C2D_DATA:
-      return "C2D_DATA";
+      return 'C2D_DATA';
     case ComputeToDataResultType.C2D_URI:
-      return "C2D_URI";
+      return 'C2D_URI';
     case ComputeToDataResultType.UNRECOGNIZED:
     default:
-      return "UNRECOGNIZED";
+      return 'UNRECOGNIZED';
   }
 }
 
@@ -76,50 +80,54 @@ export enum PontusxLifecycleStates {
   UNRECOGNIZED = -1,
 }
 
-export function pontusxLifecycleStatesFromJSON(object: any): PontusxLifecycleStates {
+export function pontusxLifecycleStatesFromJSON(
+  object: any,
+): PontusxLifecycleStates {
   switch (object) {
     case 0:
-    case "ACTIVE":
+    case 'ACTIVE':
       return PontusxLifecycleStates.ACTIVE;
     case 1:
-    case "END_OF_LIFE":
+    case 'END_OF_LIFE':
       return PontusxLifecycleStates.END_OF_LIFE;
     case 2:
-    case "DEPRECATED":
+    case 'DEPRECATED':
       return PontusxLifecycleStates.DEPRECATED;
     case 3:
-    case "REVOKED_BY_PUBLISHER":
+    case 'REVOKED_BY_PUBLISHER':
       return PontusxLifecycleStates.REVOKED_BY_PUBLISHER;
     case 4:
-    case "ORDERING_DISABLED_TEMPORARILY":
+    case 'ORDERING_DISABLED_TEMPORARILY':
       return PontusxLifecycleStates.ORDERING_DISABLED_TEMPORARILY;
     case 5:
-    case "ASSET_UNLISTED":
+    case 'ASSET_UNLISTED':
       return PontusxLifecycleStates.ASSET_UNLISTED;
     case -1:
-    case "UNRECOGNIZED":
+    case 'UNRECOGNIZED':
     default:
       return PontusxLifecycleStates.UNRECOGNIZED;
   }
 }
 
-export function pontusxLifecycleStatesToJSON(object: PontusxLifecycleStates): string {
+export function pontusxLifecycleStatesToJSON(
+  object: PontusxLifecycleStates,
+): string {
   switch (object) {
     case PontusxLifecycleStates.ACTIVE:
-      return "ACTIVE";
+      return 'ACTIVE';
     case PontusxLifecycleStates.END_OF_LIFE:
-      return "END_OF_LIFE";
+      return 'END_OF_LIFE';
     case PontusxLifecycleStates.DEPRECATED:
-      return "DEPRECATED";
+      return 'DEPRECATED';
     case PontusxLifecycleStates.REVOKED_BY_PUBLISHER:
-      return "REVOKED_BY_PUBLISHER";
+      return 'REVOKED_BY_PUBLISHER';
     case PontusxLifecycleStates.ORDERING_DISABLED_TEMPORARILY:
-      return "ORDERING_DISABLED_TEMPORARILY";
+      return 'ORDERING_DISABLED_TEMPORARILY';
     case PontusxLifecycleStates.ASSET_UNLISTED:
-      return "ASSET_UNLISTED";
+      return 'ASSET_UNLISTED';
     case PontusxLifecycleStates.UNRECOGNIZED:
     default:
-      return "UNRECOGNIZED";
+      return 'UNRECOGNIZED';
   }
 }
 
@@ -145,16 +153,12 @@ export interface XfscOffering {
 /** Message for publication into the Pontus-X ecosystem */
 export interface PontusxOffering {
   /** The main information about the asset to publish */
-  metadata:
-    | Metadata
-    | undefined;
+  metadata: Metadata | undefined;
   /**
    * Additional information regarding the offering
    * Exclusively used for terms & conditions and link to Gaia-X VPs
    */
-  additionalInformation:
-    | AdditionalInformation
-    | undefined;
+  additionalInformation: AdditionalInformation | undefined;
   /**
    * Services that are exposed by the asset to interact with it
    * Cardinality: 1..n -> At least one service has to be passed for publishing
@@ -183,9 +187,7 @@ export interface UpdateOfferingRequest {
 
 export interface UpdateOfferingRequest_UpdateOffering {
   pontusxUpdateOffering?: PontusxUpdateOffering | undefined;
-  xfscUpdateOffering?:
-    | XfscUpdateOffering
-    | undefined;
+  xfscUpdateOffering?: XfscUpdateOffering | undefined;
   /**
    * Optional information about the published asset
    * If this Information is set, it is used to publish the offering to the Credential Event Service
@@ -207,9 +209,7 @@ export interface PontusxUpdateOffering {
    */
   did: string;
   /** The main information about the asset to publish */
-  metadata?:
-    | Metadata
-    | undefined;
+  metadata?: Metadata | undefined;
   /**
    * Additional information regarding the offering
    * Exclusively used for terms & conditions and link to Gaia-X VPs
@@ -220,9 +220,7 @@ export interface PontusxUpdateOffering {
 
 /** Updated Services that are exposed by the asset to interact with it */
 export interface PontusxUpdateOffering_UpdateService {
-  service:
-    | Service
-    | undefined;
+  service: Service | undefined;
   /**
    * Optional index of the service of the asset that is to be updated according to the information in the service field above
    * If no index is given the first service [index = 0] is updated
@@ -309,16 +307,16 @@ export function xfscUpdateOfferingLifecycle_XfscLifecycleStatesFromJSON(
 ): XfscUpdateOfferingLifecycle_XfscLifecycleStates {
   switch (object) {
     case 0:
-    case "ACTIVE":
+    case 'ACTIVE':
       return XfscUpdateOfferingLifecycle_XfscLifecycleStates.ACTIVE;
     case 3:
-    case "REVOKED_BY_PUBLISHER":
+    case 'REVOKED_BY_PUBLISHER':
       return XfscUpdateOfferingLifecycle_XfscLifecycleStates.REVOKED_BY_PUBLISHER;
     case 4:
-    case "DELETED":
+    case 'DELETED':
       return XfscUpdateOfferingLifecycle_XfscLifecycleStates.DELETED;
     case -1:
-    case "UNRECOGNIZED":
+    case 'UNRECOGNIZED':
     default:
       return XfscUpdateOfferingLifecycle_XfscLifecycleStates.UNRECOGNIZED;
   }
@@ -329,14 +327,14 @@ export function xfscUpdateOfferingLifecycle_XfscLifecycleStatesToJSON(
 ): string {
   switch (object) {
     case XfscUpdateOfferingLifecycle_XfscLifecycleStates.ACTIVE:
-      return "ACTIVE";
+      return 'ACTIVE';
     case XfscUpdateOfferingLifecycle_XfscLifecycleStates.REVOKED_BY_PUBLISHER:
-      return "REVOKED_BY_PUBLISHER";
+      return 'REVOKED_BY_PUBLISHER';
     case XfscUpdateOfferingLifecycle_XfscLifecycleStates.DELETED:
-      return "DELETED";
+      return 'DELETED';
     case XfscUpdateOfferingLifecycle_XfscLifecycleStates.UNRECOGNIZED:
     default:
-      return "UNRECOGNIZED";
+      return 'UNRECOGNIZED';
   }
 }
 
@@ -440,13 +438,9 @@ export interface Metadata {
 
 export interface AlgorithmMetadata {
   /** Language used to implement the software, e.g. "python" */
-  language?:
-    | string
-    | undefined;
+  language?: string | undefined;
   /** Version of the software preferably in SemVer notation, e.g. 1.0.0. */
-  version?:
-    | string
-    | undefined;
+  version?: string | undefined;
   /**
    * Optional consumer parameters similar as in Service
    * Implemented here to gain access to user input at algorithm runtime
@@ -479,15 +473,11 @@ export interface Container {
 /** Services define the access for an asset */
 export interface Service {
   name?: string | undefined;
-  description?:
-    | string
-    | undefined;
+  description?: string | undefined;
   /** Type of service: access or compute */
   type: string;
   /** Information about the pricing model and amount for consumption */
-  pricing:
-    | Pricing
-    | undefined;
+  pricing: Pricing | undefined;
   /**
    * Files that contain the data related to the asset/service
    * At least one file is required for publication
@@ -497,37 +487,27 @@ export interface Service {
    * Describing how long the service can be used after consumption is initiated.
    * Expressed in seconds; where 0 represents no time limit
    */
-  timeout?:
-    | number
-    | undefined;
+  timeout?: number | undefined;
   /**
    * Name for the access token that is generated for consuming the asset/service
    * Important for following access token transactions in the explorer
    */
-  tokenName?:
-    | string
-    | undefined;
+  tokenName?: string | undefined;
   /**
    * Corresponding Symbol (Abbreviation) for the access token that is generated for consuming the asset/service
    * Important for following access token transactions in the explorer
    */
-  tokenSymbol?:
-    | string
-    | undefined;
+  tokenSymbol?: string | undefined;
   /**
    * URL (schema + host) of the Provider responsible for provisioning of the data service
    * If no value is given the standard provider given in the network config is used (i.e. deltaDAO provider)
    */
-  serviceEndpoint?:
-    | string
-    | undefined;
+  serviceEndpoint?: string | undefined;
   /**
    * Compute options for a compute asset/service
    * Only optional if the offering is of type 'access' and not 'compute'
    */
-  computeOptions?:
-    | ComputeOptions
-    | undefined;
+  computeOptions?: ComputeOptions | undefined;
   /** Optional message that defines required consumer input before consuming the asset/service */
   consumerParameters: ConsumerParameter[];
 }
@@ -550,16 +530,16 @@ export enum Pricing_PricingType {
 export function pricing_PricingTypeFromJSON(object: any): Pricing_PricingType {
   switch (object) {
     case 0:
-    case "FREE":
+    case 'FREE':
       return Pricing_PricingType.FREE;
     case 1:
-    case "FIXED_OCEAN":
+    case 'FIXED_OCEAN':
       return Pricing_PricingType.FIXED_OCEAN;
     case 2:
-    case "FIXED_EUROE":
+    case 'FIXED_EUROE':
       return Pricing_PricingType.FIXED_EUROE;
     case -1:
-    case "UNRECOGNIZED":
+    case 'UNRECOGNIZED':
     default:
       return Pricing_PricingType.UNRECOGNIZED;
   }
@@ -568,14 +548,14 @@ export function pricing_PricingTypeFromJSON(object: any): Pricing_PricingType {
 export function pricing_PricingTypeToJSON(object: Pricing_PricingType): string {
   switch (object) {
     case Pricing_PricingType.FREE:
-      return "FREE";
+      return 'FREE';
     case Pricing_PricingType.FIXED_OCEAN:
-      return "FIXED_OCEAN";
+      return 'FIXED_OCEAN';
     case Pricing_PricingType.FIXED_EUROE:
-      return "FIXED_EUROE";
+      return 'FIXED_EUROE';
     case Pricing_PricingType.UNRECOGNIZED:
     default:
-      return "UNRECOGNIZED";
+      return 'UNRECOGNIZED';
   }
 }
 
@@ -601,16 +581,12 @@ export interface ComputeOptions {
    * If true, any passed raw text will be allowed to run. Useful for an algorithm drag & drop use case, but increases risk of data escape through malicious user input.
    * Optional because default value in connector is false
    */
-  allowRawAlgorithm?:
-    | boolean
-    | undefined;
+  allowRawAlgorithm?: boolean | undefined;
   /**
    * If true, the algorithm job will have network access.
    * Optional because default value in connector is false
    */
-  allowNetworkAccess?:
-    | boolean
-    | undefined;
+  allowNetworkAccess?: boolean | undefined;
   /**
    * Algorithm that is allowed/trusted by the publisher to be used on asset/service
    * If not defined, then any published algorithm is allowed. If empty array, then no algorithm is allowed.
@@ -635,9 +611,7 @@ export interface TrustedAlgorihm {
    * If the algorithm has multiple files, filesChecksum is a concatenated string of all files checksums
    * Optional because this is already handled by nautilus
    */
-  filesChecksum?:
-    | string
-    | undefined;
+  filesChecksum?: string | undefined;
   /**
    * Hash of algorithm's image details (entrypoint and image checksum)
    * Produced by: sha256(algorithm_ddo.metadata.algorithm.container.entrypoint + algorithm_ddo.metadata.algorithm.container.checksum)
@@ -710,15 +684,25 @@ function createBaseCreateOfferingRequest(): CreateOfferingRequest {
 }
 
 export const CreateOfferingRequest = {
-  encode(message: CreateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: CreateOfferingRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.offerings) {
-      CreateOfferingRequest_Offering.encode(v!, writer.uint32(82).fork()).ldelim();
+      CreateOfferingRequest_Offering.encode(
+        v!,
+        writer.uint32(82).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateOfferingRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateOfferingRequest();
     while (reader.pos < end) {
@@ -729,7 +713,9 @@ export const CreateOfferingRequest = {
             break;
           }
 
-          message.offerings.push(CreateOfferingRequest_Offering.decode(reader, reader.uint32()));
+          message.offerings.push(
+            CreateOfferingRequest_Offering.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -743,7 +729,9 @@ export const CreateOfferingRequest = {
   fromJSON(object: any): CreateOfferingRequest {
     return {
       offerings: Array.isArray(object?.offerings)
-        ? object.offerings.map((e: any) => CreateOfferingRequest_Offering.fromJSON(e))
+        ? object.offerings.map((e: any) =>
+            CreateOfferingRequest_Offering.fromJSON(e),
+          )
         : [],
     };
   },
@@ -751,17 +739,26 @@ export const CreateOfferingRequest = {
   toJSON(message: CreateOfferingRequest): unknown {
     const obj: any = {};
     if (message.offerings?.length) {
-      obj.offerings = message.offerings.map((e) => CreateOfferingRequest_Offering.toJSON(e));
+      obj.offerings = message.offerings.map((e) =>
+        CreateOfferingRequest_Offering.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(base?: I): CreateOfferingRequest {
+  create<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(
+    base?: I,
+  ): CreateOfferingRequest {
     return CreateOfferingRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(object: I): CreateOfferingRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest>, I>>(
+    object: I,
+  ): CreateOfferingRequest {
     const message = createBaseCreateOfferingRequest();
-    message.offerings = object.offerings?.map((e) => CreateOfferingRequest_Offering.fromPartial(e)) || [];
+    message.offerings =
+      object.offerings?.map((e) =>
+        CreateOfferingRequest_Offering.fromPartial(e),
+      ) || [];
     return message;
   },
 };
@@ -771,18 +768,31 @@ function createBaseCreateOfferingRequest_Offering(): CreateOfferingRequest_Offer
 }
 
 export const CreateOfferingRequest_Offering = {
-  encode(message: CreateOfferingRequest_Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: CreateOfferingRequest_Offering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.pontusxOffering !== undefined) {
-      PontusxOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
+      PontusxOffering.encode(
+        message.pontusxOffering,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.xfscOffering !== undefined) {
-      XfscOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
+      XfscOffering.encode(
+        message.xfscOffering,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingRequest_Offering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateOfferingRequest_Offering {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateOfferingRequest_Offering();
     while (reader.pos < end) {
@@ -793,7 +803,10 @@ export const CreateOfferingRequest_Offering = {
             break;
           }
 
-          message.pontusxOffering = PontusxOffering.decode(reader, reader.uint32());
+          message.pontusxOffering = PontusxOffering.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 2:
           if (tag !== 18) {
@@ -813,8 +826,12 @@ export const CreateOfferingRequest_Offering = {
 
   fromJSON(object: any): CreateOfferingRequest_Offering {
     return {
-      pontusxOffering: isSet(object.pontusxOffering) ? PontusxOffering.fromJSON(object.pontusxOffering) : undefined,
-      xfscOffering: isSet(object.xfscOffering) ? XfscOffering.fromJSON(object.xfscOffering) : undefined,
+      pontusxOffering: isSet(object.pontusxOffering)
+        ? PontusxOffering.fromJSON(object.pontusxOffering)
+        : undefined,
+      xfscOffering: isSet(object.xfscOffering)
+        ? XfscOffering.fromJSON(object.xfscOffering)
+        : undefined,
     };
   },
 
@@ -829,37 +846,45 @@ export const CreateOfferingRequest_Offering = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateOfferingRequest_Offering>, I>>(base?: I): CreateOfferingRequest_Offering {
+  create<I extends Exact<DeepPartial<CreateOfferingRequest_Offering>, I>>(
+    base?: I,
+  ): CreateOfferingRequest_Offering {
     return CreateOfferingRequest_Offering.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<CreateOfferingRequest_Offering>, I>>(
     object: I,
   ): CreateOfferingRequest_Offering {
     const message = createBaseCreateOfferingRequest_Offering();
-    message.pontusxOffering = (object.pontusxOffering !== undefined && object.pontusxOffering !== null)
-      ? PontusxOffering.fromPartial(object.pontusxOffering)
-      : undefined;
-    message.xfscOffering = (object.xfscOffering !== undefined && object.xfscOffering !== null)
-      ? XfscOffering.fromPartial(object.xfscOffering)
-      : undefined;
+    message.pontusxOffering =
+      object.pontusxOffering !== undefined && object.pontusxOffering !== null
+        ? PontusxOffering.fromPartial(object.pontusxOffering)
+        : undefined;
+    message.xfscOffering =
+      object.xfscOffering !== undefined && object.xfscOffering !== null
+        ? XfscOffering.fromPartial(object.xfscOffering)
+        : undefined;
     return message;
   },
 };
 
 function createBaseXfscOffering(): XfscOffering {
-  return { VP: "" };
+  return { VP: '' };
 }
 
 export const XfscOffering = {
-  encode(message: XfscOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.VP !== "") {
+  encode(
+    message: XfscOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.VP !== '') {
       writer.uint32(10).string(message.VP);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): XfscOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseXfscOffering();
     while (reader.pos < end) {
@@ -882,38 +907,52 @@ export const XfscOffering = {
   },
 
   fromJSON(object: any): XfscOffering {
-    return { VP: isSet(object.VP) ? String(object.VP) : "" };
+    return { VP: isSet(object.VP) ? String(object.VP) : '' };
   },
 
   toJSON(message: XfscOffering): unknown {
     const obj: any = {};
-    if (message.VP !== "") {
+    if (message.VP !== '') {
       obj.VP = message.VP;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<XfscOffering>, I>>(base?: I): XfscOffering {
+  create<I extends Exact<DeepPartial<XfscOffering>, I>>(
+    base?: I,
+  ): XfscOffering {
     return XfscOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<XfscOffering>, I>>(object: I): XfscOffering {
+  fromPartial<I extends Exact<DeepPartial<XfscOffering>, I>>(
+    object: I,
+  ): XfscOffering {
     const message = createBaseXfscOffering();
-    message.VP = object.VP ?? "";
+    message.VP = object.VP ?? '';
     return message;
   },
 };
 
 function createBasePontusxOffering(): PontusxOffering {
-  return { metadata: undefined, additionalInformation: undefined, services: [] };
+  return {
+    metadata: undefined,
+    additionalInformation: undefined,
+    services: [],
+  };
 }
 
 export const PontusxOffering = {
-  encode(message: PontusxOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: PontusxOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.metadata !== undefined) {
       Metadata.encode(message.metadata, writer.uint32(10).fork()).ldelim();
     }
     if (message.additionalInformation !== undefined) {
-      AdditionalInformation.encode(message.additionalInformation, writer.uint32(18).fork()).ldelim();
+      AdditionalInformation.encode(
+        message.additionalInformation,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     for (const v of message.services) {
       Service.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -922,7 +961,8 @@ export const PontusxOffering = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PontusxOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePontusxOffering();
     while (reader.pos < end) {
@@ -940,7 +980,10 @@ export const PontusxOffering = {
             break;
           }
 
-          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          message.additionalInformation = AdditionalInformation.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 3:
           if (tag !== 26) {
@@ -960,11 +1003,15 @@ export const PontusxOffering = {
 
   fromJSON(object: any): PontusxOffering {
     return {
-      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
+      metadata: isSet(object.metadata)
+        ? Metadata.fromJSON(object.metadata)
+        : undefined,
       additionalInformation: isSet(object.additionalInformation)
         ? AdditionalInformation.fromJSON(object.additionalInformation)
         : undefined,
-      services: Array.isArray(object?.services) ? object.services.map((e: any) => Service.fromJSON(e)) : [],
+      services: Array.isArray(object?.services)
+        ? object.services.map((e: any) => Service.fromJSON(e))
+        : [],
     };
   },
 
@@ -974,7 +1021,9 @@ export const PontusxOffering = {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.additionalInformation !== undefined) {
-      obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
+      obj.additionalInformation = AdditionalInformation.toJSON(
+        message.additionalInformation,
+      );
     }
     if (message.services?.length) {
       obj.services = message.services.map((e) => Service.toJSON(e));
@@ -982,19 +1031,26 @@ export const PontusxOffering = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PontusxOffering>, I>>(base?: I): PontusxOffering {
+  create<I extends Exact<DeepPartial<PontusxOffering>, I>>(
+    base?: I,
+  ): PontusxOffering {
     return PontusxOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PontusxOffering>, I>>(object: I): PontusxOffering {
+  fromPartial<I extends Exact<DeepPartial<PontusxOffering>, I>>(
+    object: I,
+  ): PontusxOffering {
     const message = createBasePontusxOffering();
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? Metadata.fromPartial(object.metadata)
-      : undefined;
+    message.metadata =
+      object.metadata !== undefined && object.metadata !== null
+        ? Metadata.fromPartial(object.metadata)
+        : undefined;
     message.additionalInformation =
-      (object.additionalInformation !== undefined && object.additionalInformation !== null)
+      object.additionalInformation !== undefined &&
+      object.additionalInformation !== null
         ? AdditionalInformation.fromPartial(object.additionalInformation)
         : undefined;
-    message.services = object.services?.map((e) => Service.fromPartial(e)) || [];
+    message.services =
+      object.services?.map((e) => Service.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1004,18 +1060,28 @@ function createBaseCreateOfferingResponse(): CreateOfferingResponse {
 }
 
 export const CreateOfferingResponse = {
-  encode(message: CreateOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: CreateOfferingResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.id) {
       writer.uint32(10).string(v!);
     }
     if (message.DebugInformation !== undefined) {
-      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+      Struct.encode(
+        Struct.wrap(message.DebugInformation),
+        writer.uint32(26).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateOfferingResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateOfferingResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateOfferingResponse();
     while (reader.pos < end) {
@@ -1033,7 +1099,9 @@ export const CreateOfferingResponse = {
             break;
           }
 
-          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.DebugInformation = Struct.unwrap(
+            Struct.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1047,7 +1115,9 @@ export const CreateOfferingResponse = {
   fromJSON(object: any): CreateOfferingResponse {
     return {
       id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
-      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+      DebugInformation: isObject(object.DebugInformation)
+        ? object.DebugInformation
+        : undefined,
     };
   },
 
@@ -1062,10 +1132,14 @@ export const CreateOfferingResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(base?: I): CreateOfferingResponse {
+  create<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(
+    base?: I,
+  ): CreateOfferingResponse {
     return CreateOfferingResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(object: I): CreateOfferingResponse {
+  fromPartial<I extends Exact<DeepPartial<CreateOfferingResponse>, I>>(
+    object: I,
+  ): CreateOfferingResponse {
     const message = createBaseCreateOfferingResponse();
     message.id = object.id?.map((e) => e) || [];
     message.DebugInformation = object.DebugInformation ?? undefined;
@@ -1078,15 +1152,25 @@ function createBaseUpdateOfferingRequest(): UpdateOfferingRequest {
 }
 
 export const UpdateOfferingRequest = {
-  encode(message: UpdateOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: UpdateOfferingRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.offerings) {
-      UpdateOfferingRequest_UpdateOffering.encode(v!, writer.uint32(82).fork()).ldelim();
+      UpdateOfferingRequest_UpdateOffering.encode(
+        v!,
+        writer.uint32(82).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateOfferingRequest();
     while (reader.pos < end) {
@@ -1097,7 +1181,12 @@ export const UpdateOfferingRequest = {
             break;
           }
 
-          message.offerings.push(UpdateOfferingRequest_UpdateOffering.decode(reader, reader.uint32()));
+          message.offerings.push(
+            UpdateOfferingRequest_UpdateOffering.decode(
+              reader,
+              reader.uint32(),
+            ),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1111,7 +1200,9 @@ export const UpdateOfferingRequest = {
   fromJSON(object: any): UpdateOfferingRequest {
     return {
       offerings: Array.isArray(object?.offerings)
-        ? object.offerings.map((e: any) => UpdateOfferingRequest_UpdateOffering.fromJSON(e))
+        ? object.offerings.map((e: any) =>
+            UpdateOfferingRequest_UpdateOffering.fromJSON(e),
+          )
         : [],
     };
   },
@@ -1119,41 +1210,70 @@ export const UpdateOfferingRequest = {
   toJSON(message: UpdateOfferingRequest): unknown {
     const obj: any = {};
     if (message.offerings?.length) {
-      obj.offerings = message.offerings.map((e) => UpdateOfferingRequest_UpdateOffering.toJSON(e));
+      obj.offerings = message.offerings.map((e) =>
+        UpdateOfferingRequest_UpdateOffering.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(base?: I): UpdateOfferingRequest {
+  create<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(
+    base?: I,
+  ): UpdateOfferingRequest {
     return UpdateOfferingRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(object: I): UpdateOfferingRequest {
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest>, I>>(
+    object: I,
+  ): UpdateOfferingRequest {
     const message = createBaseUpdateOfferingRequest();
-    message.offerings = object.offerings?.map((e) => UpdateOfferingRequest_UpdateOffering.fromPartial(e)) || [];
+    message.offerings =
+      object.offerings?.map((e) =>
+        UpdateOfferingRequest_UpdateOffering.fromPartial(e),
+      ) || [];
     return message;
   },
 };
 
 function createBaseUpdateOfferingRequest_UpdateOffering(): UpdateOfferingRequest_UpdateOffering {
-  return { pontusxUpdateOffering: undefined, xfscUpdateOffering: undefined, publishInfo: undefined };
+  return {
+    pontusxUpdateOffering: undefined,
+    xfscUpdateOffering: undefined,
+    publishInfo: undefined,
+  };
 }
 
 export const UpdateOfferingRequest_UpdateOffering = {
-  encode(message: UpdateOfferingRequest_UpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: UpdateOfferingRequest_UpdateOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.pontusxUpdateOffering !== undefined) {
-      PontusxUpdateOffering.encode(message.pontusxUpdateOffering, writer.uint32(10).fork()).ldelim();
+      PontusxUpdateOffering.encode(
+        message.pontusxUpdateOffering,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.xfscUpdateOffering !== undefined) {
-      XfscUpdateOffering.encode(message.xfscUpdateOffering, writer.uint32(18).fork()).ldelim();
+      XfscUpdateOffering.encode(
+        message.xfscUpdateOffering,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     if (message.publishInfo !== undefined) {
-      PublishInfo.encode(message.publishInfo, writer.uint32(50).fork()).ldelim();
+      PublishInfo.encode(
+        message.publishInfo,
+        writer.uint32(50).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingRequest_UpdateOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingRequest_UpdateOffering {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateOfferingRequest_UpdateOffering();
     while (reader.pos < end) {
@@ -1164,14 +1284,20 @@ export const UpdateOfferingRequest_UpdateOffering = {
             break;
           }
 
-          message.pontusxUpdateOffering = PontusxUpdateOffering.decode(reader, reader.uint32());
+          message.pontusxUpdateOffering = PontusxUpdateOffering.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.xfscUpdateOffering = XfscUpdateOffering.decode(reader, reader.uint32());
+          message.xfscUpdateOffering = XfscUpdateOffering.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 6:
           if (tag !== 50) {
@@ -1197,17 +1323,23 @@ export const UpdateOfferingRequest_UpdateOffering = {
       xfscUpdateOffering: isSet(object.xfscUpdateOffering)
         ? XfscUpdateOffering.fromJSON(object.xfscUpdateOffering)
         : undefined,
-      publishInfo: isSet(object.publishInfo) ? PublishInfo.fromJSON(object.publishInfo) : undefined,
+      publishInfo: isSet(object.publishInfo)
+        ? PublishInfo.fromJSON(object.publishInfo)
+        : undefined,
     };
   },
 
   toJSON(message: UpdateOfferingRequest_UpdateOffering): unknown {
     const obj: any = {};
     if (message.pontusxUpdateOffering !== undefined) {
-      obj.pontusxUpdateOffering = PontusxUpdateOffering.toJSON(message.pontusxUpdateOffering);
+      obj.pontusxUpdateOffering = PontusxUpdateOffering.toJSON(
+        message.pontusxUpdateOffering,
+      );
     }
     if (message.xfscUpdateOffering !== undefined) {
-      obj.xfscUpdateOffering = XfscUpdateOffering.toJSON(message.xfscUpdateOffering);
+      obj.xfscUpdateOffering = XfscUpdateOffering.toJSON(
+        message.xfscUpdateOffering,
+      );
     }
     if (message.publishInfo !== undefined) {
       obj.publishInfo = PublishInfo.toJSON(message.publishInfo);
@@ -1218,43 +1350,53 @@ export const UpdateOfferingRequest_UpdateOffering = {
   create<I extends Exact<DeepPartial<UpdateOfferingRequest_UpdateOffering>, I>>(
     base?: I,
   ): UpdateOfferingRequest_UpdateOffering {
-    return UpdateOfferingRequest_UpdateOffering.fromPartial(base ?? ({} as any));
+    return UpdateOfferingRequest_UpdateOffering.fromPartial(
+      base ?? ({} as any),
+    );
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingRequest_UpdateOffering>, I>>(
-    object: I,
-  ): UpdateOfferingRequest_UpdateOffering {
+  fromPartial<
+    I extends Exact<DeepPartial<UpdateOfferingRequest_UpdateOffering>, I>,
+  >(object: I): UpdateOfferingRequest_UpdateOffering {
     const message = createBaseUpdateOfferingRequest_UpdateOffering();
     message.pontusxUpdateOffering =
-      (object.pontusxUpdateOffering !== undefined && object.pontusxUpdateOffering !== null)
+      object.pontusxUpdateOffering !== undefined &&
+      object.pontusxUpdateOffering !== null
         ? PontusxUpdateOffering.fromPartial(object.pontusxUpdateOffering)
         : undefined;
-    message.xfscUpdateOffering = (object.xfscUpdateOffering !== undefined && object.xfscUpdateOffering !== null)
-      ? XfscUpdateOffering.fromPartial(object.xfscUpdateOffering)
-      : undefined;
-    message.publishInfo = (object.publishInfo !== undefined && object.publishInfo !== null)
-      ? PublishInfo.fromPartial(object.publishInfo)
-      : undefined;
+    message.xfscUpdateOffering =
+      object.xfscUpdateOffering !== undefined &&
+      object.xfscUpdateOffering !== null
+        ? XfscUpdateOffering.fromPartial(object.xfscUpdateOffering)
+        : undefined;
+    message.publishInfo =
+      object.publishInfo !== undefined && object.publishInfo !== null
+        ? PublishInfo.fromPartial(object.publishInfo)
+        : undefined;
     return message;
   },
 };
 
 function createBaseXfscUpdateOffering(): XfscUpdateOffering {
-  return { hash: "", VP: "" };
+  return { hash: '', VP: '' };
 }
 
 export const XfscUpdateOffering = {
-  encode(message: XfscUpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.hash !== "") {
+  encode(
+    message: XfscUpdateOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.hash !== '') {
       writer.uint32(10).string(message.hash);
     }
-    if (message.VP !== "") {
+    if (message.VP !== '') {
       writer.uint32(18).string(message.VP);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): XfscUpdateOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseXfscUpdateOffering();
     while (reader.pos < end) {
@@ -1284,54 +1426,79 @@ export const XfscUpdateOffering = {
   },
 
   fromJSON(object: any): XfscUpdateOffering {
-    return { hash: isSet(object.hash) ? String(object.hash) : "", VP: isSet(object.VP) ? String(object.VP) : "" };
+    return {
+      hash: isSet(object.hash) ? String(object.hash) : '',
+      VP: isSet(object.VP) ? String(object.VP) : '',
+    };
   },
 
   toJSON(message: XfscUpdateOffering): unknown {
     const obj: any = {};
-    if (message.hash !== "") {
+    if (message.hash !== '') {
       obj.hash = message.hash;
     }
-    if (message.VP !== "") {
+    if (message.VP !== '') {
       obj.VP = message.VP;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(base?: I): XfscUpdateOffering {
+  create<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(
+    base?: I,
+  ): XfscUpdateOffering {
     return XfscUpdateOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(object: I): XfscUpdateOffering {
+  fromPartial<I extends Exact<DeepPartial<XfscUpdateOffering>, I>>(
+    object: I,
+  ): XfscUpdateOffering {
     const message = createBaseXfscUpdateOffering();
-    message.hash = object.hash ?? "";
-    message.VP = object.VP ?? "";
+    message.hash = object.hash ?? '';
+    message.VP = object.VP ?? '';
     return message;
   },
 };
 
 function createBasePontusxUpdateOffering(): PontusxUpdateOffering {
-  return { did: "", metadata: undefined, additionalInformation: undefined, updateServices: [] };
+  return {
+    did: '',
+    metadata: undefined,
+    additionalInformation: undefined,
+    updateServices: [],
+  };
 }
 
 export const PontusxUpdateOffering = {
-  encode(message: PontusxUpdateOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: PontusxUpdateOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
     if (message.metadata !== undefined) {
       Metadata.encode(message.metadata, writer.uint32(18).fork()).ldelim();
     }
     if (message.additionalInformation !== undefined) {
-      AdditionalInformation.encode(message.additionalInformation, writer.uint32(26).fork()).ldelim();
+      AdditionalInformation.encode(
+        message.additionalInformation,
+        writer.uint32(26).fork(),
+      ).ldelim();
     }
     for (const v of message.updateServices) {
-      PontusxUpdateOffering_UpdateService.encode(v!, writer.uint32(34).fork()).ldelim();
+      PontusxUpdateOffering_UpdateService.encode(
+        v!,
+        writer.uint32(34).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): PontusxUpdateOffering {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePontusxUpdateOffering();
     while (reader.pos < end) {
@@ -1356,14 +1523,19 @@ export const PontusxUpdateOffering = {
             break;
           }
 
-          message.additionalInformation = AdditionalInformation.decode(reader, reader.uint32());
+          message.additionalInformation = AdditionalInformation.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.updateServices.push(PontusxUpdateOffering_UpdateService.decode(reader, reader.uint32()));
+          message.updateServices.push(
+            PontusxUpdateOffering_UpdateService.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1376,49 +1548,65 @@ export const PontusxUpdateOffering = {
 
   fromJSON(object: any): PontusxUpdateOffering {
     return {
-      did: isSet(object.did) ? String(object.did) : "",
-      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined,
+      did: isSet(object.did) ? String(object.did) : '',
+      metadata: isSet(object.metadata)
+        ? Metadata.fromJSON(object.metadata)
+        : undefined,
       additionalInformation: isSet(object.additionalInformation)
         ? AdditionalInformation.fromJSON(object.additionalInformation)
         : undefined,
       updateServices: Array.isArray(object?.updateServices)
-        ? object.updateServices.map((e: any) => PontusxUpdateOffering_UpdateService.fromJSON(e))
+        ? object.updateServices.map((e: any) =>
+            PontusxUpdateOffering_UpdateService.fromJSON(e),
+          )
         : [],
     };
   },
 
   toJSON(message: PontusxUpdateOffering): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
     if (message.metadata !== undefined) {
       obj.metadata = Metadata.toJSON(message.metadata);
     }
     if (message.additionalInformation !== undefined) {
-      obj.additionalInformation = AdditionalInformation.toJSON(message.additionalInformation);
+      obj.additionalInformation = AdditionalInformation.toJSON(
+        message.additionalInformation,
+      );
     }
     if (message.updateServices?.length) {
-      obj.updateServices = message.updateServices.map((e) => PontusxUpdateOffering_UpdateService.toJSON(e));
+      obj.updateServices = message.updateServices.map((e) =>
+        PontusxUpdateOffering_UpdateService.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(base?: I): PontusxUpdateOffering {
+  create<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(
+    base?: I,
+  ): PontusxUpdateOffering {
     return PontusxUpdateOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(object: I): PontusxUpdateOffering {
+  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOffering>, I>>(
+    object: I,
+  ): PontusxUpdateOffering {
     const message = createBasePontusxUpdateOffering();
-    message.did = object.did ?? "";
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? Metadata.fromPartial(object.metadata)
-      : undefined;
+    message.did = object.did ?? '';
+    message.metadata =
+      object.metadata !== undefined && object.metadata !== null
+        ? Metadata.fromPartial(object.metadata)
+        : undefined;
     message.additionalInformation =
-      (object.additionalInformation !== undefined && object.additionalInformation !== null)
+      object.additionalInformation !== undefined &&
+      object.additionalInformation !== null
         ? AdditionalInformation.fromPartial(object.additionalInformation)
         : undefined;
-    message.updateServices = object.updateServices?.map((e) => PontusxUpdateOffering_UpdateService.fromPartial(e)) ||
-      [];
+    message.updateServices =
+      object.updateServices?.map((e) =>
+        PontusxUpdateOffering_UpdateService.fromPartial(e),
+      ) || [];
     return message;
   },
 };
@@ -1428,7 +1616,10 @@ function createBasePontusxUpdateOffering_UpdateService(): PontusxUpdateOffering_
 }
 
 export const PontusxUpdateOffering_UpdateService = {
-  encode(message: PontusxUpdateOffering_UpdateService, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: PontusxUpdateOffering_UpdateService,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.service !== undefined) {
       Service.encode(message.service, writer.uint32(26).fork()).ldelim();
     }
@@ -1438,8 +1629,12 @@ export const PontusxUpdateOffering_UpdateService = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOffering_UpdateService {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): PontusxUpdateOffering_UpdateService {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePontusxUpdateOffering_UpdateService();
     while (reader.pos < end) {
@@ -1470,7 +1665,9 @@ export const PontusxUpdateOffering_UpdateService = {
 
   fromJSON(object: any): PontusxUpdateOffering_UpdateService {
     return {
-      service: isSet(object.service) ? Service.fromJSON(object.service) : undefined,
+      service: isSet(object.service)
+        ? Service.fromJSON(object.service)
+        : undefined,
       index: isSet(object.index) ? Number(object.index) : undefined,
     };
   },
@@ -1491,35 +1688,40 @@ export const PontusxUpdateOffering_UpdateService = {
   ): PontusxUpdateOffering_UpdateService {
     return PontusxUpdateOffering_UpdateService.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PontusxUpdateOffering_UpdateService>, I>>(
-    object: I,
-  ): PontusxUpdateOffering_UpdateService {
+  fromPartial<
+    I extends Exact<DeepPartial<PontusxUpdateOffering_UpdateService>, I>,
+  >(object: I): PontusxUpdateOffering_UpdateService {
     const message = createBasePontusxUpdateOffering_UpdateService();
-    message.service = (object.service !== undefined && object.service !== null)
-      ? Service.fromPartial(object.service)
-      : undefined;
+    message.service =
+      object.service !== undefined && object.service !== null
+        ? Service.fromPartial(object.service)
+        : undefined;
     message.index = object.index ?? undefined;
     return message;
   },
 };
 
 function createBasePublishInfo(): PublishInfo {
-  return { source: "", data: "" };
+  return { source: '', data: '' };
 }
 
 export const PublishInfo = {
-  encode(message: PublishInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.source !== "") {
+  encode(
+    message: PublishInfo,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.source !== '') {
       writer.uint32(10).string(message.source);
     }
-    if (message.data !== "") {
+    if (message.data !== '') {
       writer.uint32(18).string(message.data);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PublishInfo {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePublishInfo();
     while (reader.pos < end) {
@@ -1550,17 +1752,17 @@ export const PublishInfo = {
 
   fromJSON(object: any): PublishInfo {
     return {
-      source: isSet(object.source) ? String(object.source) : "",
-      data: isSet(object.data) ? String(object.data) : "",
+      source: isSet(object.source) ? String(object.source) : '',
+      data: isSet(object.data) ? String(object.data) : '',
     };
   },
 
   toJSON(message: PublishInfo): unknown {
     const obj: any = {};
-    if (message.source !== "") {
+    if (message.source !== '') {
       obj.source = message.source;
     }
-    if (message.data !== "") {
+    if (message.data !== '') {
       obj.data = message.data;
     }
     return obj;
@@ -1569,10 +1771,12 @@ export const PublishInfo = {
   create<I extends Exact<DeepPartial<PublishInfo>, I>>(base?: I): PublishInfo {
     return PublishInfo.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PublishInfo>, I>>(object: I): PublishInfo {
+  fromPartial<I extends Exact<DeepPartial<PublishInfo>, I>>(
+    object: I,
+  ): PublishInfo {
     const message = createBasePublishInfo();
-    message.source = object.source ?? "";
-    message.data = object.data ?? "";
+    message.source = object.source ?? '';
+    message.data = object.data ?? '';
     return message;
   },
 };
@@ -1582,7 +1786,10 @@ function createBaseUpdateOfferingResponse(): UpdateOfferingResponse {
 }
 
 export const UpdateOfferingResponse = {
-  encode(message: UpdateOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: UpdateOfferingResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.id) {
       writer.uint32(10).string(v!);
     }
@@ -1590,13 +1797,20 @@ export const UpdateOfferingResponse = {
       writer.uint32(34).string(v!);
     }
     if (message.DebugInformation !== undefined) {
-      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+      Struct.encode(
+        Struct.wrap(message.DebugInformation),
+        writer.uint32(26).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateOfferingResponse();
     while (reader.pos < end) {
@@ -1621,7 +1835,9 @@ export const UpdateOfferingResponse = {
             break;
           }
 
-          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.DebugInformation = Struct.unwrap(
+            Struct.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1635,8 +1851,12 @@ export const UpdateOfferingResponse = {
   fromJSON(object: any): UpdateOfferingResponse {
     return {
       id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
-      locations: Array.isArray(object?.locations) ? object.locations.map((e: any) => String(e)) : [],
-      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+      locations: Array.isArray(object?.locations)
+        ? object.locations.map((e: any) => String(e))
+        : [],
+      DebugInformation: isObject(object.DebugInformation)
+        ? object.DebugInformation
+        : undefined,
     };
   },
 
@@ -1654,10 +1874,14 @@ export const UpdateOfferingResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(base?: I): UpdateOfferingResponse {
+  create<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(
+    base?: I,
+  ): UpdateOfferingResponse {
     return UpdateOfferingResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(object: I): UpdateOfferingResponse {
+  fromPartial<I extends Exact<DeepPartial<UpdateOfferingResponse>, I>>(
+    object: I,
+  ): UpdateOfferingResponse {
     const message = createBaseUpdateOfferingResponse();
     message.id = object.id?.map((e) => e) || [];
     message.locations = object.locations?.map((e) => e) || [];
@@ -1671,15 +1895,25 @@ function createBaseUpdateOfferingLifecycleRequest(): UpdateOfferingLifecycleRequ
 }
 
 export const UpdateOfferingLifecycleRequest = {
-  encode(message: UpdateOfferingLifecycleRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: UpdateOfferingLifecycleRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.offerings) {
-      UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.encode(v!, writer.uint32(82).fork()).ldelim();
+      UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.encode(
+        v!,
+        writer.uint32(82).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingLifecycleRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateOfferingLifecycleRequest();
     while (reader.pos < end) {
@@ -1691,7 +1925,10 @@ export const UpdateOfferingLifecycleRequest = {
           }
 
           message.offerings.push(
-            UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.decode(reader, reader.uint32()),
+            UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.decode(
+              reader,
+              reader.uint32(),
+            ),
           );
           continue;
       }
@@ -1706,7 +1943,9 @@ export const UpdateOfferingLifecycleRequest = {
   fromJSON(object: any): UpdateOfferingLifecycleRequest {
     return {
       offerings: Array.isArray(object?.offerings)
-        ? object.offerings.map((e: any) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromJSON(e))
+        ? object.offerings.map((e: any) =>
+            UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromJSON(e),
+          )
         : [],
     };
   },
@@ -1714,12 +1953,16 @@ export const UpdateOfferingLifecycleRequest = {
   toJSON(message: UpdateOfferingLifecycleRequest): unknown {
     const obj: any = {};
     if (message.offerings?.length) {
-      obj.offerings = message.offerings.map((e) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.toJSON(e));
+      obj.offerings = message.offerings.map((e) =>
+        UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(base?: I): UpdateOfferingLifecycleRequest {
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(
+    base?: I,
+  ): UpdateOfferingLifecycleRequest {
     return UpdateOfferingLifecycleRequest.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest>, I>>(
@@ -1727,13 +1970,18 @@ export const UpdateOfferingLifecycleRequest = {
   ): UpdateOfferingLifecycleRequest {
     const message = createBaseUpdateOfferingLifecycleRequest();
     message.offerings =
-      object.offerings?.map((e) => UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(e)) || [];
+      object.offerings?.map((e) =>
+        UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(e),
+      ) || [];
     return message;
   },
 };
 
 function createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle(): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
-  return { pontusxUpdateOfferingLifecycle: undefined, xfscUpdateOfferingLifecycle: undefined };
+  return {
+    pontusxUpdateOfferingLifecycle: undefined,
+    xfscUpdateOfferingLifecycle: undefined,
+  };
 }
 
 export const UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle = {
@@ -1742,18 +1990,29 @@ export const UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle = {
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
     if (message.pontusxUpdateOfferingLifecycle !== undefined) {
-      PontusxUpdateOfferingLifecycle.encode(message.pontusxUpdateOfferingLifecycle, writer.uint32(10).fork()).ldelim();
+      PontusxUpdateOfferingLifecycle.encode(
+        message.pontusxUpdateOfferingLifecycle,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.xfscUpdateOfferingLifecycle !== undefined) {
-      XfscUpdateOfferingLifecycle.encode(message.xfscUpdateOfferingLifecycle, writer.uint32(18).fork()).ldelim();
+      XfscUpdateOfferingLifecycle.encode(
+        message.xfscUpdateOfferingLifecycle,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
+    const message =
+      createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1762,14 +2021,16 @@ export const UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle = {
             break;
           }
 
-          message.pontusxUpdateOfferingLifecycle = PontusxUpdateOfferingLifecycle.decode(reader, reader.uint32());
+          message.pontusxUpdateOfferingLifecycle =
+            PontusxUpdateOfferingLifecycle.decode(reader, reader.uint32());
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.xfscUpdateOfferingLifecycle = XfscUpdateOfferingLifecycle.decode(reader, reader.uint32());
+          message.xfscUpdateOfferingLifecycle =
+            XfscUpdateOfferingLifecycle.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1780,58 +2041,89 @@ export const UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle = {
     return message;
   },
 
-  fromJSON(object: any): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+  fromJSON(
+    object: any,
+  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
     return {
-      pontusxUpdateOfferingLifecycle: isSet(object.pontusxUpdateOfferingLifecycle)
-        ? PontusxUpdateOfferingLifecycle.fromJSON(object.pontusxUpdateOfferingLifecycle)
+      pontusxUpdateOfferingLifecycle: isSet(
+        object.pontusxUpdateOfferingLifecycle,
+      )
+        ? PontusxUpdateOfferingLifecycle.fromJSON(
+            object.pontusxUpdateOfferingLifecycle,
+          )
         : undefined,
       xfscUpdateOfferingLifecycle: isSet(object.xfscUpdateOfferingLifecycle)
-        ? XfscUpdateOfferingLifecycle.fromJSON(object.xfscUpdateOfferingLifecycle)
+        ? XfscUpdateOfferingLifecycle.fromJSON(
+            object.xfscUpdateOfferingLifecycle,
+          )
         : undefined,
     };
   },
 
-  toJSON(message: UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle): unknown {
+  toJSON(
+    message: UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle,
+  ): unknown {
     const obj: any = {};
     if (message.pontusxUpdateOfferingLifecycle !== undefined) {
-      obj.pontusxUpdateOfferingLifecycle = PontusxUpdateOfferingLifecycle.toJSON(
-        message.pontusxUpdateOfferingLifecycle,
-      );
+      obj.pontusxUpdateOfferingLifecycle =
+        PontusxUpdateOfferingLifecycle.toJSON(
+          message.pontusxUpdateOfferingLifecycle,
+        );
     }
     if (message.xfscUpdateOfferingLifecycle !== undefined) {
-      obj.xfscUpdateOfferingLifecycle = XfscUpdateOfferingLifecycle.toJSON(message.xfscUpdateOfferingLifecycle);
+      obj.xfscUpdateOfferingLifecycle = XfscUpdateOfferingLifecycle.toJSON(
+        message.xfscUpdateOfferingLifecycle,
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>, I>>(
-    base?: I,
-  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
-    return UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
+  create<
+    I extends Exact<
+      DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>,
+      I
+    >,
+  >(base?: I): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    return UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle.fromPartial(
+      base ?? ({} as any),
+    );
   },
-  fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>, I>>(
-    object: I,
-  ): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
-    const message = createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
+  fromPartial<
+    I extends Exact<
+      DeepPartial<UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle>,
+      I
+    >,
+  >(object: I): UpdateOfferingLifecycleRequest_UpdateOfferingLifecycle {
+    const message =
+      createBaseUpdateOfferingLifecycleRequest_UpdateOfferingLifecycle();
     message.pontusxUpdateOfferingLifecycle =
-      (object.pontusxUpdateOfferingLifecycle !== undefined && object.pontusxUpdateOfferingLifecycle !== null)
-        ? PontusxUpdateOfferingLifecycle.fromPartial(object.pontusxUpdateOfferingLifecycle)
+      object.pontusxUpdateOfferingLifecycle !== undefined &&
+      object.pontusxUpdateOfferingLifecycle !== null
+        ? PontusxUpdateOfferingLifecycle.fromPartial(
+            object.pontusxUpdateOfferingLifecycle,
+          )
         : undefined;
     message.xfscUpdateOfferingLifecycle =
-      (object.xfscUpdateOfferingLifecycle !== undefined && object.xfscUpdateOfferingLifecycle !== null)
-        ? XfscUpdateOfferingLifecycle.fromPartial(object.xfscUpdateOfferingLifecycle)
+      object.xfscUpdateOfferingLifecycle !== undefined &&
+      object.xfscUpdateOfferingLifecycle !== null
+        ? XfscUpdateOfferingLifecycle.fromPartial(
+            object.xfscUpdateOfferingLifecycle,
+          )
         : undefined;
     return message;
   },
 };
 
 function createBasePontusxUpdateOfferingLifecycle(): PontusxUpdateOfferingLifecycle {
-  return { did: "", to: 0 };
+  return { did: '', to: 0 };
 }
 
 export const PontusxUpdateOfferingLifecycle = {
-  encode(message: PontusxUpdateOfferingLifecycle, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: PontusxUpdateOfferingLifecycle,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
     if (message.to !== 0) {
@@ -1840,8 +2132,12 @@ export const PontusxUpdateOfferingLifecycle = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): PontusxUpdateOfferingLifecycle {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): PontusxUpdateOfferingLifecycle {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePontusxUpdateOfferingLifecycle();
     while (reader.pos < end) {
@@ -1872,14 +2168,14 @@ export const PontusxUpdateOfferingLifecycle = {
 
   fromJSON(object: any): PontusxUpdateOfferingLifecycle {
     return {
-      did: isSet(object.did) ? String(object.did) : "",
+      did: isSet(object.did) ? String(object.did) : '',
       to: isSet(object.to) ? pontusxLifecycleStatesFromJSON(object.to) : 0,
     };
   },
 
   toJSON(message: PontusxUpdateOfferingLifecycle): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
     if (message.to !== 0) {
@@ -1888,26 +2184,31 @@ export const PontusxUpdateOfferingLifecycle = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PontusxUpdateOfferingLifecycle>, I>>(base?: I): PontusxUpdateOfferingLifecycle {
+  create<I extends Exact<DeepPartial<PontusxUpdateOfferingLifecycle>, I>>(
+    base?: I,
+  ): PontusxUpdateOfferingLifecycle {
     return PontusxUpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<PontusxUpdateOfferingLifecycle>, I>>(
     object: I,
   ): PontusxUpdateOfferingLifecycle {
     const message = createBasePontusxUpdateOfferingLifecycle();
-    message.did = object.did ?? "";
+    message.did = object.did ?? '';
     message.to = object.to ?? 0;
     return message;
   },
 };
 
 function createBaseXfscUpdateOfferingLifecycle(): XfscUpdateOfferingLifecycle {
-  return { hash: "", to: 0 };
+  return { hash: '', to: 0 };
 }
 
 export const XfscUpdateOfferingLifecycle = {
-  encode(message: XfscUpdateOfferingLifecycle, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.hash !== "") {
+  encode(
+    message: XfscUpdateOfferingLifecycle,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.hash !== '') {
       writer.uint32(10).string(message.hash);
     }
     if (message.to !== 0) {
@@ -1916,8 +2217,12 @@ export const XfscUpdateOfferingLifecycle = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): XfscUpdateOfferingLifecycle {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): XfscUpdateOfferingLifecycle {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseXfscUpdateOfferingLifecycle();
     while (reader.pos < end) {
@@ -1948,28 +2253,36 @@ export const XfscUpdateOfferingLifecycle = {
 
   fromJSON(object: any): XfscUpdateOfferingLifecycle {
     return {
-      hash: isSet(object.hash) ? String(object.hash) : "",
-      to: isSet(object.to) ? xfscUpdateOfferingLifecycle_XfscLifecycleStatesFromJSON(object.to) : 0,
+      hash: isSet(object.hash) ? String(object.hash) : '',
+      to: isSet(object.to)
+        ? xfscUpdateOfferingLifecycle_XfscLifecycleStatesFromJSON(object.to)
+        : 0,
     };
   },
 
   toJSON(message: XfscUpdateOfferingLifecycle): unknown {
     const obj: any = {};
-    if (message.hash !== "") {
+    if (message.hash !== '') {
       obj.hash = message.hash;
     }
     if (message.to !== 0) {
-      obj.to = xfscUpdateOfferingLifecycle_XfscLifecycleStatesToJSON(message.to);
+      obj.to = xfscUpdateOfferingLifecycle_XfscLifecycleStatesToJSON(
+        message.to,
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(base?: I): XfscUpdateOfferingLifecycle {
+  create<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(
+    base?: I,
+  ): XfscUpdateOfferingLifecycle {
     return XfscUpdateOfferingLifecycle.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(object: I): XfscUpdateOfferingLifecycle {
+  fromPartial<I extends Exact<DeepPartial<XfscUpdateOfferingLifecycle>, I>>(
+    object: I,
+  ): XfscUpdateOfferingLifecycle {
     const message = createBaseXfscUpdateOfferingLifecycle();
-    message.hash = object.hash ?? "";
+    message.hash = object.hash ?? '';
     message.to = object.to ?? 0;
     return message;
   },
@@ -1980,18 +2293,28 @@ function createBaseUpdateOfferingLifecycleResponse(): UpdateOfferingLifecycleRes
 }
 
 export const UpdateOfferingLifecycleResponse = {
-  encode(message: UpdateOfferingLifecycleResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: UpdateOfferingLifecycleResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.id) {
       writer.uint32(10).string(v!);
     }
     if (message.DebugInformation !== undefined) {
-      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(18).fork()).ldelim();
+      Struct.encode(
+        Struct.wrap(message.DebugInformation),
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateOfferingLifecycleResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): UpdateOfferingLifecycleResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateOfferingLifecycleResponse();
     while (reader.pos < end) {
@@ -2009,7 +2332,9 @@ export const UpdateOfferingLifecycleResponse = {
             break;
           }
 
-          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.DebugInformation = Struct.unwrap(
+            Struct.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2023,7 +2348,9 @@ export const UpdateOfferingLifecycleResponse = {
   fromJSON(object: any): UpdateOfferingLifecycleResponse {
     return {
       id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
-      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+      DebugInformation: isObject(object.DebugInformation)
+        ? object.DebugInformation
+        : undefined,
     };
   },
 
@@ -2038,7 +2365,9 @@ export const UpdateOfferingLifecycleResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(base?: I): UpdateOfferingLifecycleResponse {
+  create<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(
+    base?: I,
+  ): UpdateOfferingLifecycleResponse {
     return UpdateOfferingLifecycleResponse.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<UpdateOfferingLifecycleResponse>, I>>(
@@ -2056,7 +2385,10 @@ function createBaseGetOfferingRequest(): GetOfferingRequest {
 }
 
 export const GetOfferingRequest = {
-  encode(message: GetOfferingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetOfferingRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.offerings) {
       GetOfferingRequest_Offering.encode(v!, writer.uint32(82).fork()).ldelim();
     }
@@ -2064,7 +2396,8 @@ export const GetOfferingRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetOfferingRequest();
     while (reader.pos < end) {
@@ -2075,7 +2408,9 @@ export const GetOfferingRequest = {
             break;
           }
 
-          message.offerings.push(GetOfferingRequest_Offering.decode(reader, reader.uint32()));
+          message.offerings.push(
+            GetOfferingRequest_Offering.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2089,7 +2424,9 @@ export const GetOfferingRequest = {
   fromJSON(object: any): GetOfferingRequest {
     return {
       offerings: globalThis.Array.isArray(object?.offerings)
-        ? object.offerings.map((e: any) => GetOfferingRequest_Offering.fromJSON(e))
+        ? object.offerings.map((e: any) =>
+            GetOfferingRequest_Offering.fromJSON(e),
+          )
         : [],
     };
   },
@@ -2097,17 +2434,26 @@ export const GetOfferingRequest = {
   toJSON(message: GetOfferingRequest): unknown {
     const obj: any = {};
     if (message.offerings?.length) {
-      obj.offerings = message.offerings.map((e) => GetOfferingRequest_Offering.toJSON(e));
+      obj.offerings = message.offerings.map((e) =>
+        GetOfferingRequest_Offering.toJSON(e),
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(base?: I): GetOfferingRequest {
+  create<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(
+    base?: I,
+  ): GetOfferingRequest {
     return GetOfferingRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(object: I): GetOfferingRequest {
+  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest>, I>>(
+    object: I,
+  ): GetOfferingRequest {
     const message = createBaseGetOfferingRequest();
-    message.offerings = object.offerings?.map((e) => GetOfferingRequest_Offering.fromPartial(e)) || [];
+    message.offerings =
+      object.offerings?.map((e) =>
+        GetOfferingRequest_Offering.fromPartial(e),
+      ) || [];
     return message;
   },
 };
@@ -2117,18 +2463,31 @@ function createBaseGetOfferingRequest_Offering(): GetOfferingRequest_Offering {
 }
 
 export const GetOfferingRequest_Offering = {
-  encode(message: GetOfferingRequest_Offering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetOfferingRequest_Offering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.pontusxOffering !== undefined) {
-      PontusxGetOffering.encode(message.pontusxOffering, writer.uint32(10).fork()).ldelim();
+      PontusxGetOffering.encode(
+        message.pontusxOffering,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.xfscOffering !== undefined) {
-      XfscGetOffering.encode(message.xfscOffering, writer.uint32(18).fork()).ldelim();
+      XfscGetOffering.encode(
+        message.xfscOffering,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingRequest_Offering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): GetOfferingRequest_Offering {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetOfferingRequest_Offering();
     while (reader.pos < end) {
@@ -2139,14 +2498,20 @@ export const GetOfferingRequest_Offering = {
             break;
           }
 
-          message.pontusxOffering = PontusxGetOffering.decode(reader, reader.uint32());
+          message.pontusxOffering = PontusxGetOffering.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.xfscOffering = XfscGetOffering.decode(reader, reader.uint32());
+          message.xfscOffering = XfscGetOffering.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2159,8 +2524,12 @@ export const GetOfferingRequest_Offering = {
 
   fromJSON(object: any): GetOfferingRequest_Offering {
     return {
-      pontusxOffering: isSet(object.pontusxOffering) ? PontusxGetOffering.fromJSON(object.pontusxOffering) : undefined,
-      xfscOffering: isSet(object.xfscOffering) ? XfscGetOffering.fromJSON(object.xfscOffering) : undefined,
+      pontusxOffering: isSet(object.pontusxOffering)
+        ? PontusxGetOffering.fromJSON(object.pontusxOffering)
+        : undefined,
+      xfscOffering: isSet(object.xfscOffering)
+        ? XfscGetOffering.fromJSON(object.xfscOffering)
+        : undefined,
     };
   },
 
@@ -2175,17 +2544,23 @@ export const GetOfferingRequest_Offering = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(base?: I): GetOfferingRequest_Offering {
+  create<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(
+    base?: I,
+  ): GetOfferingRequest_Offering {
     return GetOfferingRequest_Offering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(object: I): GetOfferingRequest_Offering {
+  fromPartial<I extends Exact<DeepPartial<GetOfferingRequest_Offering>, I>>(
+    object: I,
+  ): GetOfferingRequest_Offering {
     const message = createBaseGetOfferingRequest_Offering();
-    message.pontusxOffering = (object.pontusxOffering !== undefined && object.pontusxOffering !== null)
-      ? PontusxGetOffering.fromPartial(object.pontusxOffering)
-      : undefined;
-    message.xfscOffering = (object.xfscOffering !== undefined && object.xfscOffering !== null)
-      ? XfscGetOffering.fromPartial(object.xfscOffering)
-      : undefined;
+    message.pontusxOffering =
+      object.pontusxOffering !== undefined && object.pontusxOffering !== null
+        ? PontusxGetOffering.fromPartial(object.pontusxOffering)
+        : undefined;
+    message.xfscOffering =
+      object.xfscOffering !== undefined && object.xfscOffering !== null
+        ? XfscGetOffering.fromPartial(object.xfscOffering)
+        : undefined;
     return message;
   },
 };
@@ -2195,18 +2570,25 @@ function createBaseGetOfferingResponse(): GetOfferingResponse {
 }
 
 export const GetOfferingResponse = {
-  encode(message: GetOfferingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetOfferingResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.offerings) {
       writer.uint32(10).string(v!);
     }
     if (message.DebugInformation !== undefined) {
-      Struct.encode(Struct.wrap(message.DebugInformation), writer.uint32(26).fork()).ldelim();
+      Struct.encode(
+        Struct.wrap(message.DebugInformation),
+        writer.uint32(26).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetOfferingResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetOfferingResponse();
     while (reader.pos < end) {
@@ -2224,7 +2606,9 @@ export const GetOfferingResponse = {
             break;
           }
 
-          message.DebugInformation = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.DebugInformation = Struct.unwrap(
+            Struct.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -2240,7 +2624,9 @@ export const GetOfferingResponse = {
       offerings: globalThis.Array.isArray(object?.offerings)
         ? object.offerings.map((e: any) => globalThis.String(e))
         : [],
-      DebugInformation: isObject(object.DebugInformation) ? object.DebugInformation : undefined,
+      DebugInformation: isObject(object.DebugInformation)
+        ? object.DebugInformation
+        : undefined,
     };
   },
 
@@ -2255,10 +2641,14 @@ export const GetOfferingResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(base?: I): GetOfferingResponse {
+  create<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(
+    base?: I,
+  ): GetOfferingResponse {
     return GetOfferingResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(object: I): GetOfferingResponse {
+  fromPartial<I extends Exact<DeepPartial<GetOfferingResponse>, I>>(
+    object: I,
+  ): GetOfferingResponse {
     const message = createBaseGetOfferingResponse();
     message.offerings = object.offerings?.map((e) => e) || [];
     message.DebugInformation = object.DebugInformation ?? undefined;
@@ -2267,25 +2657,29 @@ export const GetOfferingResponse = {
 };
 
 function createBaseXfscGetOffering(): XfscGetOffering {
-  return { did: "", issuer: "", name: "" };
+  return { did: '', issuer: '', name: '' };
 }
 
 export const XfscGetOffering = {
-  encode(message: XfscGetOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: XfscGetOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
-    if (message.issuer !== "") {
+    if (message.issuer !== '') {
       writer.uint32(18).string(message.issuer);
     }
-    if (message.name !== "") {
+    if (message.name !== '') {
       writer.uint32(26).string(message.name);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): XfscGetOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseXfscGetOffering();
     while (reader.pos < end) {
@@ -2323,52 +2717,60 @@ export const XfscGetOffering = {
 
   fromJSON(object: any): XfscGetOffering {
     return {
-      did: isSet(object.did) ? globalThis.String(object.did) : "",
-      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : "",
-      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      did: isSet(object.did) ? globalThis.String(object.did) : '',
+      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : '',
+      name: isSet(object.name) ? globalThis.String(object.name) : '',
     };
   },
 
   toJSON(message: XfscGetOffering): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
-    if (message.issuer !== "") {
+    if (message.issuer !== '') {
       obj.issuer = message.issuer;
     }
-    if (message.name !== "") {
+    if (message.name !== '') {
       obj.name = message.name;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<XfscGetOffering>, I>>(base?: I): XfscGetOffering {
+  create<I extends Exact<DeepPartial<XfscGetOffering>, I>>(
+    base?: I,
+  ): XfscGetOffering {
     return XfscGetOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<XfscGetOffering>, I>>(object: I): XfscGetOffering {
+  fromPartial<I extends Exact<DeepPartial<XfscGetOffering>, I>>(
+    object: I,
+  ): XfscGetOffering {
     const message = createBaseXfscGetOffering();
-    message.did = object.did ?? "";
-    message.issuer = object.issuer ?? "";
-    message.name = object.name ?? "";
+    message.did = object.did ?? '';
+    message.issuer = object.issuer ?? '';
+    message.name = object.name ?? '';
     return message;
   },
 };
 
 function createBasePontusxGetOffering(): PontusxGetOffering {
-  return { did: "" };
+  return { did: '' };
 }
 
 export const PontusxGetOffering = {
-  encode(message: PontusxGetOffering, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: PontusxGetOffering,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PontusxGetOffering {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePontusxGetOffering();
     while (reader.pos < end) {
@@ -2391,47 +2793,61 @@ export const PontusxGetOffering = {
   },
 
   fromJSON(object: any): PontusxGetOffering {
-    return { did: isSet(object.did) ? globalThis.String(object.did) : "" };
+    return { did: isSet(object.did) ? globalThis.String(object.did) : '' };
   },
 
   toJSON(message: PontusxGetOffering): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(base?: I): PontusxGetOffering {
+  create<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(
+    base?: I,
+  ): PontusxGetOffering {
     return PontusxGetOffering.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(object: I): PontusxGetOffering {
+  fromPartial<I extends Exact<DeepPartial<PontusxGetOffering>, I>>(
+    object: I,
+  ): PontusxGetOffering {
     const message = createBasePontusxGetOffering();
-    message.did = object.did ?? "";
+    message.did = object.did ?? '';
     return message;
   },
 };
 
 function createBaseCreateComputeToDataRequest(): CreateComputeToDataRequest {
-  return { did: "", algorithm: "", userData: {} };
+  return { did: '', algorithm: '', userData: {} };
 }
 
 export const CreateComputeToDataRequest = {
-  encode(message: CreateComputeToDataRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: CreateComputeToDataRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
-    if (message.algorithm !== "") {
+    if (message.algorithm !== '') {
       writer.uint32(18).string(message.algorithm);
     }
     Object.entries(message.userData).forEach(([key, value]) => {
-      CreateComputeToDataRequest_UserDataEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
+      CreateComputeToDataRequest_UserDataEntry.encode(
+        { key: key as any, value },
+        writer.uint32(26).fork(),
+      ).ldelim();
     });
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateComputeToDataRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateComputeToDataRequest();
     while (reader.pos < end) {
@@ -2456,7 +2872,10 @@ export const CreateComputeToDataRequest = {
             break;
           }
 
-          const entry3 = CreateComputeToDataRequest_UserDataEntry.decode(reader, reader.uint32());
+          const entry3 = CreateComputeToDataRequest_UserDataEntry.decode(
+            reader,
+            reader.uint32(),
+          );
           if (entry3.value !== undefined) {
             message.userData[entry3.key] = entry3.value;
           }
@@ -2472,23 +2891,28 @@ export const CreateComputeToDataRequest = {
 
   fromJSON(object: any): CreateComputeToDataRequest {
     return {
-      did: isSet(object.did) ? globalThis.String(object.did) : "",
-      algorithm: isSet(object.algorithm) ? globalThis.String(object.algorithm) : "",
+      did: isSet(object.did) ? globalThis.String(object.did) : '',
+      algorithm: isSet(object.algorithm)
+        ? globalThis.String(object.algorithm)
+        : '',
       userData: isObject(object.userData)
-        ? Object.entries(object.userData).reduce<{ [key: string]: string }>((acc, [key, value]) => {
-          acc[key] = String(value);
-          return acc;
-        }, {})
+        ? Object.entries(object.userData).reduce<{ [key: string]: string }>(
+            (acc, [key, value]) => {
+              acc[key] = String(value);
+              return acc;
+            },
+            {},
+          )
         : {},
     };
   },
 
   toJSON(message: CreateComputeToDataRequest): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
-    if (message.algorithm !== "") {
+    if (message.algorithm !== '') {
       obj.algorithm = message.algorithm;
     }
     if (message.userData) {
@@ -2503,14 +2927,20 @@ export const CreateComputeToDataRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(base?: I): CreateComputeToDataRequest {
+  create<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(
+    base?: I,
+  ): CreateComputeToDataRequest {
     return CreateComputeToDataRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(object: I): CreateComputeToDataRequest {
+  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataRequest>, I>>(
+    object: I,
+  ): CreateComputeToDataRequest {
     const message = createBaseCreateComputeToDataRequest();
-    message.did = object.did ?? "";
-    message.algorithm = object.algorithm ?? "";
-    message.userData = Object.entries(object.userData ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+    message.did = object.did ?? '';
+    message.algorithm = object.algorithm ?? '';
+    message.userData = Object.entries(object.userData ?? {}).reduce<{
+      [key: string]: string;
+    }>((acc, [key, value]) => {
       if (value !== undefined) {
         acc[key] = globalThis.String(value);
       }
@@ -2521,22 +2951,29 @@ export const CreateComputeToDataRequest = {
 };
 
 function createBaseCreateComputeToDataRequest_UserDataEntry(): CreateComputeToDataRequest_UserDataEntry {
-  return { key: "", value: "" };
+  return { key: '', value: '' };
 }
 
 export const CreateComputeToDataRequest_UserDataEntry = {
-  encode(message: CreateComputeToDataRequest_UserDataEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.key !== "") {
+  encode(
+    message: CreateComputeToDataRequest_UserDataEntry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.key !== '') {
       writer.uint32(10).string(message.key);
     }
-    if (message.value !== "") {
+    if (message.value !== '') {
       writer.uint32(18).string(message.value);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataRequest_UserDataEntry {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateComputeToDataRequest_UserDataEntry {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateComputeToDataRequest_UserDataEntry();
     while (reader.pos < end) {
@@ -2567,33 +3004,35 @@ export const CreateComputeToDataRequest_UserDataEntry = {
 
   fromJSON(object: any): CreateComputeToDataRequest_UserDataEntry {
     return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? globalThis.String(object.value) : "",
+      key: isSet(object.key) ? globalThis.String(object.key) : '',
+      value: isSet(object.value) ? globalThis.String(object.value) : '',
     };
   },
 
   toJSON(message: CreateComputeToDataRequest_UserDataEntry): unknown {
     const obj: any = {};
-    if (message.key !== "") {
+    if (message.key !== '') {
       obj.key = message.key;
     }
-    if (message.value !== "") {
+    if (message.value !== '') {
       obj.value = message.value;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>>(
-    base?: I,
-  ): CreateComputeToDataRequest_UserDataEntry {
-    return CreateComputeToDataRequest_UserDataEntry.fromPartial(base ?? ({} as any));
+  create<
+    I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>,
+  >(base?: I): CreateComputeToDataRequest_UserDataEntry {
+    return CreateComputeToDataRequest_UserDataEntry.fromPartial(
+      base ?? ({} as any),
+    );
   },
-  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>>(
-    object: I,
-  ): CreateComputeToDataRequest_UserDataEntry {
+  fromPartial<
+    I extends Exact<DeepPartial<CreateComputeToDataRequest_UserDataEntry>, I>,
+  >(object: I): CreateComputeToDataRequest_UserDataEntry {
     const message = createBaseCreateComputeToDataRequest_UserDataEntry();
-    message.key = object.key ?? "";
-    message.value = object.value ?? "";
+    message.key = object.key ?? '';
+    message.value = object.value ?? '';
     return message;
   },
 };
@@ -2603,15 +3042,22 @@ function createBaseComputeToDataResponse(): ComputeToDataResponse {
 }
 
 export const ComputeToDataResponse = {
-  encode(message: ComputeToDataResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ComputeToDataResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     for (const v of message.jobId) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ComputeToDataResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ComputeToDataResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseComputeToDataResponse();
     while (reader.pos < end) {
@@ -2634,7 +3080,11 @@ export const ComputeToDataResponse = {
   },
 
   fromJSON(object: any): ComputeToDataResponse {
-    return { jobId: globalThis.Array.isArray(object?.jobId) ? object.jobId.map((e: any) => globalThis.String(e)) : [] };
+    return {
+      jobId: globalThis.Array.isArray(object?.jobId)
+        ? object.jobId.map((e: any) => globalThis.String(e))
+        : [],
+    };
   },
 
   toJSON(message: ComputeToDataResponse): unknown {
@@ -2645,10 +3095,14 @@ export const ComputeToDataResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(base?: I): ComputeToDataResponse {
+  create<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(
+    base?: I,
+  ): ComputeToDataResponse {
     return ComputeToDataResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(object: I): ComputeToDataResponse {
+  fromPartial<I extends Exact<DeepPartial<ComputeToDataResponse>, I>>(
+    object: I,
+  ): ComputeToDataResponse {
     const message = createBaseComputeToDataResponse();
     message.jobId = object.jobId?.map((e) => e) || [];
     return message;
@@ -2656,12 +3110,15 @@ export const ComputeToDataResponse = {
 };
 
 function createBaseCreateComputeToDataResultRequest(): CreateComputeToDataResultRequest {
-  return { jobId: "", computeToDataReturnType: 0 };
+  return { jobId: '', computeToDataReturnType: 0 };
 }
 
 export const CreateComputeToDataResultRequest = {
-  encode(message: CreateComputeToDataResultRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.jobId !== "") {
+  encode(
+    message: CreateComputeToDataResultRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.jobId !== '') {
       writer.uint32(10).string(message.jobId);
     }
     if (message.computeToDataReturnType !== 0) {
@@ -2670,8 +3127,12 @@ export const CreateComputeToDataResultRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateComputeToDataResultRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateComputeToDataResultRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateComputeToDataResultRequest();
     while (reader.pos < end) {
@@ -2702,7 +3163,7 @@ export const CreateComputeToDataResultRequest = {
 
   fromJSON(object: any): CreateComputeToDataResultRequest {
     return {
-      jobId: isSet(object.jobId) ? globalThis.String(object.jobId) : "",
+      jobId: isSet(object.jobId) ? globalThis.String(object.jobId) : '',
       computeToDataReturnType: isSet(object.computeToDataReturnType)
         ? computeToDataResultTypeFromJSON(object.computeToDataReturnType)
         : 0,
@@ -2711,11 +3172,13 @@ export const CreateComputeToDataResultRequest = {
 
   toJSON(message: CreateComputeToDataResultRequest): unknown {
     const obj: any = {};
-    if (message.jobId !== "") {
+    if (message.jobId !== '') {
       obj.jobId = message.jobId;
     }
     if (message.computeToDataReturnType !== 0) {
-      obj.computeToDataReturnType = computeToDataResultTypeToJSON(message.computeToDataReturnType);
+      obj.computeToDataReturnType = computeToDataResultTypeToJSON(
+        message.computeToDataReturnType,
+      );
     }
     return obj;
   },
@@ -2725,30 +3188,37 @@ export const CreateComputeToDataResultRequest = {
   ): CreateComputeToDataResultRequest {
     return CreateComputeToDataResultRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>>(
-    object: I,
-  ): CreateComputeToDataResultRequest {
+  fromPartial<
+    I extends Exact<DeepPartial<CreateComputeToDataResultRequest>, I>,
+  >(object: I): CreateComputeToDataResultRequest {
     const message = createBaseCreateComputeToDataResultRequest();
-    message.jobId = object.jobId ?? "";
+    message.jobId = object.jobId ?? '';
     message.computeToDataReturnType = object.computeToDataReturnType ?? 0;
     return message;
   },
 };
 
 function createBaseGetComputeToDataResultResponse(): GetComputeToDataResultResponse {
-  return { data: "" };
+  return { data: '' };
 }
 
 export const GetComputeToDataResultResponse = {
-  encode(message: GetComputeToDataResultResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.data !== "") {
+  encode(
+    message: GetComputeToDataResultResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.data !== '') {
       writer.uint32(10).string(message.data);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetComputeToDataResultResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): GetComputeToDataResultResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetComputeToDataResultResponse();
     while (reader.pos < end) {
@@ -2771,61 +3241,78 @@ export const GetComputeToDataResultResponse = {
   },
 
   fromJSON(object: any): GetComputeToDataResultResponse {
-    return { data: isSet(object.data) ? globalThis.String(object.data) : "" };
+    return { data: isSet(object.data) ? globalThis.String(object.data) : '' };
   },
 
   toJSON(message: GetComputeToDataResultResponse): unknown {
     const obj: any = {};
-    if (message.data !== "") {
+    if (message.data !== '') {
       obj.data = message.data;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(base?: I): GetComputeToDataResultResponse {
+  create<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(
+    base?: I,
+  ): GetComputeToDataResultResponse {
     return GetComputeToDataResultResponse.fromPartial(base ?? ({} as any));
   },
   fromPartial<I extends Exact<DeepPartial<GetComputeToDataResultResponse>, I>>(
     object: I,
   ): GetComputeToDataResultResponse {
     const message = createBaseGetComputeToDataResultResponse();
-    message.data = object.data ?? "";
+    message.data = object.data ?? '';
     return message;
   },
 };
 
 function createBaseMetadata(): Metadata {
-  return { type: "", name: "", description: "", author: "", licence: "", tags: [], algorithm: undefined };
+  return {
+    type: '',
+    name: '',
+    description: '',
+    author: '',
+    licence: '',
+    tags: [],
+    algorithm: undefined,
+  };
 }
 
 export const Metadata = {
-  encode(message: Metadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.type !== "") {
+  encode(
+    message: Metadata,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.type !== '') {
       writer.uint32(10).string(message.type);
     }
-    if (message.name !== "") {
+    if (message.name !== '') {
       writer.uint32(18).string(message.name);
     }
-    if (message.description !== "") {
+    if (message.description !== '') {
       writer.uint32(26).string(message.description);
     }
-    if (message.author !== "") {
+    if (message.author !== '') {
       writer.uint32(34).string(message.author);
     }
-    if (message.licence !== "") {
+    if (message.licence !== '') {
       writer.uint32(42).string(message.licence);
     }
     for (const v of message.tags) {
       writer.uint32(50).string(v!);
     }
     if (message.algorithm !== undefined) {
-      AlgorithmMetadata.encode(message.algorithm, writer.uint32(58).fork()).ldelim();
+      AlgorithmMetadata.encode(
+        message.algorithm,
+        writer.uint32(58).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Metadata {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMetadata();
     while (reader.pos < end) {
@@ -2891,31 +3378,35 @@ export const Metadata = {
 
   fromJSON(object: any): Metadata {
     return {
-      type: isSet(object.type) ? String(object.type) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      author: isSet(object.author) ? String(object.author) : "",
-      licence: isSet(object.licence) ? String(object.licence) : "",
-      tags: Array.isArray(object?.tags) ? object.tags.map((e: any) => String(e)) : [],
-      algorithm: isSet(object.algorithm) ? AlgorithmMetadata.fromJSON(object.algorithm) : undefined,
+      type: isSet(object.type) ? String(object.type) : '',
+      name: isSet(object.name) ? String(object.name) : '',
+      description: isSet(object.description) ? String(object.description) : '',
+      author: isSet(object.author) ? String(object.author) : '',
+      licence: isSet(object.licence) ? String(object.licence) : '',
+      tags: Array.isArray(object?.tags)
+        ? object.tags.map((e: any) => String(e))
+        : [],
+      algorithm: isSet(object.algorithm)
+        ? AlgorithmMetadata.fromJSON(object.algorithm)
+        : undefined,
     };
   },
 
   toJSON(message: Metadata): unknown {
     const obj: any = {};
-    if (message.type !== "") {
+    if (message.type !== '') {
       obj.type = message.type;
     }
-    if (message.name !== "") {
+    if (message.name !== '') {
       obj.name = message.name;
     }
-    if (message.description !== "") {
+    if (message.description !== '') {
       obj.description = message.description;
     }
-    if (message.author !== "") {
+    if (message.author !== '') {
       obj.author = message.author;
     }
-    if (message.licence !== "") {
+    if (message.licence !== '') {
       obj.licence = message.licence;
     }
     if (message.tags?.length) {
@@ -2932,25 +3423,34 @@ export const Metadata = {
   },
   fromPartial<I extends Exact<DeepPartial<Metadata>, I>>(object: I): Metadata {
     const message = createBaseMetadata();
-    message.type = object.type ?? "";
-    message.name = object.name ?? "";
-    message.description = object.description ?? "";
-    message.author = object.author ?? "";
-    message.licence = object.licence ?? "";
+    message.type = object.type ?? '';
+    message.name = object.name ?? '';
+    message.description = object.description ?? '';
+    message.author = object.author ?? '';
+    message.licence = object.licence ?? '';
     message.tags = object.tags?.map((e) => e) || [];
-    message.algorithm = (object.algorithm !== undefined && object.algorithm !== null)
-      ? AlgorithmMetadata.fromPartial(object.algorithm)
-      : undefined;
+    message.algorithm =
+      object.algorithm !== undefined && object.algorithm !== null
+        ? AlgorithmMetadata.fromPartial(object.algorithm)
+        : undefined;
     return message;
   },
 };
 
 function createBaseAlgorithmMetadata(): AlgorithmMetadata {
-  return { language: undefined, version: undefined, consumerParameters: [], container: undefined };
+  return {
+    language: undefined,
+    version: undefined,
+    consumerParameters: [],
+    container: undefined,
+  };
 }
 
 export const AlgorithmMetadata = {
-  encode(message: AlgorithmMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: AlgorithmMetadata,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.language !== undefined) {
       writer.uint32(10).string(message.language);
     }
@@ -2967,7 +3467,8 @@ export const AlgorithmMetadata = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): AlgorithmMetadata {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAlgorithmMetadata();
     while (reader.pos < end) {
@@ -2992,7 +3493,9 @@ export const AlgorithmMetadata = {
             break;
           }
 
-          message.consumerParameters.push(ConsumerParameter.decode(reader, reader.uint32()));
+          message.consumerParameters.push(
+            ConsumerParameter.decode(reader, reader.uint32()),
+          );
           continue;
         case 4:
           if (tag !== 34) {
@@ -3015,9 +3518,13 @@ export const AlgorithmMetadata = {
       language: isSet(object.language) ? String(object.language) : undefined,
       version: isSet(object.version) ? String(object.version) : undefined,
       consumerParameters: Array.isArray(object?.consumerParameters)
-        ? object.consumerParameters.map((e: any) => ConsumerParameter.fromJSON(e))
+        ? object.consumerParameters.map((e: any) =>
+            ConsumerParameter.fromJSON(e),
+          )
         : [],
-      container: isSet(object.container) ? Container.fromJSON(object.container) : undefined,
+      container: isSet(object.container)
+        ? Container.fromJSON(object.container)
+        : undefined,
     };
   },
 
@@ -3030,7 +3537,9 @@ export const AlgorithmMetadata = {
       obj.version = message.version;
     }
     if (message.consumerParameters?.length) {
-      obj.consumerParameters = message.consumerParameters.map((e) => ConsumerParameter.toJSON(e));
+      obj.consumerParameters = message.consumerParameters.map((e) =>
+        ConsumerParameter.toJSON(e),
+      );
     }
     if (message.container !== undefined) {
       obj.container = Container.toJSON(message.container);
@@ -3038,44 +3547,55 @@ export const AlgorithmMetadata = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(base?: I): AlgorithmMetadata {
+  create<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(
+    base?: I,
+  ): AlgorithmMetadata {
     return AlgorithmMetadata.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(object: I): AlgorithmMetadata {
+  fromPartial<I extends Exact<DeepPartial<AlgorithmMetadata>, I>>(
+    object: I,
+  ): AlgorithmMetadata {
     const message = createBaseAlgorithmMetadata();
     message.language = object.language ?? undefined;
     message.version = object.version ?? undefined;
-    message.consumerParameters = object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) || [];
-    message.container = (object.container !== undefined && object.container !== null)
-      ? Container.fromPartial(object.container)
-      : undefined;
+    message.consumerParameters =
+      object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) ||
+      [];
+    message.container =
+      object.container !== undefined && object.container !== null
+        ? Container.fromPartial(object.container)
+        : undefined;
     return message;
   },
 };
 
 function createBaseContainer(): Container {
-  return { entrypoint: "", image: "", tag: "", checksum: "" };
+  return { entrypoint: '', image: '', tag: '', checksum: '' };
 }
 
 export const Container = {
-  encode(message: Container, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.entrypoint !== "") {
+  encode(
+    message: Container,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.entrypoint !== '') {
       writer.uint32(10).string(message.entrypoint);
     }
-    if (message.image !== "") {
+    if (message.image !== '') {
       writer.uint32(18).string(message.image);
     }
-    if (message.tag !== "") {
+    if (message.tag !== '') {
       writer.uint32(26).string(message.tag);
     }
-    if (message.checksum !== "") {
+    if (message.checksum !== '') {
       writer.uint32(34).string(message.checksum);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Container {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContainer();
     while (reader.pos < end) {
@@ -3120,25 +3640,25 @@ export const Container = {
 
   fromJSON(object: any): Container {
     return {
-      entrypoint: isSet(object.entrypoint) ? String(object.entrypoint) : "",
-      image: isSet(object.image) ? String(object.image) : "",
-      tag: isSet(object.tag) ? String(object.tag) : "",
-      checksum: isSet(object.checksum) ? String(object.checksum) : "",
+      entrypoint: isSet(object.entrypoint) ? String(object.entrypoint) : '',
+      image: isSet(object.image) ? String(object.image) : '',
+      tag: isSet(object.tag) ? String(object.tag) : '',
+      checksum: isSet(object.checksum) ? String(object.checksum) : '',
     };
   },
 
   toJSON(message: Container): unknown {
     const obj: any = {};
-    if (message.entrypoint !== "") {
+    if (message.entrypoint !== '') {
       obj.entrypoint = message.entrypoint;
     }
-    if (message.image !== "") {
+    if (message.image !== '') {
       obj.image = message.image;
     }
-    if (message.tag !== "") {
+    if (message.tag !== '') {
       obj.tag = message.tag;
     }
-    if (message.checksum !== "") {
+    if (message.checksum !== '') {
       obj.checksum = message.checksum;
     }
     return obj;
@@ -3147,12 +3667,14 @@ export const Container = {
   create<I extends Exact<DeepPartial<Container>, I>>(base?: I): Container {
     return Container.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Container>, I>>(object: I): Container {
+  fromPartial<I extends Exact<DeepPartial<Container>, I>>(
+    object: I,
+  ): Container {
     const message = createBaseContainer();
-    message.entrypoint = object.entrypoint ?? "";
-    message.image = object.image ?? "";
-    message.tag = object.tag ?? "";
-    message.checksum = object.checksum ?? "";
+    message.entrypoint = object.entrypoint ?? '';
+    message.image = object.image ?? '';
+    message.tag = object.tag ?? '';
+    message.checksum = object.checksum ?? '';
     return message;
   },
 };
@@ -3161,7 +3683,7 @@ function createBaseService(): Service {
   return {
     name: undefined,
     description: undefined,
-    type: "",
+    type: '',
     pricing: undefined,
     files: [],
     timeout: undefined,
@@ -3174,14 +3696,17 @@ function createBaseService(): Service {
 }
 
 export const Service = {
-  encode(message: Service, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Service,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.name !== undefined) {
       writer.uint32(10).string(message.name);
     }
     if (message.description !== undefined) {
       writer.uint32(18).string(message.description);
     }
-    if (message.type !== "") {
+    if (message.type !== '') {
       writer.uint32(26).string(message.type);
     }
     if (message.pricing !== undefined) {
@@ -3203,7 +3728,10 @@ export const Service = {
       writer.uint32(90).string(message.serviceEndpoint);
     }
     if (message.computeOptions !== undefined) {
-      ComputeOptions.encode(message.computeOptions, writer.uint32(66).fork()).ldelim();
+      ComputeOptions.encode(
+        message.computeOptions,
+        writer.uint32(66).fork(),
+      ).ldelim();
     }
     for (const v of message.consumerParameters) {
       ConsumerParameter.encode(v!, writer.uint32(74).fork()).ldelim();
@@ -3212,7 +3740,8 @@ export const Service = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Service {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseService();
     while (reader.pos < end) {
@@ -3286,14 +3815,19 @@ export const Service = {
             break;
           }
 
-          message.computeOptions = ComputeOptions.decode(reader, reader.uint32());
+          message.computeOptions = ComputeOptions.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 9:
           if (tag !== 74) {
             break;
           }
 
-          message.consumerParameters.push(ConsumerParameter.decode(reader, reader.uint32()));
+          message.consumerParameters.push(
+            ConsumerParameter.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -3307,17 +3841,31 @@ export const Service = {
   fromJSON(object: any): Service {
     return {
       name: isSet(object.name) ? String(object.name) : undefined,
-      description: isSet(object.description) ? String(object.description) : undefined,
-      type: isSet(object.type) ? String(object.type) : "",
-      pricing: isSet(object.pricing) ? Pricing.fromJSON(object.pricing) : undefined,
-      files: Array.isArray(object?.files) ? object.files.map((e: any) => Files.fromJSON(e)) : [],
+      description: isSet(object.description)
+        ? String(object.description)
+        : undefined,
+      type: isSet(object.type) ? String(object.type) : '',
+      pricing: isSet(object.pricing)
+        ? Pricing.fromJSON(object.pricing)
+        : undefined,
+      files: Array.isArray(object?.files)
+        ? object.files.map((e: any) => Files.fromJSON(e))
+        : [],
       timeout: isSet(object.timeout) ? Number(object.timeout) : undefined,
       tokenName: isSet(object.tokenName) ? String(object.tokenName) : undefined,
-      tokenSymbol: isSet(object.tokenSymbol) ? String(object.tokenSymbol) : undefined,
-      serviceEndpoint: isSet(object.serviceEndpoint) ? String(object.serviceEndpoint) : undefined,
-      computeOptions: isSet(object.computeOptions) ? ComputeOptions.fromJSON(object.computeOptions) : undefined,
+      tokenSymbol: isSet(object.tokenSymbol)
+        ? String(object.tokenSymbol)
+        : undefined,
+      serviceEndpoint: isSet(object.serviceEndpoint)
+        ? String(object.serviceEndpoint)
+        : undefined,
+      computeOptions: isSet(object.computeOptions)
+        ? ComputeOptions.fromJSON(object.computeOptions)
+        : undefined,
       consumerParameters: Array.isArray(object?.consumerParameters)
-        ? object.consumerParameters.map((e: any) => ConsumerParameter.fromJSON(e))
+        ? object.consumerParameters.map((e: any) =>
+            ConsumerParameter.fromJSON(e),
+          )
         : [],
     };
   },
@@ -3330,7 +3878,7 @@ export const Service = {
     if (message.description !== undefined) {
       obj.description = message.description;
     }
-    if (message.type !== "") {
+    if (message.type !== '') {
       obj.type = message.type;
     }
     if (message.pricing !== undefined) {
@@ -3355,7 +3903,9 @@ export const Service = {
       obj.computeOptions = ComputeOptions.toJSON(message.computeOptions);
     }
     if (message.consumerParameters?.length) {
-      obj.consumerParameters = message.consumerParameters.map((e) => ConsumerParameter.toJSON(e));
+      obj.consumerParameters = message.consumerParameters.map((e) =>
+        ConsumerParameter.toJSON(e),
+      );
     }
     return obj;
   },
@@ -3367,19 +3917,23 @@ export const Service = {
     const message = createBaseService();
     message.name = object.name ?? undefined;
     message.description = object.description ?? undefined;
-    message.type = object.type ?? "";
-    message.pricing = (object.pricing !== undefined && object.pricing !== null)
-      ? Pricing.fromPartial(object.pricing)
-      : undefined;
+    message.type = object.type ?? '';
+    message.pricing =
+      object.pricing !== undefined && object.pricing !== null
+        ? Pricing.fromPartial(object.pricing)
+        : undefined;
     message.files = object.files?.map((e) => Files.fromPartial(e)) || [];
     message.timeout = object.timeout ?? undefined;
     message.tokenName = object.tokenName ?? undefined;
     message.tokenSymbol = object.tokenSymbol ?? undefined;
     message.serviceEndpoint = object.serviceEndpoint ?? undefined;
-    message.computeOptions = (object.computeOptions !== undefined && object.computeOptions !== null)
-      ? ComputeOptions.fromPartial(object.computeOptions)
-      : undefined;
-    message.consumerParameters = object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) || [];
+    message.computeOptions =
+      object.computeOptions !== undefined && object.computeOptions !== null
+        ? ComputeOptions.fromPartial(object.computeOptions)
+        : undefined;
+    message.consumerParameters =
+      object.consumerParameters?.map((e) => ConsumerParameter.fromPartial(e)) ||
+      [];
     return message;
   },
 };
@@ -3389,7 +3943,10 @@ function createBasePricing(): Pricing {
 }
 
 export const Pricing = {
-  encode(message: Pricing, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Pricing,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.pricingType !== 0) {
       writer.uint32(8).int32(message.pricingType);
     }
@@ -3400,7 +3957,8 @@ export const Pricing = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Pricing {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePricing();
     while (reader.pos < end) {
@@ -3431,7 +3989,9 @@ export const Pricing = {
 
   fromJSON(object: any): Pricing {
     return {
-      pricingType: isSet(object.pricingType) ? pricing_PricingTypeFromJSON(object.pricingType) : 0,
+      pricingType: isSet(object.pricingType)
+        ? pricing_PricingTypeFromJSON(object.pricingType)
+        : 0,
       fixedRate: isSet(object.fixedRate) ? Number(object.fixedRate) : undefined,
     };
   },
@@ -3459,25 +4019,29 @@ export const Pricing = {
 };
 
 function createBaseFiles(): Files {
-  return { url: "", method: "", headers: undefined };
+  return { url: '', method: '', headers: undefined };
 }
 
 export const Files = {
   encode(message: Files, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.url !== "") {
+    if (message.url !== '') {
       writer.uint32(10).string(message.url);
     }
-    if (message.method !== "") {
+    if (message.method !== '') {
       writer.uint32(34).string(message.method);
     }
     if (message.headers !== undefined) {
-      Struct.encode(Struct.wrap(message.headers), writer.uint32(50).fork()).ldelim();
+      Struct.encode(
+        Struct.wrap(message.headers),
+        writer.uint32(50).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Files {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFiles();
     while (reader.pos < end) {
@@ -3502,7 +4066,9 @@ export const Files = {
             break;
           }
 
-          message.headers = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          message.headers = Struct.unwrap(
+            Struct.decode(reader, reader.uint32()),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -3515,18 +4081,18 @@ export const Files = {
 
   fromJSON(object: any): Files {
     return {
-      url: isSet(object.url) ? String(object.url) : "",
-      method: isSet(object.method) ? String(object.method) : "",
+      url: isSet(object.url) ? String(object.url) : '',
+      method: isSet(object.method) ? String(object.method) : '',
       headers: isObject(object.headers) ? object.headers : undefined,
     };
   },
 
   toJSON(message: Files): unknown {
     const obj: any = {};
-    if (message.url !== "") {
+    if (message.url !== '') {
       obj.url = message.url;
     }
-    if (message.method !== "") {
+    if (message.method !== '') {
       obj.method = message.method;
     }
     if (message.headers !== undefined) {
@@ -3540,19 +4106,27 @@ export const Files = {
   },
   fromPartial<I extends Exact<DeepPartial<Files>, I>>(object: I): Files {
     const message = createBaseFiles();
-    message.url = object.url ?? "";
-    message.method = object.method ?? "";
+    message.url = object.url ?? '';
+    message.method = object.method ?? '';
     message.headers = object.headers ?? undefined;
     return message;
   },
 };
 
 function createBaseComputeOptions(): ComputeOptions {
-  return { allowRawAlgorithm: undefined, allowNetworkAccess: undefined, trustedAlgorithms: [], trustedPublishers: [] };
+  return {
+    allowRawAlgorithm: undefined,
+    allowNetworkAccess: undefined,
+    trustedAlgorithms: [],
+    trustedPublishers: [],
+  };
 }
 
 export const ComputeOptions = {
-  encode(message: ComputeOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ComputeOptions,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.allowRawAlgorithm !== undefined) {
       writer.uint32(8).bool(message.allowRawAlgorithm);
     }
@@ -3569,7 +4143,8 @@ export const ComputeOptions = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ComputeOptions {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseComputeOptions();
     while (reader.pos < end) {
@@ -3594,7 +4169,9 @@ export const ComputeOptions = {
             break;
           }
 
-          message.trustedAlgorithms.push(TrustedAlgorihm.decode(reader, reader.uint32()));
+          message.trustedAlgorithms.push(
+            TrustedAlgorihm.decode(reader, reader.uint32()),
+          );
           continue;
         case 4:
           if (tag !== 34) {
@@ -3614,8 +4191,12 @@ export const ComputeOptions = {
 
   fromJSON(object: any): ComputeOptions {
     return {
-      allowRawAlgorithm: isSet(object.allowRawAlgorithm) ? Boolean(object.allowRawAlgorithm) : undefined,
-      allowNetworkAccess: isSet(object.allowNetworkAccess) ? Boolean(object.allowNetworkAccess) : undefined,
+      allowRawAlgorithm: isSet(object.allowRawAlgorithm)
+        ? Boolean(object.allowRawAlgorithm)
+        : undefined,
+      allowNetworkAccess: isSet(object.allowNetworkAccess)
+        ? Boolean(object.allowNetworkAccess)
+        : undefined,
       trustedAlgorithms: Array.isArray(object?.trustedAlgorithms)
         ? object.trustedAlgorithms.map((e: any) => TrustedAlgorihm.fromJSON(e))
         : [],
@@ -3634,7 +4215,9 @@ export const ComputeOptions = {
       obj.allowNetworkAccess = message.allowNetworkAccess;
     }
     if (message.trustedAlgorithms?.length) {
-      obj.trustedAlgorithms = message.trustedAlgorithms.map((e) => TrustedAlgorihm.toJSON(e));
+      obj.trustedAlgorithms = message.trustedAlgorithms.map((e) =>
+        TrustedAlgorihm.toJSON(e),
+      );
     }
     if (message.trustedPublishers?.length) {
       obj.trustedPublishers = message.trustedPublishers;
@@ -3642,26 +4225,39 @@ export const ComputeOptions = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ComputeOptions>, I>>(base?: I): ComputeOptions {
+  create<I extends Exact<DeepPartial<ComputeOptions>, I>>(
+    base?: I,
+  ): ComputeOptions {
     return ComputeOptions.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ComputeOptions>, I>>(object: I): ComputeOptions {
+  fromPartial<I extends Exact<DeepPartial<ComputeOptions>, I>>(
+    object: I,
+  ): ComputeOptions {
     const message = createBaseComputeOptions();
     message.allowRawAlgorithm = object.allowRawAlgorithm ?? undefined;
     message.allowNetworkAccess = object.allowNetworkAccess ?? undefined;
-    message.trustedAlgorithms = object.trustedAlgorithms?.map((e) => TrustedAlgorihm.fromPartial(e)) || [];
+    message.trustedAlgorithms =
+      object.trustedAlgorithms?.map((e) => TrustedAlgorihm.fromPartial(e)) ||
+      [];
     message.trustedPublishers = object.trustedPublishers?.map((e) => e) || [];
     return message;
   },
 };
 
 function createBaseTrustedAlgorihm(): TrustedAlgorihm {
-  return { did: "", filesChecksum: undefined, containerSectionChecksum: undefined };
+  return {
+    did: '',
+    filesChecksum: undefined,
+    containerSectionChecksum: undefined,
+  };
 }
 
 export const TrustedAlgorihm = {
-  encode(message: TrustedAlgorihm, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
+  encode(
+    message: TrustedAlgorihm,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.did !== '') {
       writer.uint32(10).string(message.did);
     }
     if (message.filesChecksum !== undefined) {
@@ -3674,7 +4270,8 @@ export const TrustedAlgorihm = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): TrustedAlgorihm {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTrustedAlgorihm();
     while (reader.pos < end) {
@@ -3712,8 +4309,10 @@ export const TrustedAlgorihm = {
 
   fromJSON(object: any): TrustedAlgorihm {
     return {
-      did: isSet(object.did) ? String(object.did) : "",
-      filesChecksum: isSet(object.filesChecksum) ? String(object.filesChecksum) : undefined,
+      did: isSet(object.did) ? String(object.did) : '',
+      filesChecksum: isSet(object.filesChecksum)
+        ? String(object.filesChecksum)
+        : undefined,
       containerSectionChecksum: isSet(object.containerSectionChecksum)
         ? String(object.containerSectionChecksum)
         : undefined,
@@ -3722,7 +4321,7 @@ export const TrustedAlgorihm = {
 
   toJSON(message: TrustedAlgorihm): unknown {
     const obj: any = {};
-    if (message.did !== "") {
+    if (message.did !== '') {
       obj.did = message.did;
     }
     if (message.filesChecksum !== undefined) {
@@ -3734,14 +4333,19 @@ export const TrustedAlgorihm = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(base?: I): TrustedAlgorihm {
+  create<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(
+    base?: I,
+  ): TrustedAlgorihm {
     return TrustedAlgorihm.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(object: I): TrustedAlgorihm {
+  fromPartial<I extends Exact<DeepPartial<TrustedAlgorihm>, I>>(
+    object: I,
+  ): TrustedAlgorihm {
     const message = createBaseTrustedAlgorihm();
-    message.did = object.did ?? "";
+    message.did = object.did ?? '';
     message.filesChecksum = object.filesChecksum ?? undefined;
-    message.containerSectionChecksum = object.containerSectionChecksum ?? undefined;
+    message.containerSectionChecksum =
+      object.containerSectionChecksum ?? undefined;
     return message;
   },
 };
@@ -3751,7 +4355,10 @@ function createBaseAdditionalInformation(): AdditionalInformation {
 }
 
 export const AdditionalInformation = {
-  encode(message: AdditionalInformation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: AdditionalInformation,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.termsAndConditions === true) {
       writer.uint32(32).bool(message.termsAndConditions);
     }
@@ -3761,8 +4368,12 @@ export const AdditionalInformation = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AdditionalInformation {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): AdditionalInformation {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAdditionalInformation();
     while (reader.pos < end) {
@@ -3793,8 +4404,12 @@ export const AdditionalInformation = {
 
   fromJSON(object: any): AdditionalInformation {
     return {
-      termsAndConditions: isSet(object.termsAndConditions) ? Boolean(object.termsAndConditions) : false,
-      gaiaXInformation: isSet(object.gaiaXInformation) ? gaiaX.fromJSON(object.gaiaXInformation) : undefined,
+      termsAndConditions: isSet(object.termsAndConditions)
+        ? Boolean(object.termsAndConditions)
+        : false,
+      gaiaXInformation: isSet(object.gaiaXInformation)
+        ? gaiaX.fromJSON(object.gaiaXInformation)
+        : undefined,
     };
   },
 
@@ -3809,15 +4424,20 @@ export const AdditionalInformation = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<AdditionalInformation>, I>>(base?: I): AdditionalInformation {
+  create<I extends Exact<DeepPartial<AdditionalInformation>, I>>(
+    base?: I,
+  ): AdditionalInformation {
     return AdditionalInformation.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<AdditionalInformation>, I>>(object: I): AdditionalInformation {
+  fromPartial<I extends Exact<DeepPartial<AdditionalInformation>, I>>(
+    object: I,
+  ): AdditionalInformation {
     const message = createBaseAdditionalInformation();
     message.termsAndConditions = object.termsAndConditions ?? false;
-    message.gaiaXInformation = (object.gaiaXInformation !== undefined && object.gaiaXInformation !== null)
-      ? gaiaX.fromPartial(object.gaiaXInformation)
-      : undefined;
+    message.gaiaXInformation =
+      object.gaiaXInformation !== undefined && object.gaiaXInformation !== null
+        ? gaiaX.fromPartial(object.gaiaXInformation)
+        : undefined;
     return message;
   },
 };
@@ -3835,13 +4455,16 @@ export const gaiaX = {
       Terms.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     if (message.serviceSD !== undefined) {
-      gaiaX_ServiceSelfDescription.encode(message.serviceSD, writer.uint32(26).fork()).ldelim();
+      gaiaX_ServiceSelfDescription
+        .encode(message.serviceSD, writer.uint32(26).fork())
+        .ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasegaiaX();
     while (reader.pos < end) {
@@ -3859,14 +4482,19 @@ export const gaiaX = {
             break;
           }
 
-          message.termsAndConditions.push(Terms.decode(reader, reader.uint32()));
+          message.termsAndConditions.push(
+            Terms.decode(reader, reader.uint32()),
+          );
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.serviceSD = gaiaX_ServiceSelfDescription.decode(reader, reader.uint32());
+          message.serviceSD = gaiaX_ServiceSelfDescription.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -3879,11 +4507,15 @@ export const gaiaX = {
 
   fromJSON(object: any): gaiaX {
     return {
-      containsPII: isSet(object.containsPII) ? Boolean(object.containsPII) : false,
+      containsPII: isSet(object.containsPII)
+        ? Boolean(object.containsPII)
+        : false,
       termsAndConditions: Array.isArray(object?.termsAndConditions)
         ? object.termsAndConditions.map((e: any) => Terms.fromJSON(e))
         : [],
-      serviceSD: isSet(object.serviceSD) ? gaiaX_ServiceSelfDescription.fromJSON(object.serviceSD) : undefined,
+      serviceSD: isSet(object.serviceSD)
+        ? gaiaX_ServiceSelfDescription.fromJSON(object.serviceSD)
+        : undefined,
     };
   },
 
@@ -3893,7 +4525,9 @@ export const gaiaX = {
       obj.containsPII = message.containsPII;
     }
     if (message.termsAndConditions?.length) {
-      obj.termsAndConditions = message.termsAndConditions.map((e) => Terms.toJSON(e));
+      obj.termsAndConditions = message.termsAndConditions.map((e) =>
+        Terms.toJSON(e),
+      );
     }
     if (message.serviceSD !== undefined) {
       obj.serviceSD = gaiaX_ServiceSelfDescription.toJSON(message.serviceSD);
@@ -3907,21 +4541,26 @@ export const gaiaX = {
   fromPartial<I extends Exact<DeepPartial<gaiaX>, I>>(object: I): gaiaX {
     const message = createBasegaiaX();
     message.containsPII = object.containsPII ?? false;
-    message.termsAndConditions = object.termsAndConditions?.map((e) => Terms.fromPartial(e)) || [];
-    message.serviceSD = (object.serviceSD !== undefined && object.serviceSD !== null)
-      ? gaiaX_ServiceSelfDescription.fromPartial(object.serviceSD)
-      : undefined;
+    message.termsAndConditions =
+      object.termsAndConditions?.map((e) => Terms.fromPartial(e)) || [];
+    message.serviceSD =
+      object.serviceSD !== undefined && object.serviceSD !== null
+        ? gaiaX_ServiceSelfDescription.fromPartial(object.serviceSD)
+        : undefined;
     return message;
   },
 };
 
 function createBasegaiaX_ServiceSelfDescription(): gaiaX_ServiceSelfDescription {
-  return { url: "", isVerified: undefined };
+  return { url: '', isVerified: undefined };
 }
 
 export const gaiaX_ServiceSelfDescription = {
-  encode(message: gaiaX_ServiceSelfDescription, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.url !== "") {
+  encode(
+    message: gaiaX_ServiceSelfDescription,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.url !== '') {
       writer.uint32(10).string(message.url);
     }
     if (message.isVerified !== undefined) {
@@ -3930,8 +4569,12 @@ export const gaiaX_ServiceSelfDescription = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): gaiaX_ServiceSelfDescription {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): gaiaX_ServiceSelfDescription {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasegaiaX_ServiceSelfDescription();
     while (reader.pos < end) {
@@ -3962,14 +4605,16 @@ export const gaiaX_ServiceSelfDescription = {
 
   fromJSON(object: any): gaiaX_ServiceSelfDescription {
     return {
-      url: isSet(object.url) ? String(object.url) : "",
-      isVerified: isSet(object.isVerified) ? Boolean(object.isVerified) : undefined,
+      url: isSet(object.url) ? String(object.url) : '',
+      isVerified: isSet(object.isVerified)
+        ? Boolean(object.isVerified)
+        : undefined,
     };
   },
 
   toJSON(message: gaiaX_ServiceSelfDescription): unknown {
     const obj: any = {};
-    if (message.url !== "") {
+    if (message.url !== '') {
       obj.url = message.url;
     }
     if (message.isVerified !== undefined) {
@@ -3978,31 +4623,36 @@ export const gaiaX_ServiceSelfDescription = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(base?: I): gaiaX_ServiceSelfDescription {
+  create<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(
+    base?: I,
+  ): gaiaX_ServiceSelfDescription {
     return gaiaX_ServiceSelfDescription.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(object: I): gaiaX_ServiceSelfDescription {
+  fromPartial<I extends Exact<DeepPartial<gaiaX_ServiceSelfDescription>, I>>(
+    object: I,
+  ): gaiaX_ServiceSelfDescription {
     const message = createBasegaiaX_ServiceSelfDescription();
-    message.url = object.url ?? "";
+    message.url = object.url ?? '';
     message.isVerified = object.isVerified ?? undefined;
     return message;
   },
 };
 
 function createBaseTerms(): Terms {
-  return { url: "" };
+  return { url: '' };
 }
 
 export const Terms = {
   encode(message: Terms, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.url !== "") {
+    if (message.url !== '') {
       writer.uint32(10).string(message.url);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Terms {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTerms();
     while (reader.pos < end) {
@@ -4025,12 +4675,12 @@ export const Terms = {
   },
 
   fromJSON(object: any): Terms {
-    return { url: isSet(object.url) ? String(object.url) : "" };
+    return { url: isSet(object.url) ? String(object.url) : '' };
   },
 
   toJSON(message: Terms): unknown {
     const obj: any = {};
-    if (message.url !== "") {
+    if (message.url !== '') {
       obj.url = message.url;
     }
     return obj;
@@ -4041,33 +4691,44 @@ export const Terms = {
   },
   fromPartial<I extends Exact<DeepPartial<Terms>, I>>(object: I): Terms {
     const message = createBaseTerms();
-    message.url = object.url ?? "";
+    message.url = object.url ?? '';
     return message;
   },
 };
 
 function createBaseConsumerParameter(): ConsumerParameter {
-  return { name: "", type: "", label: "", required: false, description: "", default: "", options: [] };
+  return {
+    name: '',
+    type: '',
+    label: '',
+    required: false,
+    description: '',
+    default: '',
+    options: [],
+  };
 }
 
 export const ConsumerParameter = {
-  encode(message: ConsumerParameter, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.name !== "") {
+  encode(
+    message: ConsumerParameter,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.name !== '') {
       writer.uint32(10).string(message.name);
     }
-    if (message.type !== "") {
+    if (message.type !== '') {
       writer.uint32(18).string(message.type);
     }
-    if (message.label !== "") {
+    if (message.label !== '') {
       writer.uint32(26).string(message.label);
     }
     if (message.required === true) {
       writer.uint32(32).bool(message.required);
     }
-    if (message.description !== "") {
+    if (message.description !== '') {
       writer.uint32(42).string(message.description);
     }
-    if (message.default !== "") {
+    if (message.default !== '') {
       writer.uint32(50).string(message.default);
     }
     for (const v of message.options) {
@@ -4077,7 +4738,8 @@ export const ConsumerParameter = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsumerParameter {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsumerParameter();
     while (reader.pos < end) {
@@ -4130,7 +4792,9 @@ export const ConsumerParameter = {
             break;
           }
 
-          message.options.push(Struct.unwrap(Struct.decode(reader, reader.uint32())));
+          message.options.push(
+            Struct.unwrap(Struct.decode(reader, reader.uint32())),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -4143,34 +4807,34 @@ export const ConsumerParameter = {
 
   fromJSON(object: any): ConsumerParameter {
     return {
-      name: isSet(object.name) ? String(object.name) : "",
-      type: isSet(object.type) ? String(object.type) : "",
-      label: isSet(object.label) ? String(object.label) : "",
+      name: isSet(object.name) ? String(object.name) : '',
+      type: isSet(object.type) ? String(object.type) : '',
+      label: isSet(object.label) ? String(object.label) : '',
       required: isSet(object.required) ? Boolean(object.required) : false,
-      description: isSet(object.description) ? String(object.description) : "",
-      default: isSet(object.default) ? String(object.default) : "",
+      description: isSet(object.description) ? String(object.description) : '',
+      default: isSet(object.default) ? String(object.default) : '',
       options: Array.isArray(object?.options) ? [...object.options] : [],
     };
   },
 
   toJSON(message: ConsumerParameter): unknown {
     const obj: any = {};
-    if (message.name !== "") {
+    if (message.name !== '') {
       obj.name = message.name;
     }
-    if (message.type !== "") {
+    if (message.type !== '') {
       obj.type = message.type;
     }
-    if (message.label !== "") {
+    if (message.label !== '') {
       obj.label = message.label;
     }
     if (message.required === true) {
       obj.required = message.required;
     }
-    if (message.description !== "") {
+    if (message.description !== '') {
       obj.description = message.description;
     }
-    if (message.default !== "") {
+    if (message.default !== '') {
       obj.default = message.default;
     }
     if (message.options?.length) {
@@ -4179,17 +4843,21 @@ export const ConsumerParameter = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ConsumerParameter>, I>>(base?: I): ConsumerParameter {
+  create<I extends Exact<DeepPartial<ConsumerParameter>, I>>(
+    base?: I,
+  ): ConsumerParameter {
     return ConsumerParameter.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ConsumerParameter>, I>>(object: I): ConsumerParameter {
+  fromPartial<I extends Exact<DeepPartial<ConsumerParameter>, I>>(
+    object: I,
+  ): ConsumerParameter {
     const message = createBaseConsumerParameter();
-    message.name = object.name ?? "";
-    message.type = object.type ?? "";
-    message.label = object.label ?? "";
+    message.name = object.name ?? '';
+    message.type = object.type ?? '';
+    message.label = object.label ?? '';
     message.required = object.required ?? false;
-    message.description = object.description ?? "";
-    message.default = object.default ?? "";
+    message.description = object.description ?? '';
+    message.default = object.default ?? '';
     message.options = object.options?.map((e) => e) || [];
     return message;
   },
@@ -4197,16 +4865,29 @@ export const ConsumerParameter = {
 
 /** service definition for publisher */
 export interface serviceofferingPublisher {
-  CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse>;
-  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse>;
+  CreateOffering(
+    request: CreateOfferingRequest,
+  ): Promise<CreateOfferingResponse>;
+  UpdateOffering(
+    request: UpdateOfferingRequest,
+  ): Promise<UpdateOfferingResponse>;
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse>;
-  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
-  runComputeToDataJob(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse>;
-  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse>;
+  UpdateOfferingLifecycle(
+    request: UpdateOfferingLifecycleRequest,
+  ): Promise<UpdateOfferingLifecycleResponse>;
+  runComputeToDataJob(
+    request: CreateComputeToDataRequest,
+  ): Promise<ComputeToDataResponse>;
+  GetComputeToDataResult(
+    request: CreateComputeToDataResultRequest,
+  ): Promise<GetComputeToDataResultResponse>;
 }
 
-export const serviceofferingPublisherServiceName = "eupg.serviceofferingpublisher.serviceofferingPublisher";
-export class serviceofferingPublisherClientImpl implements serviceofferingPublisher {
+export const serviceofferingPublisherServiceName =
+  'eupg.serviceofferingpublisher.serviceofferingPublisher';
+export class serviceofferingPublisherClientImpl
+  implements serviceofferingPublisher
+{
   private readonly rpc: Rpc;
   private readonly service: string;
   constructor(rpc: Rpc, opts?: { service?: string }) {
@@ -4219,60 +4900,109 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.runComputeToDataJob = this.runComputeToDataJob.bind(this);
     this.GetComputeToDataResult = this.GetComputeToDataResult.bind(this);
   }
-  CreateOffering(request: CreateOfferingRequest): Promise<CreateOfferingResponse> {
+  CreateOffering(
+    request: CreateOfferingRequest,
+  ): Promise<CreateOfferingResponse> {
     const data = CreateOfferingRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "CreateOffering", data);
-    return promise.then((data) => CreateOfferingResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(this.service, 'CreateOffering', data);
+    return promise.then((data) =>
+      CreateOfferingResponse.decode(_m0.Reader.create(data)),
+    );
   }
 
-  UpdateOffering(request: UpdateOfferingRequest): Promise<UpdateOfferingResponse> {
+  UpdateOffering(
+    request: UpdateOfferingRequest,
+  ): Promise<UpdateOfferingResponse> {
     const data = UpdateOfferingRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "UpdateOffering", data);
-    return promise.then((data) => UpdateOfferingResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(this.service, 'UpdateOffering', data);
+    return promise.then((data) =>
+      UpdateOfferingResponse.decode(_m0.Reader.create(data)),
+    );
   }
 
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse> {
     const data = GetOfferingRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetOffering", data);
-    return promise.then((data) => GetOfferingResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(this.service, 'GetOffering', data);
+    return promise.then((data) =>
+      GetOfferingResponse.decode(_m0.Reader.create(data)),
+    );
   }
 
-  UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse> {
+  UpdateOfferingLifecycle(
+    request: UpdateOfferingLifecycleRequest,
+  ): Promise<UpdateOfferingLifecycleResponse> {
     const data = UpdateOfferingLifecycleRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "UpdateOfferingLifecycle", data);
-    return promise.then((data) => UpdateOfferingLifecycleResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(
+      this.service,
+      'UpdateOfferingLifecycle',
+      data,
+    );
+    return promise.then((data) =>
+      UpdateOfferingLifecycleResponse.decode(_m0.Reader.create(data)),
+    );
   }
 
-  runComputeToDataJob(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse> {
+  runComputeToDataJob(
+    request: CreateComputeToDataRequest,
+  ): Promise<ComputeToDataResponse> {
     const data = CreateComputeToDataRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "runComputeToDataJob", data);
-    return promise.then((data) => ComputeToDataResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(this.service, 'runComputeToDataJob', data);
+    return promise.then((data) =>
+      ComputeToDataResponse.decode(_m0.Reader.create(data)),
+    );
   }
 
-  GetComputeToDataResult(request: CreateComputeToDataResultRequest): Promise<GetComputeToDataResultResponse> {
+  GetComputeToDataResult(
+    request: CreateComputeToDataResultRequest,
+  ): Promise<GetComputeToDataResultResponse> {
     const data = CreateComputeToDataResultRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetComputeToDataResult", data);
-    return promise.then((data) => GetComputeToDataResultResponse.decode(_m0.Reader.create(data)));
+    const promise = this.rpc.request(
+      this.service,
+      'GetComputeToDataResult',
+      data,
+    );
+    return promise.then((data) =>
+      GetComputeToDataResultResponse.decode(_m0.Reader.create(data)),
+    );
   }
 }
 
 interface Rpc {
-  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  request(
+    service: string,
+    method: string,
+    data: Uint8Array,
+  ): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
+  return typeof value === 'object' && value !== null;
 }
 
 function isSet(value: any): boolean {

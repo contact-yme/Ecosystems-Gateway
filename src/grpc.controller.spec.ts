@@ -1,7 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GrpcController } from './grpc.controller';
 import { PontusxService } from './pontusx/pontusx.service';
-import { CreateComputeToDataRequest, CreateComputeToDataResultRequest, GetComputeToDataResultResponse, GetOfferingRequest, Pricing_PricingType, PontusxOffering, ComputeToDataResultType } from './generated/src/_proto/spp_v2';
+import {
+  CreateComputeToDataRequest,
+  CreateComputeToDataResultRequest,
+  GetComputeToDataResultResponse,
+  GetOfferingRequest,
+  Pricing_PricingType,
+  PontusxOffering,
+  ComputeToDataResultType,
+} from './generated/src/_proto/spp_v2';
 import { RpcException } from '@nestjs/microservices';
 import { XfscService } from './xfsc/xfsc.service';
 
@@ -15,19 +23,15 @@ describe('Grpc Controller', () => {
     })),
     updateOffering: jest.fn(),
     updateOfferingLifecycle: jest.fn(),
-    getOffering: jest.fn()
+    getOffering: jest.fn(),
   };
 
   const mockXFSCService = {
-    publish: jest.fn()
-    .mockResolvedValue('test-id'),
-    update: jest.fn()
-    .mockResolvedValue('test-id'),
+    publish: jest.fn().mockResolvedValue('test-id'),
+    update: jest.fn().mockResolvedValue('test-id'),
     delete: jest.fn(),
-    revoke: jest.fn()
-    .mockResolvedValue('test-id')  
-  }
-
+    revoke: jest.fn().mockResolvedValue('test-id'),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,10 +43,10 @@ describe('Grpc Controller', () => {
         },
         {
           provide: XfscService,
-          useValue: mockXFSCService
-        }
+          useValue: mockXFSCService,
+        },
       ],
-    }).compile()
+    }).compile();
 
     controller = module.get<GrpcController>(GrpcController);
     pontusxService = module.get<PontusxService>(PontusxService);
@@ -50,7 +54,7 @@ describe('Grpc Controller', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  })
+  });
 
   it('Create offering', async () => {
     const result = await controller.createOffering({
@@ -94,28 +98,37 @@ describe('Grpc Controller', () => {
     it('should return a jobId if successful', async () => {
       const mockData: CreateComputeToDataResultRequest = {
         jobId: '',
-        computeToDataReturnType: ComputeToDataResultType.C2D_DATA
+        computeToDataReturnType: ComputeToDataResultType.C2D_DATA,
       };
       const mockResult = ['mockJobId'];
 
-      jest.spyOn(pontusxService, 'requestComputeToData').mockResolvedValue(mockResult);
+      jest
+        .spyOn(pontusxService, 'requestComputeToData')
+        .mockResolvedValue(mockResult);
 
       const result = await controller.getComputeToDataResult(mockData);
 
       expect(result).toEqual({ jobId: mockResult });
-      expect(pontusxService.requestComputeToData).toHaveBeenCalledWith(mockData.jobId, mockData.computeToDataReturnType);
+      expect(pontusxService.requestComputeToData).toHaveBeenCalledWith(
+        mockData.jobId,
+        mockData.computeToDataReturnType,
+      );
     });
 
     it('should throw an RpcException if requestComputeToData fails', async () => {
       const mockData: CreateComputeToDataResultRequest = {
         jobId: '',
-        computeToDataReturnType: ComputeToDataResultType.C2D_DATA
+        computeToDataReturnType: ComputeToDataResultType.C2D_DATA,
       };
       const mockError = new Error('Something went wrong');
 
-      jest.spyOn(pontusxService, 'requestComputeToData').mockRejectedValue(mockError);
+      jest
+        .spyOn(pontusxService, 'requestComputeToData')
+        .mockRejectedValue(mockError);
 
-      await expect(controller.getComputeToDataResult(mockData)).rejects.toThrow(RpcException);
+      await expect(controller.getComputeToDataResult(mockData)).rejects.toThrow(
+        RpcException,
+      );
     });
   });
 
@@ -139,21 +152,30 @@ describe('Grpc Controller', () => {
 
       jest.spyOn(pontusxService, 'getOffering').mockResolvedValue(null);
 
-      await expect(controller.getOffering(mockData)).rejects.toThrow(RpcException);
+      await expect(controller.getOffering(mockData)).rejects.toThrow(
+        RpcException,
+      );
     });
   });
 
   describe('getComputeToDataResult', () => {
     it('should return "test-result"', async () => {
-      const mockData: CreateComputeToDataResultRequest = { jobId: "mockJobId", computeToDataReturnType: ComputeToDataResultType.C2D_DATA }
-      const mockResult: GetComputeToDataResultResponse = { data: "mockJobId" };
+      const mockData: CreateComputeToDataResultRequest = {
+        jobId: 'mockJobId',
+        computeToDataReturnType: ComputeToDataResultType.C2D_DATA,
+      };
+      const mockResult: GetComputeToDataResultResponse = { data: 'mockJobId' };
 
-      jest.spyOn(pontusxService, 'getComputeToDataResult').mockResolvedValue(mockResult.data);
+      jest
+        .spyOn(pontusxService, 'getComputeToDataResult')
+        .mockResolvedValue(mockResult.data);
 
       const result = await controller.getComputeToDataResult(mockData);
 
       expect(result).toEqual(mockResult);
-      expect(pontusxService.getComputeToDataResult).toHaveBeenCalledWith(mockData.jobId);
+      expect(pontusxService.getComputeToDataResult).toHaveBeenCalledWith(
+        mockData.jobId,
+      );
     });
   });
 });
