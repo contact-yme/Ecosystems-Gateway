@@ -16,7 +16,6 @@ import {
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
-import { XfscService } from './xfsc/xfsc.service';
 
 @Controller('grpc')
 export class GrpcController {
@@ -189,7 +188,7 @@ export class GrpcController {
           }
   
           if (offering.xfscOffering) {
-            const xfscResult = await this.xsfcService.getOffering(
+            const xfscResult = await this.xfscService.getOffering(
               offering.xfscOffering.did,
               offering.xfscOffering.issuer,
               offering.xfscOffering.name,
