@@ -1,38 +1,136 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { XfscService } from './xfsc.service';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
+import axios, { AxiosResponse } from 'axios'
+import { XfscService } from './xfsc.service'
 
-describe('XfscService', () => {
-  let service: XfscService;
-  let httpService: HttpService;
+jest.mock('axios')
+import { CreateOfferingRequest, CreateOfferingResponse } from '../../src/generated/src/_proto/spp_v2'
 
-  const mockHttpService = {
-    axiosRef: {
-      request: jest.fn(),
-      post: jest.fn(),
-    },
-  };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        XfscService,
-        HttpService,
-        ConfigService, // replace me with TestConfig
-        {
-          provide: HttpService,
-          useValue: mockHttpService,
-        },
-      ],
-    }).compile();
+jest.mock('axios')
+describe('Xfsc service', () => {
+    let xfscService = new XfscService()
 
-    service = module.get<XfscService>(XfscService);
-    httpService = module.get<HttpService>(HttpService);
-  });
+    it('Token function should return a string', async () => {
+        const mockResponse = {
+            data: {
+                access_token: 'mockToken'
+            }
+        }
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-    expect(httpService).toBeDefined();
-  });
-});
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(mockResponse)
+
+        const token = await xfscService.getToken()
+
+        expect(mockResponse.data.access_token).toBe(token)
+    })
+
+    it('Publish function should return ID', async () => {
+        const mockVP = {
+            key: 'value'
+        } as unknown as JSON
+
+        const mockToken = 'mockToken'
+
+        const response: AxiosResponse<JSON> = {
+            data: { id: 'mockID' } as unknown as JSON,
+            status: 200,
+            statusText: 'OK',
+            headers: {}, 
+            config: {
+                headers: undefined
+            }
+        }
+
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(response)
+
+        const result = await xfscService.publish(mockToken, mockVP)
+        expect(result).toBe('mockID')
+
+        expect(axios.request).toHaveBeenCalledWith(expect.objectContaining({
+            method: 'post',
+            headers: expect.objectContaining({
+                'Authorization': `Bearer ${mockToken}`
+            }),
+            data: mockVP
+        }))
+
+        expect(xfscService.publish).rejects.toThrow()
+    })
+
+    it('Delete function should return the Nothing and throw an error in case of a problem', async () => {
+        const mockToken = 'mockToken'
+        const mockHash = 'mockHash'
+
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(undefined)
+
+        await xfscService.delete(mockToken, mockHash)
+
+        expect(axios.request).toHaveBeenCalledWith(expect.objectContaining({
+            method: 'delete',
+            headers: expect.objectContaining({
+                'Authorization': `Bearer ${mockToken}`
+            })
+        }))
+
+        expect(xfscService.delete).rejects.toThrow()
+    })
+
+    it('Update Function should return the ID as well as throwing an error in case of a problem occuring', async () => {
+        const mockVP = {
+            key: 'value'
+        } as unknown as JSON
+
+        const mockToken = 'mockToken'
+
+        const mockHash = 'mockHash'
+
+        const response: AxiosResponse<JSON> = {
+            data: { id: 'mockID' } as unknown as JSON,
+            status: 200,
+            statusText: 'OK',
+            headers: {}, 
+            config: {
+                headers: undefined
+            }
+        }
+
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(response)
+
+        const result = await xfscService.update(mockToken, mockHash, mockVP)
+        
+        expect(result).toBe('mockID')
+        expect(xfscService.update).rejects.toThrow()
+    })
+
+    it('revoke Function should return ID and throw an error in case of a problem occuring', async () => {
+        const mockToken = 'mockToken'
+
+        const mockHash = 'mockHash'
+
+        const response: AxiosResponse<JSON> = {
+            data: { id: 'mockID' } as unknown as JSON,
+            status: 200,
+            statusText: 'OK',
+            headers: {}, 
+            config: {
+                headers: undefined
+            }
+        }
+
+        axios.request = jest
+        .fn()
+        .mockResolvedValue(response)
+
+        const result = await xfscService.revoke(mockToken, mockHash)
+        expect(result).toBe('mockID')
+        expect(xfscService.revoke).rejects.toThrow()
+    })
+
+})

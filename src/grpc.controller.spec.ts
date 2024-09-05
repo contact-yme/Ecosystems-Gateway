@@ -1,13 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GrpcController } from './grpc.controller';
 import { PontusxService } from './pontusx/pontusx.service';
-import {
-  ComputeToDataResultType,
-  PontusxOffering,
-  Pricing_PricingType,
-} from './generated/src/_proto/spp_v2';
-import { CreateComputeToDataRequest, CreateComputeToDataResultRequest, GetComputeToDataResultResponse, GetOfferingRequest } from './generated/src/_proto/spp_v2';
+import { CreateComputeToDataRequest, CreateComputeToDataResultRequest, GetComputeToDataResultResponse, GetOfferingRequest, Pricing_PricingType, PontusxOffering, ComputeToDataResultType } from './generated/src/_proto/spp_v2';
 import { RpcException } from '@nestjs/microservices';
+import { XfscService } from './xfsc/xfsc.service';
 
 describe('Grpc Controller', () => {
   let controller: GrpcController;
@@ -22,23 +18,31 @@ describe('Grpc Controller', () => {
     getOffering: jest.fn()
   };
 
+  const mockXFSCService = {
+    publish: jest.fn()
+    .mockResolvedValue('test-id'),
+    update: jest.fn()
+    .mockResolvedValue('test-id'),
+    delete: jest.fn(),
+    revoke: jest.fn()
+    .mockResolvedValue('test-id')  
+  }
+
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GrpcController],
       providers: [
         {
           provide: PontusxService,
-          useValue: {
-            publishComputeAsset: jest.fn(),
-            updateOffering: jest.fn(),
-            setState: jest.fn(),
-            requestComputeToData: jest.fn(),
-            getOffering: jest.fn(),
-            getComputeToDataResult: jest.fn()
-          },
+          useValue: mockPontusXService,
         },
+        {
+          provide: XfscService,
+          useValue: mockXFSCService
+        }
       ],
-    }).compile();
+    }).compile()
 
     controller = module.get<GrpcController>(GrpcController);
     pontusxService = module.get<PontusxService>(PontusxService);
@@ -46,23 +50,40 @@ describe('Grpc Controller', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
+  })
 
   it('Create offering', async () => {
     const result = await controller.createOffering({
-      main: {
-        type: 'dataset',
-        author: '',
-        licence: '',
-        dateCreated: '',
-        files: [],
-        tags: [],
-        description: '',
-        allowedAlgorithm: [],
-      },
-      additionalInformation: undefined,
-      token: '',
-      name: '',
+      offerings: [
+        {
+          pontusxOffering: {
+            metadata: {
+              type: 'dataset',
+              name: '',
+              author: '',
+              licence: '',
+              tags: [],
+              description: '',
+            },
+            services: [
+              {
+                type: 'access',
+                files: [
+                  {
+                    url: '',
+                    method: '',
+                  },
+                ],
+                pricing: {
+                  pricingType: Pricing_PricingType.FREE,
+                },
+                consumerParameters: [],
+              },
+            ],
+            additionalInformation: undefined,
+          },
+        },
+      ],
     });
 
     expect(mockPontusXService.publishAsset.mock.calls).toHaveLength(1);

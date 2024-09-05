@@ -1,0 +1,34 @@
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { AppService } from './app.service';
+import {
+  ApiExcludeEndpoint,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
+import { CreateOfferingRequest, XfscOffering } from './generated/src/_proto/spp_v2';
+
+@Controller()
+export class RestController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  @ApiExcludeEndpoint()
+  getHealthz(): boolean {
+    return true;
+  }
+
+  @Post()
+  @ApiOperation({
+    summary:
+      "Push a VC to Pontus-X, XFSC Federated Catalog and Gaia-X's CredentialEventService",
+    description: 'Put a VC in in the request body',
+  })
+  @ApiTags('publishing-connector')
+  @ApiProperty()
+  async publishVcEverywhere(
+    @Body() body: CreateOfferingRequest, // TODO: use dto, also validation is never a bad idea
+  ) {
+    return await this.appService.publishEverything(body);
+  }
+}
