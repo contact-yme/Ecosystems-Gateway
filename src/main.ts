@@ -24,6 +24,8 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
+
+  // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
   await app.listen(5001);
 }
 bootstrap();
