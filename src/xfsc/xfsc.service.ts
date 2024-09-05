@@ -1,9 +1,8 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Logger } from '@nestjs/common'
 
 import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT } from './config'
-
 
 export class XfscService {
     
@@ -113,10 +112,11 @@ export class XfscService {
     }
 
   async getOffering(did: string, author: string, name: string): Promise<string> {
+    let token = this.getToken();
     const RequestConfig: AxiosRequestConfig = {
       headers: {
         'accept': 'application/json',
-        'Authorization': `Bearer ${this.token}`
+        'Authorization': `Bearer ${token}`
       }
     }
 
