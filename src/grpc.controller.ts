@@ -13,6 +13,8 @@ import {
   GetOfferingResponse,
   GetComputeToDataResultResponse,
   CreateComputeToDataResultRequest,
+  CreateComputeToDataRequest,
+  ComputeToDataResponse,
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
@@ -219,5 +221,25 @@ export class GrpcController {
         message: 'Seems like an error occurred',
       });
     }
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async RunComputeToDataJob(
+    data: CreateComputeToDataRequest,
+  ): Promise<ComputeToDataResponse> {
+    this.logger.debug('Calling RunComputeToDataJob');
+    return await this.pontusxService
+      .requestComputeToData(data.did, data.algorithm, data.userData)
+      .then((result) => {
+        return {
+          jobId: result,
+        };
+      })
+      .catch((err) => {
+        throw new RpcException({
+          code: GrpcStatusCode.INTERNAL,
+          message: err,
+        });
+      });
   }
 }
