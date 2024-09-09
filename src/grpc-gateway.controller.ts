@@ -135,11 +135,6 @@ export class GrpcGatewayController {
     }
   }
 
-  @Get(':method')
-  async handleGet(@Param('method') method: string, @Query() query: any) {
-    return this.callGrpcMethod(method, query);
-  }
-
   @Post(':method')
   async handlePost(@Param('method') method: string, @Body() body: any) {
     return this.callGrpcMethod(method, body);
@@ -154,7 +149,7 @@ export class GrpcGatewayController {
       }
       this.grpcClient[method](params, (error, response) => {
         if (error) {
-          return reject(error);
+          return reject(error.details);
         }
         return resolve(response);
       });
