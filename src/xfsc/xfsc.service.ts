@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import { Logger } from '@nestjs/common'
 
-import encodeBase64 from './base64'
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, CLIENT_SECRET, CLIENT_ID } from './config'
 
 
@@ -9,7 +8,6 @@ export class XfscService {
     
     private readonly username: string
     private readonly password: string
-    private readonly credentials: string
     private readonly client_secret: string
     private readonly client_id: string
     private readonly xfscCatAddr: string
@@ -26,21 +24,20 @@ export class XfscService {
 
         this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT
         this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT
-
-        this.credentials = encodeBase64(this.username + ':' + this.password)
     }
 
     async publish(token: string, VP: JSON): Promise<string> {
         // returns ID
         let response: AxiosResponse<JSON>
 
+        this.logger.debug(token)
         
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
             url: this.xfscCatAddr,
             headers: { 
-              'accept': '*/*', 
+              'accept': 'application/json', 
               'Content-Type': 'application/json', 
               'Authorization': 'Bearer ' + token
             },
@@ -135,8 +132,7 @@ export class XfscService {
         maxBodyLength: Infinity,
         url: this.xfscTokenEndpoint,
         headers: { 
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Authorization': 'Basic ' + this.credentials
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
         data : data
         }
