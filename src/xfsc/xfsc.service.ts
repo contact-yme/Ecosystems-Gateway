@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosError } from 'axios'
 import { Logger } from '@nestjs/common'
 
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, CLIENT_SECRET, CLIENT_ID } from './config'
@@ -30,8 +30,6 @@ export class XfscService {
         // returns ID
         let response: AxiosResponse<JSON>
 
-        this.logger.debug(token)
-        
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -47,27 +45,29 @@ export class XfscService {
         this.logger.log('Publishing in XFSC CAT ...')
         try {
           response = await axios.request(config)
-          this.logger.log('Published successfully in XFSC CAT.')
+          this.logger.log('Successfully published in XFSC CAT.')
           return response.data['id']
         } catch (error) {
-          this.logger.error('Error occurred while trying to Publish VP to XFSC Cat: ' + error)
+          this.logger.error('Error occurred while trying to Publish VP to XFSC Cat.')
           
-          throw error
-        }
+          this.handleError(error)
+      }     
     }
 
     async update(token: string, hash: string, VP: JSON): Promise<string> {
         // returns ID
+
         this.delete(token, hash)
 
-        const response: string = await this.publish(token, VP)  // Publish function already returns the SD's ID
+        const id: string = await this.publish(token, VP)  // Publish function already returns the SD's ID
         this.logger.log('Published updated SD successfully.')
 
-        return response
+        return id
     }
 
     async delete(token: string, hash: string): Promise<void> {
         // returns nothing, because there's no body in the Cat's response
+
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
@@ -78,19 +78,19 @@ export class XfscService {
             }
           }
           
-          axios.request(config)
-          .catch(error => {
-            this.logger.error(error)
+        try {
+          const response = await axios.request(config)
 
-            throw error
-            })  
-        this.logger.log('Successfully deleted SD (${hash})')
+          this.logger.log('Successfully deleted SD with hash: ', hash)
+        } catch(error) {
+          this.logger.error('Error occured while trying to delete SD with hash: ', hash)
+
+          this.handleError(error)
+        }
     }
 
     async revoke(token: string, hash: string): Promise<string> {
         // returns ID
-
-        let response: AxiosResponse<JSON>
 
         let config = {
             method: 'post',
@@ -103,7 +103,7 @@ export class XfscService {
           }
           
           try {
-            response = await axios.request(config)
+            const response = await axios.request(config)
 
             this.logger.log('Successfully revoked SD (${hash}).')  
             
@@ -111,12 +111,11 @@ export class XfscService {
           } catch(error) {
             this.logger.error('Error occurred while processing the request: ')
 
-            throw error
+            this.handleError(error)
           }
     }
 
     async getToken(): Promise<string> { 
-        const axios = require('axios')
         const qs = require('qs')
         let data = qs.stringify({
           'grant_type': 'password',
@@ -128,17 +127,46 @@ export class XfscService {
         })
 
         let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: this.xfscTokenEndpoint,
-        headers: { 
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data : data
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: this.xfscTokenEndpoint,
+          headers: { 
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
         }
 
-        const response: Promise<JSON> = await axios.request(config)
+        try {
+          const response: JSON = await axios.request(config)
+
+          return response['data']['access_token']
+        } catch(error) {
+          this.logger.error("Error occured while requesting the token.")
+
+          this.handleError(error)
+        }
+    }
+
+    handleError(error): void {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
         
-        return response['data']['access_token']
+        console.error('Error message:', axiosError.message);
+        
+        if (axiosError.response) {
+          this.logger.error('Status code:', axiosError.response.status)
+          this.logger.error('Response data:', axiosError.response.data) 
+          this.logger.error('Response headers:', axiosError.response.headers)
+
+        } else if (axiosError.request) {
+          this.logger.error('Request:', axiosError.request)
+
+        } else {
+          this.logger.error('Error', axiosError.message)
+
+        }
+      } else {
+        this.logger.error('Non-Axios error occurred: ', error)
+      }
     }
 }
