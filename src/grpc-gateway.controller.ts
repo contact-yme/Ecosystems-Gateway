@@ -131,7 +131,7 @@ export class GrpcGatewayController {
         };
       default:
         console.log('Not implemented: ', field);
-        return { type: 'string' }; // Default fallback
+        return { type: 'string' };
     }
   }
 

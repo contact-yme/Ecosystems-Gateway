@@ -485,13 +485,14 @@ export class PontusxService implements OnModuleInit {
 
     let jobIds = [];
     if (computeJob instanceof Array) {
-      computeJob.forEach(async (job) => {
-        await this.redis.rpush(
-          `${this.getSelectedNetworkConfig().network}:ctd:pending`,
-          job.jobId,
-        );
-        jobIds.push(job.jobId);
-      });
+      await Promise.all(
+        computeJob.map(async (job) => {
+          await this.redis.rpush(
+            `${this.getSelectedNetworkConfig().network}:ctd:pending`,
+            job.jobId,
+          );
+          jobIds.push(job.jobId);
+        }),);
     } else {
       await this.redis.rpush(
         `${this.getSelectedNetworkConfig().network}:ctd:pending`,
@@ -520,7 +521,7 @@ export class PontusxService implements OnModuleInit {
       let cached = await this.redis.get(
         `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
       );
-      if (cached == undefined) {
+      if (cached === null) {
         await this.redis.rpush(
           `${this.getSelectedNetworkConfig().network}:ctd:pending`,
           jobId,
@@ -567,10 +568,24 @@ export class PontusxService implements OnModuleInit {
         return;
       }
 
+      let b64data = "";
+      switch(FetchedData.data.constructor) {
+        case Object:
+          b64data = Buffer.from("not implemented").toString('base64');
+        break;
+        case String:
+        case Buffer:
+        case ArrayBuffer:
+        case Array:
+        default:
+          b64data = Buffer.from(FetchedData.data).toString('base64');
+        break;
+      };
+
       let redisTransaction = this.redis.multi();
       redisTransaction.set(
         `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
-        Buffer.from(FetchedData.data).toString('base64'),
+        b64data,
       );
       redisTransaction.expire(
         `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
@@ -586,7 +601,7 @@ export class PontusxService implements OnModuleInit {
         jobId,
       );
       this.logger.debug(
-        `Executing ${redisTransaction.length} redis commands after successfull compute-to-data job`,
+        `Executing ${redisTransaction.length} redis commands after successful compute-to-data job`,
       );
       await redisTransaction.exec();
     });
