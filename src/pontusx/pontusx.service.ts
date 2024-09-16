@@ -492,7 +492,8 @@ export class PontusxService implements OnModuleInit {
             job.jobId,
           );
           jobIds.push(job.jobId);
-        }),);
+        }),
+      );
     } else {
       await this.redis.rpush(
         `${this.getSelectedNetworkConfig().network}:ctd:pending`,
@@ -517,8 +518,7 @@ export class PontusxService implements OnModuleInit {
     jobId: string,
     return_type: ComputeToDataResultType,
   ): Promise<string> {
-    switch(return_type)
-    {
+    switch (return_type) {
       case ComputeToDataResultType.C2D_DATA:
         let cached = await this.redis.get(
           `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
@@ -528,7 +528,7 @@ export class PontusxService implements OnModuleInit {
             `${this.getSelectedNetworkConfig().network}:ctd:pending`,
             jobId,
           );
-          return "Queued";
+          return 'Queued';
         }
         return cached;
       case ComputeToDataResultType.C2D_URI:
@@ -571,19 +571,19 @@ export class PontusxService implements OnModuleInit {
         return;
       }
 
-      let b64data = "";
-      switch(FetchedData.data.constructor) {
+      let b64data = '';
+      switch (FetchedData.data.constructor) {
         case Object:
-          b64data = Buffer.from("not implemented").toString('base64');
-        break;
+          b64data = Buffer.from('not implemented').toString('base64');
+          break;
         case String:
         case Buffer:
         case ArrayBuffer:
         case Array:
         default:
           b64data = Buffer.from(FetchedData.data).toString('base64');
-        break;
-      };
+          break;
+      }
 
       let redisTransaction = this.redis.multi();
       redisTransaction.set(
