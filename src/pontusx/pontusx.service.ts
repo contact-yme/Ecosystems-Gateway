@@ -517,25 +517,28 @@ export class PontusxService implements OnModuleInit {
     jobId: string,
     return_type: ComputeToDataResultType,
   ): Promise<string> {
-    if (return_type === ComputeToDataResultType.C2D_DATA) {
-      let cached = await this.redis.get(
-        `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
-      );
-      if (cached === null) {
-        await this.redis.rpush(
-          `${this.getSelectedNetworkConfig().network}:ctd:pending`,
-          jobId,
+    switch(return_type)
+    {
+      case ComputeToDataResultType.C2D_DATA:
+        let cached = await this.redis.get(
+          `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
         );
-        return undefined;
-      }
-      return cached;
-    } else if (return_type === ComputeToDataResultType.C2D_URI) {
-      return await this.nautilus.getComputeResult({
-        jobId: jobId,
-        providerUri: this.getSelectedNetworkConfig().providerUri,
-      });
+        if (cached === null) {
+          await this.redis.rpush(
+            `${this.getSelectedNetworkConfig().network}:ctd:pending`,
+            jobId,
+          );
+          return "Queued";
+        }
+        return cached;
+      case ComputeToDataResultType.C2D_URI:
+        return await this.nautilus.getComputeResult({
+          jobId: jobId,
+          providerUri: this.getSelectedNetworkConfig().providerUri,
+        });
+      default:
+        throw new NotFoundException(`Requested method not found`);
     }
-    return undefined;
   }
 
   @Cron(CronExpression.EVERY_30_SECONDS)
