@@ -36,6 +36,9 @@ import {
   Service,
   UpdateOfferingRequest_UpdateOffering,
   ComputeToDataResultType,
+  ComputeToDataResponse,
+  GetComputeToDataResultResponse,
+  ComputeToDataResponseState,
 } from '../generated/src/_proto/spp_v2';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
@@ -517,25 +520,31 @@ export class PontusxService implements OnModuleInit {
   async getComputeToDataResult(
     jobId: string,
     return_type: ComputeToDataResultType,
-  ): Promise<string> {
+  ): Promise<GetComputeToDataResultResponse> {
     switch (return_type) {
       case ComputeToDataResultType.C2D_DATA:
         let cached = await this.redis.get(
           `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
         );
         if (cached === null) {
+          let queued = await this.redis.lpos(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
+          if(queued != null) {
+            return { state: ComputeToDataResponseState.IN_PROGRESS, data: "Data has been queued, processing started" };
+          }
+
           await this.redis.rpush(
             `${this.getSelectedNetworkConfig().network}:ctd:pending`,
             jobId,
           );
-          return 'Queued';
+          return { state: ComputeToDataResponseState.QUEUED, data: "Data has been queued, waiting to be processed" };
         }
-        return cached;
+        return { state: ComputeToDataResponseState.FINISHED, data: cached };
       case ComputeToDataResultType.C2D_URI:
-        return await this.nautilus.getComputeResult({
+        let resp = await this.nautilus.getComputeResult({
           jobId: jobId,
           providerUri: this.getSelectedNetworkConfig().providerUri,
         });
+        return { state: ComputeToDataResponseState.FINISHED, data: resp };
       default:
         throw new NotFoundException(`Requested method not found`);
     }

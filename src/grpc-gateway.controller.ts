@@ -75,7 +75,7 @@ export class GrpcGatewayController {
       info: {
         title: 'gRPC Gateway API',
         version: '1.0.0',
-        description: 'Auto-generated OpenAPI spec for gRPC methods',
+        description: 'Publishing Connector gRPC HTTP Gateway.',
       },
       servers: [
         {

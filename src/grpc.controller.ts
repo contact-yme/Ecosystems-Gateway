@@ -173,9 +173,7 @@ export class GrpcController {
           });
         }
 
-        return {
-          data: res,
-        };
+        return res;
       })
       .catch((err) => {
         throw new RpcException({
