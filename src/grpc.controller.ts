@@ -174,7 +174,7 @@ export class GrpcController {
         }
 
         return {
-          data: data.jobId,
+          data: res,
         };
       })
       .catch((err) => {
