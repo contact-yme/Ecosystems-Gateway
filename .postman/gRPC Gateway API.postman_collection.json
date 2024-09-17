@@ -1,0 +1,315 @@
+{
+	"info": {
+		"_postman_id": "6d6d7725-b1ba-4324-b877-7b303465fba9",
+		"name": "gRPC Gateway API",
+		"description": "Publishing Connector gRPC HTTP Gateway.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38060636"
+	},
+	"item": [
+		{
+			"name": "CreateOffering",
+			"item": [
+				{
+					"name": "Invoke CreateOffering method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"offerings\": [\n        {\n        \"xfscOffering\":\n            {\n                \"VP\": \"{\\\"@context\\\" : [ \\\"https://www.w3.org/2018/credentials/v1\\\", \\\"https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#\\\", \\\"https://w3id.org/security/suites/jws-2020/v1\\\" ],    \\\"type\\\" : [ \\\"VerifiablePresentation\\\" ],    \\\"id\\\" : \\\"https://backend.sag.euprogigant.io/.well-known/participants/529900M1LIO0SLOBAS50.json\\\",    \\\"verifiableCredential\\\" : {      \\\"@context\\\" : [ \\\"https://www.w3.org/2018/credentials/v1\\\", \\\"https://registry.lab.gaia-x.eu/development/api/trusted-shape-registry/v1/shapes/jsonld/trustframework#\\\", \\\"https://w3id.org/security/suites/jws-2020/v1\\\" ],      \\\"type\\\" : [ \\\"VerifiableCredential\\\" ],      \\\"id\\\" : \\\"https://backend.sag.euprogigant.io/.well-known/participants/529900M1LIO0SLOBAS50.json\\\",      \\\"issuer\\\" : \\\"did:web:backend.sag.euprogigant.io\\\",      \\\"issuanceDate\\\" : \\\"2024-04-03T09:04:39Z\\\",      \\\"credentialSubject\\\" : [ {        \\\"gx:legalAddress\\\" : [ {          \\\"gx:countrySubdivisionCode\\\" : [ \\\"DE-HE\\\" ]        } ],        \\\"gx:headquarterAddress\\\" : [ {          \\\"gx:countrySubdivisionCode\\\" : [ \\\"DE-HE\\\" ]        } ],        \\\"gx:legalRegistrationNumber\\\" : [ {          \\\"gx:leiCode\\\" : [ \\\"529900M1LIO0SLOBAS50\\\" ]        } ],        \\\"gx:legalName\\\" : \\\"Software Aktiengesellschaft\\\",        \\\"type\\\" : \\\"gx:LegalParticipant\\\",        \\\"id\\\" : \\\"https://backend.sag.euprogigant.io/.well-known/participants/529900M1LIO0SLOBAS50.json\\\"      } ],      \\\"proof\\\" : {        \\\"type\\\" : \\\"JsonWebSignature2020\\\",        \\\"created\\\" : \\\"2024-04-03T09:04:39Z\\\",        \\\"proofPurpose\\\" : \\\"assertionMethod\\\",        \\\"verificationMethod\\\" : \\\"did:web:sagresearch.de#cert_2024-01-12\\\",        \\\"jws\\\" : \\\"eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJQUzI1NiJ9..P1cHmRk1X1hwldvxltY8zIw-CwFfnLLPr1TFMV5T59ToSxkB_y1PnYV50EGjMYweAK51gZkNtnmsfzNtYT6DuyS9ak8YlPO1d9nVZzJ2_2kXVHCXHQ_A7V6-bc-Z54KlTV5r1029j8GWtNuGcy_kw7Jq1YyfZCKcAGQbOUwCvQP8kRU8cMN8ZKXP3iX8N_b2_NOnXQyvNYRco2jwmMu81bS2sTYqTqn7kMH5s1-72Ofw32p8JVQiMCgYHrNz27F1yR4slzubM4iqJQsnMl0zvzPWZonFUuvAp64yi489E_Hg9Fz8-ArevRmMnEqdtV30Pcd9hjfJbiBY_m4uWJ3PTQ\\\"      }    },    \\\"proof\\\" : {      \\\"type\\\" : \\\"JsonWebSignature2020\\\",      \\\"created\\\" : \\\"2024-04-03T09:04:39Z\\\",      \\\"proofPurpose\\\" : \\\"assertionMethod\\\",      \\\"verificationMethod\\\" : \\\"did:web:sagresearch.de#cert_2024-01-12\\\",      \\\"jws\\\" : \\\"eyJiNjQiOmZhbHNlLCJjcml0IjpbImI2NCJdLCJhbGciOiJQUzI1NiJ9..J1wLNvsDq0fygVT3Wn13FEkBslo1mXSZ_41hMXEeBzRFtWsrdGBAjLWgXdhFFSytITSr04rL2lNboZ0gjQpY2KIGXTQ8NAJDc63Idl4XQaoA8cL6l6qMiTi77FOR_2aKxPJJdNlibHruATK9bqD5BFJYoYF4-_p_kZE7EToa-z7I3wnxZJDYdi6T6tmnL4vpBx2OFYvQKcC4AkljCeM7t6jucpyyAOCcu2mJQM_3ipTsqOXn8viTLlIVXnXIUX8Gcnlyv9uaUyZn7zFnzV4suYs03hw4wqMzfszKOruiD26Gsa6s2mrxM_0ntOr4MK5kPRzpy9Gn4uxXyCfE1qBZ0Q\\\"    }  }\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/CreateOffering",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"CreateOffering"
+							]
+						},
+						"description": "Calls the gRPC method CreateOffering"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UpdateOffering",
+			"item": [
+				{
+					"name": "Invoke UpdateOffering method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"offerings\": {}\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/UpdateOffering",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"UpdateOffering"
+							]
+						},
+						"description": "Calls the gRPC method UpdateOffering"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetOffering",
+			"item": [
+				{
+					"name": "Invoke GetOffering method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"offerings\": [\n        {\n            \"pontusxOffering\": {\n                \"did\": \"did:op:7746d00c660165832b249df2918405de41836d4b3e55d98662e5f5c1279d67b7\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/GetOffering",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"GetOffering"
+							]
+						},
+						"description": "Calls the gRPC method GetOffering"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UpdateOfferingLifecycle",
+			"item": [
+				{
+					"name": "Invoke UpdateOfferingLifecycle method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"offerings\": {}\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/UpdateOfferingLifecycle",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"UpdateOfferingLifecycle"
+							]
+						},
+						"description": "Calls the gRPC method UpdateOfferingLifecycle"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RunComputeToDataJob",
+			"item": [
+				{
+					"name": "Invoke runComputeToDataJob method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"did\": \"did:op:ea6890f851252e0646ab4887c40603182e42ab684f597f5731f02cfe9efe5be0\",\n    \"algorithm\": \"did:op:7e36f8d3c52faaa2f5aa9336b05ce9d9e499188b1408ebdeb9c0834c9b94c450\",\n    \"user_data\": {}\n}\n",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/RunComputeToDataJob",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"RunComputeToDataJob"
+							]
+						},
+						"description": "Calls the gRPC method runComputeToDataJob"
+					},
+					"response": []
+				}
+			],
+			"description": "Pontus-x's \"Compute to Data\" model enables secure data usage by allowing computations on sensitive data without exposing the raw dataset. Data owners maintain full control as computations are sent to their environment, ensuring privacy while only sharing the results. Blockchain technology ensures transparency and trust in the process, while allowing data owners to monetize their data securely. The system supports a variety of data types and computations.\n\nThe current gRPC format:\n\n``` protobuf\nmessage CreateComputeToDataRequest {\n    string did = 1;\n    string algorithm = 2;\n    map<string, string> user_data = 3;\n}\n\n ```\n\nThe result will be a base64 encoded data."
+		},
+		{
+			"name": "GetComputeToDataResult",
+			"item": [
+				{
+					"name": "Get Result as Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jobId\": \"a42c9742e59a486c94345c1d5769fc51\",\n    \"compute_to_data_return_type\": 0\n}\n",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/GetComputeToDataResult",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"GetComputeToDataResult"
+							]
+						},
+						"description": "Calls the gRPC method GetComputeToDataResult"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Result as URL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jobId\": \"a42c9742e59a486c94345c1d5769fc51\",\n    \"compute_to_data_return_type\": 1\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/grpc/GetComputeToDataResult",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"grpc",
+								"GetComputeToDataResult"
+							]
+						},
+						"description": "Calls the gRPC method GetComputeToDataResult"
+					},
+					"response": []
+				}
+			],
+			"description": "Pontus-x's \"Compute to Data\" model enables secure data usage by allowing computations on sensitive data without exposing the raw dataset. Data owners maintain full control as computations are sent to their environment, ensuring privacy while only sharing the results. Blockchain technology ensures transparency and trust in the process, while allowing data owners to monetize their data securely. The system supports a variety of data types and computations.\n\nThe current gRPC format:\n\n``` protobuf\nmessage CreateComputeToDataRequest {\n    string jobId = 1;\n    string compute_to_data_return_type = 2;\n}\n\n ```\n\nThe result will be a base64 encoded data."
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001"
+		}
+	]
+}
