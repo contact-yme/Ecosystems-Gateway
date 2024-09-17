@@ -11,7 +11,7 @@
 			"name": "CreateOffering",
 			"item": [
 				{
-					"name": "Invoke CreateOffering method",
+					"name": "Create an Offer in XFSC",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -183,7 +183,7 @@
 			"name": "RunComputeToDataJob",
 			"item": [
 				{
-					"name": "Invoke runComputeToDataJob method",
+					"name": "Request a Compute2Data Job",
 					"request": {
 						"method": "POST",
 						"header": [
