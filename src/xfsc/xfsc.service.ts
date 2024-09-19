@@ -118,7 +118,7 @@ export class XfscService {
     async getToken(): Promise<string> { 
         const qs = require('qs')
         let data = qs.stringify({
-          'grant_type': 'password',
+          'grant_type': 'password',  // 'client_credentials' flow is not suitable, because of a lack of keycloak configurations in terms of the client's roles, which would cause a 403 forbidden status Code
           'username': this.username,
           'password': this.password,
           'client_id': this.client_id,
