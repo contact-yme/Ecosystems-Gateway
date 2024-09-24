@@ -1,91 +1,93 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { Logger } from '@nestjs/common';
 
-import encodeBase64 from './base64';
-import {
-  XFSC_USERNAME,
-  XFSC_PASSWORD,
-  XFSC_CAT_HOST_SD_ENDPOINT,
-  XFSC_CAT_TOKEN_ENDPOINT,
-} from './config';
+import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, CLIENT_SECRET, CLIENT_ID } from './config'
+
 
 export class XfscService {
-  private username: string;
-  private password: string;
-  private credentials: string;
-  private readonly xfscCatAddr: string;
-  private readonly xfscTokenEndpoint: string;
-  private readonly logger: Logger;
+    
+    private readonly username: string
+    private readonly password: string
+    private readonly client_secret: string
+    private readonly client_id: string
+    private readonly xfscCatAddr: string
+    private readonly xfscTokenEndpoint: string  
+    private readonly logger: Logger
+    
+    constructor() {
+        this.logger = new Logger(XfscService.name)
+        this.username = XFSC_USERNAME  
+        this.password = XFSC_PASSWORD
 
-  constructor() {
-    this.logger = new Logger(XfscService.name);
-    this.username = XFSC_USERNAME; // read .env vars here
-    this.password = XFSC_PASSWORD;
-    this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT;
-    this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT;
+        this.client_id = CLIENT_ID
+        this.client_secret = CLIENT_SECRET
 
-    this.credentials = encodeBase64(this.username + ':' + this.password);
-  }
-
-  async publish(token: string, VP: JSON): Promise<string> {
-    // returns ID
-    let response: AxiosResponse<JSON>;
-
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: this.xfscCatAddr,
-      headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
-      data: VP,
-    };
-
-    this.logger.log('Publishing in XFSC CAT ...');
-    try {
-      response = await axios.request(config);
-      this.logger.log('Published successfully in XFSC CAT.');
-      return response.data['id'];
-    } catch (error) {
-      this.logger.error(
-        'Error occurred while trying to Publish VP to XFSC Cat: ' + error,
-      );
-
-      throw error;
+        this.xfscCatAddr = XFSC_CAT_HOST_SD_ENDPOINT
+        this.xfscTokenEndpoint = XFSC_CAT_TOKEN_ENDPOINT
     }
-  }
 
-  async update(token: string, hash: string, VP: JSON): Promise<string> {
-    // returns ID
-    this.delete(token, hash);
+    async publish(token: string, VP: JSON): Promise<string> {
+        // returns ID
+        let response: AxiosResponse<JSON>
 
-    const response: string = await this.publish(token, VP); // Publish function already returns the SD's ID
-    this.logger.log('Published updated SD successfully.');
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr,
+            headers: { 
+              'accept': 'application/json', 
+              'Content-Type': 'application/json', 
+              'Authorization': 'Bearer ' + token
+            },
+            data : VP
+          }
+        
+        this.logger.log('Publishing in XFSC CAT ...')
+        try {
+          response = await axios.request(config)
+          this.logger.log('Successfully published in XFSC CAT.')
+          return response.data['id']
+        } catch (error) {
+          this.logger.error('Error occurred while trying to Publish VP to XFSC Cat.')
+          
+          this.handleError(error)
+      }     
+    }
 
-    return response;
-  }
+    async update(token: string, hash: string, VP: JSON): Promise<string> {
+        // returns ID
 
-  async delete(token: string, hash: string): Promise<void> {
-    // returns nothing, because there's no body in the Cat's response
-    let config = {
-      method: 'delete',
-      maxBodyLength: Infinity,
-      url: this.xfscCatAddr + hash,
-      headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
-    };
+        this.delete(token, hash)
 
-    axios.request(config).catch((error) => {
-      this.logger.error(error);
+        const id: string = await this.publish(token, VP)  // Publish function already returns the SD's ID
+        this.logger.log('Published updated SD successfully.')
 
-      throw error;
-    });
-    this.logger.log('Successfully deleted SD (${hash})');
-  }
+        return id
+    }
+
+    async delete(token: string, hash: string): Promise<void> {
+        // returns nothing, because there's no body in the Cat's response
+
+        let config = {
+            method: 'delete',
+            maxBodyLength: Infinity,
+            url: this.xfscCatAddr + hash,
+            headers: { 
+              'accept': 'application/json', 
+              'Authorization': 'Bearer ' + token
+            }
+          }
+          
+        try {
+          const response = await axios.request(config)
+
+          this.logger.log('Successfully deleted SD with hash: ', hash)
+        } catch(error) {
+          this.logger.error('Error occured while trying to delete SD with hash: ', hash)
+
+          this.handleError(error)
+        }
+    }
 
   async revoke(token: string, hash: string): Promise<string> {
     // returns ID
@@ -175,26 +177,58 @@ export class XfscService {
     }
   }
 
-  async getToken(): Promise<string> {
-    const axios = require('axios');
-    const qs = require('qs');
-    let data = qs.stringify({
-      grant_type: 'client_credentials',
-    });
+    async getToken(): Promise<string> { 
+        const qs = require('qs')
+        let data = qs.stringify({
+          'grant_type': 'password',  // 'client_credentials' flow is not suitable, because of a lack of keycloak configurations in terms of the client's roles, which would cause a 403 forbidden status Code
+          'username': this.username,
+          'password': this.password,
+          'client_id': this.client_id,
+          'scope': 'openid',
+          'client_secret': this.client_secret 
+        })
 
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: this.xfscTokenEndpoint,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Basic ' + this.credentials,
-      },
-      data: data,
-    };
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: this.xfscTokenEndpoint,
+          headers: { 
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          data : data
+        }
 
-    const response: Promise<JSON> = await axios.request(config);
+        try {
+          const response: JSON = await axios.request(config)
 
-    return response['data']['access_token'];
-  }
+          return response['data']['access_token']
+        } catch(error) {
+          this.logger.error("Error occured while requesting the token.")
+
+          this.handleError(error)
+        }
+    }
+
+    handleError(error): void {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        
+        console.error('Error message:', axiosError.message);
+        
+        if (axiosError.response) {
+          this.logger.error('Status code:', axiosError.response.status)
+          this.logger.error('Response data:', axiosError.response.data) 
+          this.logger.error('Response headers:', axiosError.response.headers)
+
+        } else if (axiosError.request) {
+          this.logger.error('Request:', axiosError.request)
+
+        } else {
+          this.logger.error('Error', axiosError.message)
+
+        }
+      } else {
+        this.logger.error('Non-Axios error occurred: ', error)
+      }
+    }
 }
