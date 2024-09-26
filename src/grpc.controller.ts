@@ -33,7 +33,7 @@ export class GrpcController {
     data: CreateOfferingRequest,
   ): Promise<CreateOfferingResponse> {
     this.logger.debug('grpc method CreateOffering called');
-    //this.logger.debug(data);
+    this.logger.debug(data);
 
     const results = [];
     for (const offering of data.offerings) {
@@ -158,15 +158,8 @@ export class GrpcController {
   ): Promise<GetComputeToDataResultResponse> {
 
     try {
-      const res = await this.pontusxService
+      return await this.pontusxService
         .getComputeToDataResult(data.jobId, data.computeToDataReturnType);
-      if (res == null) {
-        throw new RpcException({
-          code: GrpcStatusCode.UNAVAILABLE,
-          message: 'Result is not available',
-        });
-      }
-      return res;
     } catch (err) {
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
