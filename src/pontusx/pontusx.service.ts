@@ -527,16 +527,25 @@ export class PontusxService implements OnModuleInit {
           `${this.getSelectedNetworkConfig().network}:ctd:result:${jobId}`,
         );
         if (cached === null) {
-          let queued = await this.redis.lpos(`${this.getSelectedNetworkConfig().network}:ctd:pending`, jobId);
-          if(queued != null) {
-            return { state: ComputeToDataResponseState.IN_PROGRESS, data: "Data has been queued, processing started" };
+          let queued = await this.redis.lpos(
+            `${this.getSelectedNetworkConfig().network}:ctd:pending`,
+            jobId,
+          );
+          if (queued != null) {
+            return {
+              state: ComputeToDataResponseState.IN_PROGRESS,
+              data: 'Data has been queued, processing started',
+            };
           }
 
           await this.redis.rpush(
             `${this.getSelectedNetworkConfig().network}:ctd:pending`,
             jobId,
           );
-          return { state: ComputeToDataResponseState.QUEUED, data: "Data has been queued, waiting to be processed" };
+          return {
+            state: ComputeToDataResponseState.QUEUED,
+            data: 'Data has been queued, waiting to be processed',
+          };
         }
         return { state: ComputeToDataResponseState.FINISHED, data: cached };
       case ComputeToDataResultType.C2D_URI:
