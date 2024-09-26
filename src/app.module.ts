@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { GrpcController } from './grpc.controller';
-import { AppService } from './app.service';
 import { CredentialEventServiceModule } from './credential-event-service/credential-event-service.module';
 import { PontusxModule } from './pontusx/pontusx.module';
 import { XfscModule } from './xfsc/xfsc.module';
@@ -24,7 +23,6 @@ import { GrpcGatewayController } from './grpc-gateway.controller';
     PontusxModule,
     XfscModule,
   ],
-  controllers: [GrpcController, GrpcGatewayController],
-  providers: [AppService],
+  controllers: [GrpcController, GrpcGatewayController]
 })
 export class AppModule {}
