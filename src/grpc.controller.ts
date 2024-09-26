@@ -196,7 +196,7 @@ export class GrpcController {
               offering.xfscOffering.issuer,
               offering.xfscOffering.name,
             );
-            result.concat(xfscResult);
+            result.push(...xfscResult);
           }
         }),
       );
