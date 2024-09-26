@@ -6,18 +6,29 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // sadly needed to boot nautilus up, otherwise onModuleInit doesn't get triggered :(
-  app.init();
+  await app.init();
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: '0.0.0.0:5000',
+      url: '0.0.0.0:5002',
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
+
+      onLoadPackageDefinition(pkg, server) {
+        // Add gRPC server reflection if ENABLE_GRPC_REFLECTION is set either as environment variable or config variable
+        if (Boolean(process.env.ENABLE_GRPC_REFLECTION) || false) {
+          console.log('Enabled gRPC Reflection');
+          const grpcReflection = require('@grpc/reflection');
+          new grpcReflection.ReflectionService(pkg).addToServer(server);
+        }
+      },
     },
   });
 
   await app.startAllMicroservices();
+
+  // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
+  await app.listen(5001);
 }
 bootstrap();

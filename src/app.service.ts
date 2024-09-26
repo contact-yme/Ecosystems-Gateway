@@ -21,11 +21,10 @@ export class AppService {
     const pontusxResult = await this.pontusxService.publishAsset(vc);
     this.logger.debug('result from pontusx', pontusxResult);
 
-    this.xfscService.getToken()
-    .then(token => {
-      const xfscResult = this.xfscService.publish(token, vc)
+    this.xfscService.getToken().then((token) => {
+      const xfscResult = this.xfscService.publish(token, vc);
       this.logger.debug('result from xfsc catalog', xfscResult);
-    })
+    });
 
     const credentialEventResult = await this.credentialEventService.publish(
       'hmm',

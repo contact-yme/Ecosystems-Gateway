@@ -11,7 +11,7 @@ services:
       - "3000:3000"
       - "5001:5000"
     networks:
-      - gaia-x
+      - xsfc
       - proxy
     labels:
       traefik.enable: true
@@ -25,10 +25,24 @@ services:
       traefik.http.routers.publishingconnector-secure.rule: Host(`publishing-connector.localhost`)
       traefik.http.routers.publishingconnector-secure.entrypoints: websecure
       traefik.http.services.publishingconnector-secure.loadbalancer.server.port: 5000
+  redis:
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
 
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    hostname: redis-commander
+    restart: unless-stopped
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
 
 networks:
-  gaia-x:
+  xsfc:
     external: true
   proxy:
     external: true

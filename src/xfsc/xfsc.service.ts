@@ -1,5 +1,5 @@
-import axios, { AxiosResponse, AxiosError } from 'axios'
-import { Logger } from '@nestjs/common'
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import { Logger } from '@nestjs/common';
 
 import { XFSC_USERNAME, XFSC_PASSWORD, XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, CLIENT_SECRET, CLIENT_ID } from './config'
 
@@ -89,31 +89,93 @@ export class XfscService {
         }
     }
 
-    async revoke(token: string, hash: string): Promise<string> {
-        // returns ID
+  async revoke(token: string, hash: string): Promise<string> {
+    // returns ID
 
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: this.xfscCatAddr + hash + '/revoke',
-            headers: { 
-              'accept': 'application/json',
-              'Authorization': 'Bearer ' + token
-            }
-          }
-          
-          try {
-            const response = await axios.request(config)
+    let response: AxiosResponse<JSON>;
 
-            this.logger.log('Successfully revoked SD (${hash}).')  
-            
-            return response.data['id']
-          } catch(error) {
-            this.logger.error('Error occurred while processing the request: ')
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: this.xfscCatAddr + hash + '/revoke',
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+    };
 
-            this.handleError(error)
-          }
+    try {
+      response = await axios.request(config);
+
+      this.logger.log('Successfully revoked SD (${hash}).');
+
+      return response.data['id'];
+    } catch (error) {
+      this.logger.error('Error occurred while processing the request: ');
+
+      throw error;
     }
+  }
+
+  async getOffering(
+    did: string,
+    author: string,
+    name: string,
+  ): Promise<string> {
+    let token = this.getToken();
+    const RequestConfig: AxiosRequestConfig = {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const searchParams = new URLSearchParams({});
+    if (did) {
+      searchParams.set('id', did);
+
+      if (author) {
+        searchParams.set('issuer', author);
+      }
+
+      return await axios
+        .get(`/self-descriptions?${searchParams.toString()}`, RequestConfig)
+        .then((response) => {
+          try {
+            let resp = JSON.parse(response.data);
+            if (resp.items) {
+              return resp.items[0].content;
+            }
+          } catch (Exception) {
+            return undefined;
+          }
+        })
+        .catch((error) => {
+          return undefined;
+        });
+    } else {
+      searchParams.set('offset', '0');
+      searchParams.set('withContent', 'true');
+      searchParams.set('withMeta', 'false');
+      searchParams.set('limit', '1000');
+      return await axios
+        .get(`/self-descriptions?${searchParams.toString()}`, RequestConfig)
+        .then((response) => {
+          try {
+            let resp = JSON.parse(response.data);
+            let found_items = [];
+            resp.items.forEach((item) => {
+              found_items.push(item.content);
+            });
+          } catch (Exception) {
+            return undefined;
+          }
+        })
+        .catch((error) => {
+          return undefined;
+        });
+    }
+  }
 
     async getToken(): Promise<string> { 
         const qs = require('qs')
