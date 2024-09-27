@@ -11,7 +11,7 @@ services:
       - "5002:5002"
       - "5001:5001"
     networks:
-      - xsfc
+      - xfsc
       - proxy
     labels:
       traefik.enable: true
@@ -42,7 +42,7 @@ services:
     - "8081:8081"
 
 networks:
-  xsfc:
+  xfsc:
     external: true
   proxy:
     external: true
