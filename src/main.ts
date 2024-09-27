@@ -2,16 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   await app.init();
 
+  const configService = app.get<ConfigService>(ConfigService);
+
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: '0.0.0.0:5002',
+      url: `0.0.0.0:${configService.get('GRPC_PORT') || 5002}`,
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
 
@@ -29,6 +32,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
-  await app.listen(5001);
+  await app.listen(configService.get('GRPC_GATEWAY_PORT') || 3000);
 }
 bootstrap();

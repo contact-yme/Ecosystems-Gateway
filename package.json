@@ -21,7 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
   },
-  "pre-commit":  ["pretty"],
+  "pre-commit": [
+    "pretty"
+  ],
   "dependencies": {
     "@deltadao/nautilus": "^1.0.2",
     "@grpc/grpc-js": "1.11.2",

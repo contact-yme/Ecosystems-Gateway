@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { GrpcController } from './grpc.controller';
 import { CredentialEventServiceModule } from './credential-event-service/credential-event-service.module';
@@ -14,9 +14,13 @@ import { GrpcGatewayController } from './grpc-gateway.controller';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    RedisModule.forRoot({
-      type: 'single',
-      url: 'redis://127.0.0.1:6379',
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'single',
+        url: `redis://${configService.get('REDIS_ADDRESS') || '127.0.0.1:6379'}`,
+      }),
+      inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
     CredentialEventServiceModule,
