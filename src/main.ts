@@ -14,7 +14,7 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: `0.0.0.0:${configService.get('GRPC_PORT') || 5002}`,
+      url: configService.get('GRPC_BIND') || '127.0.0.1:5002', // TODO: Fix default values
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
 
@@ -32,6 +32,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
-  await app.listen(configService.get('GRPC_GATEWAY_PORT') || 3000);
+  await app.listen(configService.get('GRPC_GATEWAY_BIND') || '0.0.0.0:3000');
 }
 bootstrap();
