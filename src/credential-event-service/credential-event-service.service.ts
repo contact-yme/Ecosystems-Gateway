@@ -19,7 +19,7 @@ export class CredentialEventServiceService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.cesUrl = this.configService.get('CES_URL');    
+    this.cesUrl = this.configService.get('CES_URL');
   }
 
   async publish(source: string, vc: any) {
