@@ -8,8 +8,8 @@ services:
       - PRIVATE_KEY= # Create your own via https://gchq.github.io/CyberChef/#recipe=Generate_ECDSA_Key_Pair('P-256','DER')
       - NETWORK=GENX
     ports:
-      - "3000:3000"
-      - "5001:5000"
+      - "5002:5002"
+      - "5001:5001"
     networks:
       - xsfc
       - proxy
