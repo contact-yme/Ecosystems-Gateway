@@ -3,18 +3,19 @@ import {
   loadGrpcClient,
   loadGrpcServiceDefinition,
 } from './grpc-client.loader';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('grpc')
 export class GrpcGatewayController {
   private grpcClient: any;
   private grpcDefinitions: any;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.grpcClient = loadGrpcClient(
       './_proto/spp_v2.proto',
       'eupg.serviceofferingpublisher',
       'serviceofferingPublisher',
-      '0.0.0.0:5002',
+      configService.get('GRPC_BIND') || '127.0.0.1:5002', // TODO: Fix default values
     );
 
     this.grpcDefinitions = loadGrpcServiceDefinition(

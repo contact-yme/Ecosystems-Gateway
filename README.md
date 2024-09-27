@@ -6,7 +6,7 @@ A service to push Gaia-X Verifiable Credentials (VC's) to [Pontus-X](https://por
 
 It offers a gRPC API described in [here](./src/_proto/spp_v2.proto).
 
-While the REST API is currently __not__ supported.
+While the REST API is currently __not__ supported, you there is a Http-gRPC gateway you can use.
 
 ### Quickstart
 
@@ -26,6 +26,9 @@ See the example `.env.example` for enviroments variables that can be set.
 
 |Key|Value|Description|
 |---|---|---|
+|GRPC_BIND|Address gRPC service listens on| Defaults to 5002|
+|GRPC_GATEWAY_BIND|Address the gRPC-HTTP Gateway listens on| Defaults to 3000|
+|REDIS_ADDRESS|Address of Redis|Defaults to |`127.0.0.1:6379`|
 |NETWORK|PONTUSXTEST, PONTUSXDEV, MUMBAI||
 |PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
 |CES_URL|<https://ces-development.lab.gaia-x.eu/credentials-events>|Is used for the CredentialEventService|
