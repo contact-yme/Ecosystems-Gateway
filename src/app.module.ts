@@ -23,6 +23,6 @@ import { GrpcGatewayController } from './grpc-gateway.controller';
     PontusxModule,
     XfscModule,
   ],
-  controllers: [GrpcController, GrpcGatewayController]
+  controllers: [GrpcController, GrpcGatewayController],
 })
 export class AppModule {}

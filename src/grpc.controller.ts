@@ -26,7 +26,7 @@ export class GrpcController {
   constructor(
     private readonly pontusxService: PontusxService,
     private readonly xfscService: XfscService,
-  ) { }
+  ) {}
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(
@@ -48,14 +48,17 @@ export class GrpcController {
         try {
           const VP = JSON.parse(offering.xfscOffering.VP);
           const token = await this.xfscService.getToken();
-          const singleResult = await this.xfscService.publish(token, (data = VP));
-          results.push(singleResult)
+          const singleResult = await this.xfscService.publish(
+            token,
+            (data = VP),
+          );
+          results.push(singleResult);
         } catch (err) {
           this.logger.error(
             'Error occured when trying to get the Token needed for the XFSC catalogue: ',
             err,
           );
-          throw err
+          throw err;
         }
       }
     }
@@ -156,10 +159,11 @@ export class GrpcController {
   async getComputeToDataResult(
     data: CreateComputeToDataResultRequest,
   ): Promise<GetComputeToDataResultResponse> {
-
     try {
-      return await this.pontusxService
-        .getComputeToDataResult(data.jobId, data.computeToDataReturnType);
+      return await this.pontusxService.getComputeToDataResult(
+        data.jobId,
+        data.computeToDataReturnType,
+      );
     } catch (err) {
       throw new RpcException({
         code: GrpcStatusCode.INTERNAL,
@@ -212,8 +216,11 @@ export class GrpcController {
   ): Promise<ComputeToDataResponse> {
     this.logger.debug('Calling RunComputeToDataJob');
     try {
-      let result = await this.pontusxService
-        .requestComputeToData(data.did, data.algorithm, data.userData);
+      let result = await this.pontusxService.requestComputeToData(
+        data.did,
+        data.algorithm,
+        data.userData,
+      );
       return {
         jobId: result,
       };
