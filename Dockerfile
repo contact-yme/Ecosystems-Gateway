@@ -19,7 +19,7 @@ ENV NODE_ENV production
 RUN protoc --plugin="./node_modules/.bin/protoc-gen-ts_proto" \
             --ts_proto_opt=esModuleInterop=true \
             --ts_proto_out="./src/generated" \
-            ./src/_proto/spp.proto
+            ./src/_proto/spp_v2.proto
 
 # Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
 RUN npm ci --only=production && npm cache clean --force
