@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, Body, Query, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Query,
+  Logger,
+} from '@nestjs/common';
 import {
   loadGrpcClient,
   loadGrpcServiceDefinition,
@@ -26,7 +34,9 @@ export class GrpcGatewayController {
       'serviceofferingPublisher',
     );
 
-    this.logger.log(`Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`);
+    this.logger.log(
+      `Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`,
+    );
   }
 
   @Get('list')
