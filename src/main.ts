@@ -12,7 +12,8 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
 
   const GRPC_BIND = configService.get('GRPC_BIND') || '0.0.0.0:5002';
-  const GRPC_GATEWAY_PORT: string = configService.get('GRPC_GATEWAY_PORT') || '0.0.0.0:3000';
+  const GRPC_GATEWAY_PORT: string =
+    configService.get('GRPC_GATEWAY_PORT') || '0.0.0.0:3000';
   const ENABLE_GRPC_REFLECTION =
     configService.get('ENABLE_GRPC_REFLECTION') || false;
   LOGGER.log(
