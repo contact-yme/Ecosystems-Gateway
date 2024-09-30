@@ -12,11 +12,11 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
 
   const GRPC_BIND = configService.get('GRPC_BIND') || '0.0.0.0:5002';
-  const GRPC_GATEWAY_BIND = configService.get('GRPC_GATEWAY_BIND') || 3000;
+  const GRPC_GATEWAY_PORT: string = configService.get('GRPC_GATEWAY_PORT') || '0.0.0.0:3000';
   const ENABLE_GRPC_REFLECTION =
     configService.get('ENABLE_GRPC_REFLECTION') || false;
   LOGGER.log(
-    `Bind gRPC to '${GRPC_BIND}', gRPC Gateway to '${GRPC_GATEWAY_BIND}' and ${ENABLE_GRPC_REFLECTION ? 'enable' : 'disable'} gRPC Reflection`,
+    `Bind gRPC to '${GRPC_BIND}', gRPC Gateway to '${GRPC_GATEWAY_PORT}' and ${ENABLE_GRPC_REFLECTION ? 'enable' : 'disable'} gRPC Reflection`,
   );
 
   await app.init();
@@ -41,6 +41,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
-  await app.listen(GRPC_GATEWAY_BIND);
+  await app.listen(GRPC_GATEWAY_PORT);
 }
 bootstrap();
