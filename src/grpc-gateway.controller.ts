@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, Logger } from '@nestjs/common';
 import {
   loadGrpcClient,
   loadGrpcServiceDefinition,
@@ -7,10 +7,12 @@ import { ConfigService } from '@nestjs/config';
 
 @Controller('grpc')
 export class GrpcGatewayController {
+  private readonly logger: Logger;
   private grpcClient: any;
   private grpcDefinitions: any;
 
   constructor(private readonly configService: ConfigService) {
+    this.logger = new Logger(GrpcGatewayController.name);
     this.grpcClient = loadGrpcClient(
       './_proto/spp_v2.proto',
       'eupg.serviceofferingpublisher',
@@ -24,9 +26,7 @@ export class GrpcGatewayController {
       'serviceofferingPublisher',
     );
 
-    console.log(
-      `Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`,
-    );
+    this.logger.log(`Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`);
   }
 
   @Get('list')
