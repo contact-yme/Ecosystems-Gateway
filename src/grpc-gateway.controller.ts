@@ -14,7 +14,6 @@ import {
 } from './grpc-client.loader';
 import { ConfigService } from '@nestjs/config';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { HttpAdapterHost } from '@nestjs/core';
 
 @ApiTags('grpc')
 @Controller('grpc')
@@ -23,7 +22,9 @@ export class GrpcGatewayController {
   private grpcClient: any;
   private grpcDefinitions: any;
 
-  constructor(private readonly configService: ConfigService, private readonly httpAdapterHost: HttpAdapterHost) {
+  constructor(
+    private readonly configService: ConfigService,
+  ) {
     this.logger = new Logger(GrpcGatewayController.name);
     this.grpcClient = loadGrpcClient(
       './_proto/spp_v2.proto',
@@ -50,7 +51,9 @@ export class GrpcGatewayController {
     description: 'List of available gRPC methods and payload schemas',
   })
   listMethods() {
-    return Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service);
+    return Object.keys(
+      this.grpcDefinitions['serviceofferingPublisher'].service,
+    );
   }
 
   @Post(':method')
@@ -58,17 +61,20 @@ export class GrpcGatewayController {
   @ApiBody({
     schema: {
       type: 'object',
-      additionalProperties: true, // Accept any body format
+      additionalProperties: true,
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Successful gRPC call',
-    schema: { type: 'object', additionalProperties: true }, // Generic response
+    schema: { type: 'object', additionalProperties: true },
   })
   async handleGrpcCall(@Param('method') methodName: string, @Body() body: any) {
     if (!this.grpcDefinitions['serviceofferingPublisher'].service[methodName]) {
-      throw new HttpException(`gRPC method ${methodName} not found`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `gRPC method ${methodName} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     try {

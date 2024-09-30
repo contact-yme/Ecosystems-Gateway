@@ -13,7 +13,8 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
 
   const GRPC_BIND = configService.get('GRPC_BIND') || '0.0.0.0:5002';
-  const ENABLE_GRPC_GATEWAY: boolean = configService.get('ENABLE_GRPC_GATEWAY') || false;
+  const ENABLE_GRPC_GATEWAY: boolean =
+    configService.get('ENABLE_GRPC_GATEWAY') || false;
   const GRPC_GATEWAY_BIND: string =
     configService.get('GRPC_GATEWAY_BIND') || '0.0.0.0:3000';
   const ENABLE_GRPC_REFLECTION =
@@ -51,9 +52,12 @@ async function bootstrap() {
 
   await app.init();
 
-  if(ENABLE_GRPC_GATEWAY) {
+  if (ENABLE_GRPC_GATEWAY) {
     const GRPC_GATEWAY_INTERFACE_PORT_SPLIT = GRPC_GATEWAY_BIND.split(':', 2);
-    await app.listen(GRPC_GATEWAY_INTERFACE_PORT_SPLIT[1], GRPC_GATEWAY_INTERFACE_PORT_SPLIT[0]);
+    await app.listen(
+      GRPC_GATEWAY_INTERFACE_PORT_SPLIT[1],
+      GRPC_GATEWAY_INTERFACE_PORT_SPLIT[0],
+    );
     LOGGER.log(`Application is running on: ${await app.getUrl()}`);
   }
 }
