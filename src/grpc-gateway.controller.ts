@@ -22,9 +22,7 @@ export class GrpcGatewayController {
   private grpcClient: any;
   private grpcDefinitions: any;
 
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.logger = new Logger(GrpcGatewayController.name);
     this.grpcClient = loadGrpcClient(
       './_proto/spp_v2.proto',
