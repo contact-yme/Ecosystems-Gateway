@@ -32,7 +32,6 @@ async function bootstrap() {
       onLoadPackageDefinition(pkg, server) {
         // Add gRPC server reflection if ENABLE_GRPC_REFLECTION is set either as environment variable or config variable
         if (ENABLE_GRPC_REFLECTION) {
-          console.log('Enabled gRPC Reflection');
           const grpcReflection = require('@grpc/reflection');
           new grpcReflection.ReflectionService(pkg).addToServer(server);
         }
