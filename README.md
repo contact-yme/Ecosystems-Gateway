@@ -27,7 +27,7 @@ See the example `.env.example` for enviroments variables that can be set.
 |Key|Value|Description|
 |---|---|---|
 |GRPC_BIND|Address gRPC service listens on| Defaults to '0.0.0.0:5002'|
-|GRPC_GATEWAY_BIND|Address the gRPC-HTTP Gateway listens on| Defaults to '0.0.0.0:3000'|
+|GRPC_GATEWAY_PORT|Port the gRPC-HTTP Gateway listens on| Defaults to 3000|
 |REDIS_ADDRESS|Address of Redis|Defaults to |`127.0.0.1:6379`|
 |NETWORK|PONTUSXTEST, PONTUSXDEV, MUMBAI||
 |PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
