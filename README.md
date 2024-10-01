@@ -26,13 +26,14 @@ See the example `.env.example` for enviroments variables that can be set.
 
 |Key|Value|Description|
 |---|---|---|
-|GRPC_BIND|Address gRPC service listens on| Defaults to '0.0.0.0:5002'|
-|GRPC_GATEWAY_BIND|Address the gRPC-HTTP Gateway listens on| Defaults to '0.0.0.0:3000'|
-|REDIS_ADDRESS|Address of Redis|Defaults to |`127.0.0.1:6379`|
+|REDIS_ADDRESS|'ip:port'|default: `127.0.0.1:6379`|
 |NETWORK|PONTUSXTEST, PONTUSXDEV, MUMBAI||
 |PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
 |CES_URL|<https://ces-development.lab.gaia-x.eu/credentials-events>|Is used for the CredentialEventService|
 |ENABLE_GRPC_REFLECTION|true/false|Enables the gRPC reflection for automated rpc discovery|
+|GRPC_BIND|'ip:port'|Address gRPC service listens on, default: `0.0.0.0:5002`|
+|ENABLE_GRPC_GATEWAY|true/false|Enables the gRPC<->HTTP Gateway, default: false|
+|GRPC_GATEWAY_BIND|'ip:port'|Address the gRPC<->HTTP Gateway listens on, default: `0.0.0.0:3000`|
 
 Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_URL` for the CredentialEventService as well as
 XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, XFSC_USERNAME, XFSC_PASSWORD for the XFSC catalogue.

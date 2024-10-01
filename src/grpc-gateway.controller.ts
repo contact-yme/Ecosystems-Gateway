@@ -1,21 +1,34 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Logger,
+  HttpStatus,
+  HttpException,
+  Body,
+  Param,
+} from '@nestjs/common';
 import {
   loadGrpcClient,
   loadGrpcServiceDefinition,
 } from './grpc-client.loader';
 import { ConfigService } from '@nestjs/config';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('grpc')
 @Controller('grpc')
 export class GrpcGatewayController {
+  private readonly logger: Logger;
   private grpcClient: any;
   private grpcDefinitions: any;
 
   constructor(private readonly configService: ConfigService) {
+    this.logger = new Logger(GrpcGatewayController.name);
     this.grpcClient = loadGrpcClient(
       './_proto/spp_v2.proto',
       'eupg.serviceofferingpublisher',
       'serviceofferingPublisher',
-      configService.get('GRPC_BIND') || '0.0.0.0:5002', // TODO: Fix default values
+      configService.get('GRPC_BIND') || '0.0.0.0:5002',
     );
 
     this.grpcDefinitions = loadGrpcServiceDefinition(
@@ -24,121 +37,50 @@ export class GrpcGatewayController {
       'serviceofferingPublisher',
     );
 
-    console.log(
+    this.logger.log(
       `Loaded ${Object.keys(this.grpcDefinitions['serviceofferingPublisher'].service).length} grpc services`,
     );
   }
 
   @Get('list')
+  @ApiOperation({ summary: 'List all gRPC methods' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of available gRPC methods and payload schemas',
+  })
   listMethods() {
-    const openApiSpec = this.generateOpenApiSpec();
-    return openApiSpec;
-  }
-
-  private generateOpenApiSpec() {
-    const paths: any = {};
-    Object.keys(
+    return Object.keys(
       this.grpcDefinitions['serviceofferingPublisher'].service,
-    ).forEach((methodName) => {
-      const method =
-        this.grpcDefinitions['serviceofferingPublisher'].service[methodName];
-      paths[`/grpc/${methodName}`] = {
-        post: {
-          summary: `Invoke ${methodName} method`,
-          description: `Calls the gRPC method ${methodName}`,
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: this.getRequestBodySchema(method.requestType),
-                },
-              },
-            },
-          },
-          responses: {
-            200: {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: this.getResponseSchema(method.responseType),
-                },
-              },
-            },
-          },
-        },
-      };
-    });
-
-    const openApiSpec = {
-      openapi: '3.0.0',
-      info: {
-        title: 'gRPC Gateway API',
-        version: '1.0.0',
-        description: 'Publishing Connector gRPC HTTP Gateway.',
-      },
-      servers: [
-        {
-          url: 'http://localhost:5001',
-        },
-      ],
-      paths: paths,
-    };
-
-    return openApiSpec;
-  }
-
-  private getRequestBodySchema(requestType: any) {
-    const fields = requestType.type.field || {};
-
-    const properties: any = {};
-    Object.values(fields).forEach((field: any) => {
-      properties[field.name] = this.mapFieldTypeToOpenAPI(field);
-    });
-
-    return {
-      type: 'object',
-      properties: properties,
-    };
-  }
-
-  private getResponseSchema(responseType: any) {
-    const fields = responseType.type.field || {};
-
-    const properties: any = {};
-    Object.values(fields).forEach((field: any) => {
-      properties[field.name] = this.mapFieldTypeToOpenAPI(field);
-    });
-
-    return {
-      type: 'object',
-      properties: properties,
-    };
-  }
-
-  private mapFieldTypeToOpenAPI(field: any) {
-    switch (field.type) {
-      case 'TYPE_STRING':
-        return { type: 'string' };
-      case 'TYPE_MESSAGE':
-        return { type: 'object' };
-      case 'TYPE_ENUM':
-        return {
-          type: 'string',
-          enum: this.grpcDefinitions[field.typeName].type.value
-            ? Object.values(this.grpcDefinitions[field.typeName].type.value)
-            : [],
-        };
-      default:
-        console.log('Not implemented: ', field);
-        return { type: 'string' };
-    }
+    );
   }
 
   @Post(':method')
-  async handlePost(@Param('method') method: string, @Body() body: any) {
-    return this.callGrpcMethod(method, body);
+  @ApiOperation({ summary: 'Invoke gRPC method dynamically' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful gRPC call',
+    schema: { type: 'object', additionalProperties: true },
+  })
+  async handleGrpcCall(@Param('method') methodName: string, @Body() body: any) {
+    if (!this.grpcDefinitions['serviceofferingPublisher'].service[methodName]) {
+      throw new HttpException(
+        `gRPC method ${methodName} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    try {
+      return await this.callGrpcMethod(methodName, body);
+    } catch (error) {
+      this.logger.error(`Error calling gRPC method ${methodName}:`, error);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   private callGrpcMethod(method: string, params: any) {

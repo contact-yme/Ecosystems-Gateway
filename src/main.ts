@@ -3,25 +3,35 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  await app.init();
+  const LOGGER = new Logger('main');
 
   const configService = app.get<ConfigService>(ConfigService);
+
+  const GRPC_BIND = configService.get('GRPC_BIND') || '0.0.0.0:5002';
+  const ENABLE_GRPC_GATEWAY: boolean =
+    configService.get('ENABLE_GRPC_GATEWAY') || false;
+  const GRPC_GATEWAY_BIND: string =
+    configService.get('GRPC_GATEWAY_BIND') || '0.0.0.0:3000';
+  const ENABLE_GRPC_REFLECTION =
+    configService.get('ENABLE_GRPC_REFLECTION') || false;
+  LOGGER.log(
+    `Bind gRPC to '${GRPC_BIND}' and ${ENABLE_GRPC_REFLECTION ? 'enable' : 'disable'} gRPC Reflection`,
+  );
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: configService.get('GRPC_BIND') || '0.0.0.0:5002', // TODO: Fix default values
+      url: GRPC_BIND,
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
 
       onLoadPackageDefinition(pkg, server) {
-        // Add gRPC server reflection if ENABLE_GRPC_REFLECTION is set either as environment variable or config variable
-        if (Boolean(process.env.ENABLE_GRPC_REFLECTION) || false) {
-          console.log('Enabled gRPC Reflection');
+        if (ENABLE_GRPC_REFLECTION) {
           const grpcReflection = require('@grpc/reflection');
           new grpcReflection.ReflectionService(pkg).addToServer(server);
         }
@@ -31,7 +41,25 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-  // We provide a HTTP 2 grpc gateway here, you can safely comment out if not needed
-  await app.listen(configService.get('GRPC_GATEWAY_BIND') || '0.0.0.0:3000');
+  const config = new DocumentBuilder()
+    .setTitle('Connector')
+    .setDescription('Interconnectivity by design')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document);
+
+  await app.init();
+
+  if (ENABLE_GRPC_GATEWAY) {
+    const GRPC_GATEWAY_INTERFACE_PORT_SPLIT = GRPC_GATEWAY_BIND.split(':', 2);
+    await app.listen(
+      GRPC_GATEWAY_INTERFACE_PORT_SPLIT[1],
+      GRPC_GATEWAY_INTERFACE_PORT_SPLIT[0],
+    );
+    LOGGER.log(`HTTP-gRPC-Gateway is running on: ${await app.getUrl()}`);
+  }
 }
+
 bootstrap();
