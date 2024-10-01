@@ -58,7 +58,7 @@ async function bootstrap() {
       GRPC_GATEWAY_INTERFACE_PORT_SPLIT[1],
       GRPC_GATEWAY_INTERFACE_PORT_SPLIT[0],
     );
-    LOGGER.log(`Application is running on: ${await app.getUrl()}`);
+    LOGGER.log(`HTTP-gRPC-Gateway is running on: ${await app.getUrl()}`);
   }
 }
 
