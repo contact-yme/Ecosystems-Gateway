@@ -26,6 +26,7 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
+      url: configService.get('GRPC_BIND', '0.0.0.0:5002'), // TODO: Fix default values
       url: GRPC_BIND,
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
