@@ -12,13 +12,13 @@ async function bootstrap() {
 
   const configService = app.get<ConfigService>(ConfigService);
 
-  const GRPC_BIND = configService.get('GRPC_BIND') || '0.0.0.0:5002';
+  const GRPC_BIND = configService.get('GRPC_BIND', '0.0.0.0:5002');
   const ENABLE_GRPC_GATEWAY: boolean =
-    configService.get('ENABLE_GRPC_GATEWAY') || false;
+    configService.get('ENABLE_GRPC_GATEWAY', false);
   const GRPC_GATEWAY_BIND: string =
-    configService.get('GRPC_GATEWAY_BIND') || '0.0.0.0:3000';
+    configService.get('GRPC_GATEWAY_BIND', '0.0.0.0:3000');
   const ENABLE_GRPC_REFLECTION =
-    configService.get('ENABLE_GRPC_REFLECTION') || false;
+    configService.get('ENABLE_GRPC_REFLECTION', false);
   LOGGER.log(
     `Bind gRPC to '${GRPC_BIND}' and ${ENABLE_GRPC_REFLECTION ? 'enable' : 'disable'} gRPC Reflection`,
   );
@@ -26,7 +26,6 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: configService.get('GRPC_BIND', '0.0.0.0:5002'), // TODO: Fix default values
       url: GRPC_BIND,
       package: 'eupg.serviceofferingpublisher',
       protoPath: join(__dirname, './_proto/spp_v2.proto'),
