@@ -424,6 +424,7 @@ export class PontusxService implements OnModuleInit {
         method: file.method,
       };
       if (file.headers !== undefined) {
+        this.logger.debug(`Setting file headers: ${file.headers}`);
         urlFile.headers = file.headers;
       }
       serviceBuilder.addFile(urlFile);

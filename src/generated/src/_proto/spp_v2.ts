@@ -435,7 +435,11 @@ export interface ComputeToDataResponse {
   jobId: string[];
 }
 
-/** The compute to data result request can be used to get the results from a job. You can fetch */
+/**
+ * The compute to data result request can be used to get the results from a job.
+ * With the jobindex a specific result files (ordered by name 0-n) can be fetched
+ * By default only the first result file will be returned
+ */
 export interface CreateComputeToDataResultRequest {
   jobId: string;
   jobIndex?: number | undefined;
@@ -633,7 +637,12 @@ export interface Files {
    */
   method: string;
   /** Optional headers field e.g. for basic access control */
-  headers?: { [key: string]: any } | undefined;
+  headers: { [key: string]: string };
+}
+
+export interface Files_HeadersEntry {
+  key: string;
+  value: string;
 }
 
 export interface ComputeOptions {
@@ -3520,7 +3529,7 @@ export const Pricing = {
 };
 
 function createBaseFiles(): Files {
-  return { url: "", method: "", headers: undefined };
+  return { url: "", method: "", headers: {} };
 }
 
 export const Files = {
@@ -3531,9 +3540,9 @@ export const Files = {
     if (message.method !== "") {
       writer.uint32(34).string(message.method);
     }
-    if (message.headers !== undefined) {
-      Struct.encode(Struct.wrap(message.headers), writer.uint32(50).fork()).ldelim();
-    }
+    Object.entries(message.headers).forEach(([key, value]) => {
+      Files_HeadersEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).ldelim();
+    });
     return writer;
   },
 
@@ -3563,7 +3572,10 @@ export const Files = {
             break;
           }
 
-          message.headers = Struct.unwrap(Struct.decode(reader, reader.uint32()));
+          const entry6 = Files_HeadersEntry.decode(reader, reader.uint32());
+          if (entry6.value !== undefined) {
+            message.headers[entry6.key] = entry6.value;
+          }
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -3578,7 +3590,12 @@ export const Files = {
     return {
       url: isSet(object.url) ? globalThis.String(object.url) : "",
       method: isSet(object.method) ? globalThis.String(object.method) : "",
-      headers: isObject(object.headers) ? object.headers : undefined,
+      headers: isObject(object.headers)
+        ? Object.entries(object.headers).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {})
+        : {},
     };
   },
 
@@ -3590,8 +3607,14 @@ export const Files = {
     if (message.method !== "") {
       obj.method = message.method;
     }
-    if (message.headers !== undefined) {
-      obj.headers = message.headers;
+    if (message.headers) {
+      const entries = Object.entries(message.headers);
+      if (entries.length > 0) {
+        obj.headers = {};
+        entries.forEach(([k, v]) => {
+          obj.headers[k] = v;
+        });
+      }
     }
     return obj;
   },
@@ -3603,7 +3626,86 @@ export const Files = {
     const message = createBaseFiles();
     message.url = object.url ?? "";
     message.method = object.method ?? "";
-    message.headers = object.headers ?? undefined;
+    message.headers = Object.entries(object.headers ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = globalThis.String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseFiles_HeadersEntry(): Files_HeadersEntry {
+  return { key: "", value: "" };
+}
+
+export const Files_HeadersEntry = {
+  encode(message: Files_HeadersEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Files_HeadersEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFiles_HeadersEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Files_HeadersEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.String(object.value) : "",
+    };
+  },
+
+  toJSON(message: Files_HeadersEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== "") {
+      obj.value = message.value;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Files_HeadersEntry>, I>>(base?: I): Files_HeadersEntry {
+    return Files_HeadersEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Files_HeadersEntry>, I>>(object: I): Files_HeadersEntry {
+    const message = createBaseFiles_HeadersEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
     return message;
   },
 };
