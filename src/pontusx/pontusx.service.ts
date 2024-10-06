@@ -47,6 +47,7 @@ import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import axios, { AxiosResponse } from 'axios';
+import { Mutex } from 'async-mutex';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -58,6 +59,8 @@ export class PontusxService implements OnModuleInit {
   private readonly provider: providers.JsonRpcProvider;
   private nautilus: Nautilus;
   private logLevel: LogLevel = LogLevel.Warn;
+  // there should only be one action with one private key at a time on the pontus-x network
+  private mutex: Mutex;
 
   constructor(
     private readonly configService: ConfigService,
@@ -86,6 +89,8 @@ export class PontusxService implements OnModuleInit {
       this.configService.getOrThrow('PRIVATE_KEY'),
       this.provider,
     );
+
+    this.mutex = new Mutex();
   }
 
   async onModuleInit(): Promise<void> {
@@ -109,108 +114,116 @@ export class PontusxService implements OnModuleInit {
   }
 
   async publishAsset(offering: PontusxOffering) {
-    //this.logger.debug('VC from pontusx publishing:', offering);
-
-    const owner = await this.wallet.getAddress();
-    this.logger.debug(`Your address is ${owner}`);
-
-    const assetBuilder = new AssetBuilder();
-
-    const filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
-
-    for (const service of offering.services) {
-      const serviceBuilder = new ServiceBuilder({
-        serviceType: service.type as ServiceTypes,
-        fileType: FileTypes.URL,
-      }); // only URL data source supported
-
-      const NautilusService = this.buildService(
-        serviceBuilder,
-        offering,
-        service,
-      );
-
-      assetBuilder.addService(NautilusService);
-    }
-
-    const asset = filled_assetBuilder.build();
-
-    const result = await this.nautilus.publish(asset);
-    return result;
-  }
-
-  async updateOffering(UpdateOffering: UpdateOfferingRequest_UpdateOffering) {
-    const offering = UpdateOffering.pontusxUpdateOffering;
-    const aquariusAsset = await this.nautilus.getAquariusAsset(offering.did);
-
-    let filled_assetBuilder: AssetBuilder;
-    if (offering.metadata !== undefined) {
-      const assetBuilder = new AssetBuilder(aquariusAsset);
-      this.logger.debug('Updating metadata of Pontus-X asset');
+    const release = await this.mutex.acquire();
+    try {
       const owner = await this.wallet.getAddress();
-      filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
-    } else {
-      filled_assetBuilder = new AssetBuilder(aquariusAsset);
-    }
+      this.logger.debug(`Your address is ${owner}`);
 
-    let updatedInd: Array<Number> = [];
+      const assetBuilder = new AssetBuilder();
 
-    offering.updateServices?.forEach((updateService) => {
-      let serviceInd: number = 0;
-      if (updateService.index !== undefined) {
-        if (updateService.index in aquariusAsset.services) {
-          serviceInd = updateService.index;
-        } else {
-          throw new RpcException({
-            code: GrpcStatusCode.OUT_OF_RANGE,
-            message: `The requested service index ${updateService.index} is out of range of the existing services of the asset`,
-          });
-        }
-      }
-      if (updatedInd.includes(serviceInd)) {
-        if (serviceInd === 0) {
-          this.logger.debug(
-            `Updating only first service of asset ${offering.did} ...`,
-          );
-        } else {
-          this.logger.debug(
-            `Updating service with index ${serviceInd} of asset ${offering.did} ...`,
-          );
-        }
+      const filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
 
+      for (const service of offering.services) {
         const serviceBuilder = new ServiceBuilder({
-          aquariusAsset,
-          serviceId: aquariusAsset.services[serviceInd].id,
-        });
+          serviceType: service.type as ServiceTypes,
+          fileType: FileTypes.URL,
+        }); // only URL data source supported
+
         const NautilusService = this.buildService(
           serviceBuilder,
           offering,
-          updateService.service,
+          service,
         );
-        filled_assetBuilder.addService(NautilusService);
-        updatedInd.push(serviceInd);
+
+        assetBuilder.addService(NautilusService);
+      }
+
+      const asset = filled_assetBuilder.build();
+
+      const result = await this.nautilus.publish(asset);
+      return result;
+    } finally {
+      release();
+    }
+  }
+
+  async updateOffering(UpdateOffering: UpdateOfferingRequest_UpdateOffering) {
+    const release = await this.mutex.acquire();
+    try {
+      const offering = UpdateOffering.pontusxUpdateOffering;
+      const aquariusAsset = await this.nautilus.getAquariusAsset(offering.did);
+
+      let filled_assetBuilder: AssetBuilder;
+      if (offering.metadata !== undefined) {
+        const assetBuilder = new AssetBuilder(aquariusAsset);
+        this.logger.debug('Updating metadata of Pontus-X asset');
+        const owner = await this.wallet.getAddress();
+        filled_assetBuilder = this.fillAsset(assetBuilder, offering, owner);
       } else {
-        this.logger.warn(
-          `Skipping repeated update of service with index ${serviceInd}`,
+        filled_assetBuilder = new AssetBuilder(aquariusAsset);
+      }
+
+      let updatedInd: Array<Number> = [];
+
+      offering.updateServices?.forEach((updateService) => {
+        let serviceInd: number = 0;
+        if (updateService.index !== undefined) {
+          if (updateService.index in aquariusAsset.services) {
+            serviceInd = updateService.index;
+          } else {
+            throw new RpcException({
+              code: GrpcStatusCode.OUT_OF_RANGE,
+              message: `The requested service index ${updateService.index} is out of range of the existing services of the asset`,
+            });
+          }
+        }
+        if (updatedInd.includes(serviceInd)) {
+          if (serviceInd === 0) {
+            this.logger.debug(
+              `Updating only first service of asset ${offering.did} ...`,
+            );
+          } else {
+            this.logger.debug(
+              `Updating service with index ${serviceInd} of asset ${offering.did} ...`,
+            );
+          }
+
+          const serviceBuilder = new ServiceBuilder({
+            aquariusAsset,
+            serviceId: aquariusAsset.services[serviceInd].id,
+          });
+          const NautilusService = this.buildService(
+            serviceBuilder,
+            offering,
+            updateService.service,
+          );
+          filled_assetBuilder.addService(NautilusService);
+          updatedInd.push(serviceInd);
+        } else {
+          this.logger.warn(
+            `Skipping repeated update of service with index ${serviceInd}`,
+          );
+        }
+      });
+
+      const asset = filled_assetBuilder.build();
+      const result = await this.nautilus.edit(asset);
+
+      let cesResult;
+      if (UpdateOffering.publishInfo !== undefined) {
+        cesResult = await this.credentialEventService.publish(
+          UpdateOffering.publishInfo.source,
+          JSON.parse(UpdateOffering.publishInfo.data),
         );
       }
-    });
 
-    const asset = filled_assetBuilder.build();
-    const result = await this.nautilus.edit(asset);
-
-    let cesResult;
-    if (UpdateOffering.publishInfo !== undefined) {
-      cesResult = await this.credentialEventService.publish(
-        UpdateOffering.publishInfo.source,
-        JSON.parse(UpdateOffering.publishInfo.data),
-      );
+      return {
+        pontus: result,
+        ces: cesResult,
+      };
+    } finally {
+      release();
     }
-
-    return {
-      pontus: result,
-      ces: cesResult,
-    };
   }
 
   async setState(did: string, state: LifecycleStates) {
@@ -458,54 +471,61 @@ export class PontusxService implements OnModuleInit {
     algo: string,
     userdata: {},
   ): Promise<string[]> {
-    const computeConfig: Omit<ComputeConfig, 'signer' | 'chainConfig'> = {
-      dataset: {
-        did: did,
-        userdata: userdata,
-      },
-      algorithm: { did: algo },
-    };
+    const release = await this.mutex.acquire();
+    try {
+      const computeConfig: Omit<ComputeConfig, 'signer' | 'chainConfig'> = {
+        dataset: {
+          did: did,
+          userdata: userdata,
+        },
+        algorithm: { did: algo },
+      };
 
-    const dataset = await this.getOffering(computeConfig.dataset.did).catch(
-      (_reason) => {
-        throw new NotFoundException('Asset not found');
-      },
-    );
+      const dataset = await this.getOffering(computeConfig.dataset.did).catch(
+        (_reason) => {
+          throw new NotFoundException('Asset not found');
+        },
+      );
 
-    // verify that requested asset has compute jobs available
-    const compute_objects = dataset.services.filter((obj) => {
-      return obj.type === 'compute';
-    });
-    if (compute_objects.length < 1) {
-      throw new NotFoundException('No algorithms are available');
-    }
-
-    const computeJob = await this.nautilus
-      .compute(computeConfig)
-      .catch((error) => {
-        throw new NotFoundException(`Compute to Data job cant start: ${error}`);
+      // verify that requested asset has compute jobs available
+      const compute_objects = dataset.services.filter((obj) => {
+        return obj.type === 'compute';
       });
+      if (compute_objects.length < 1) {
+        throw new NotFoundException('No algorithms are available');
+      }
 
-    let jobIds = [];
-    if (computeJob instanceof Array) {
-      await Promise.all(
-        computeJob.map(async (job) => {
-          await this.redis.rpush(
-            `${this.getSelectedNetworkConfig().network}:ctd:pending`,
-            job.jobId,
+      const computeJob = await this.nautilus
+        .compute(computeConfig)
+        .catch((error) => {
+          throw new NotFoundException(
+            `Compute to Data job cant start: ${error}`,
           );
-          jobIds.push(job.jobId);
-        }),
-      );
-    } else {
-      await this.redis.rpush(
-        `${this.getSelectedNetworkConfig().network}:ctd:pending`,
-        computeJob.jobId,
-      );
-      jobIds.push(computeJob.jobId);
-    }
+        });
 
-    return jobIds;
+      let jobIds = [];
+      if (computeJob instanceof Array) {
+        await Promise.all(
+          computeJob.map(async (job) => {
+            await this.redis.rpush(
+              `${this.getSelectedNetworkConfig().network}:ctd:pending`,
+              job.jobId,
+            );
+            jobIds.push(job.jobId);
+          }),
+        );
+      } else {
+        await this.redis.rpush(
+          `${this.getSelectedNetworkConfig().network}:ctd:pending`,
+          computeJob.jobId,
+        );
+        jobIds.push(computeJob.jobId);
+      }
+
+      return jobIds;
+    } finally {
+      release();
+    }
   }
 
   async getComputeToDataStatus(jobId: string): Promise<number> {
