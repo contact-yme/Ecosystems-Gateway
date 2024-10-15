@@ -624,7 +624,9 @@ export class PontusxService implements OnModuleInit {
       let b64data = '';
       switch (FetchedData.data.constructor) {
         case Object:
-          b64data = Buffer.from('not implemented').toString('base64');
+          b64data = Buffer.from(JSON.stringify(FetchedData.data)).toString(
+            'base64',
+          );
           break;
         case String:
         case Buffer:

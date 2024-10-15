@@ -28,7 +28,7 @@ export class GrpcGatewayController {
       './_proto/spp_v2.proto',
       'eupg.serviceofferingpublisher',
       'serviceofferingPublisher',
-      configService.get('GRPC_BIND') || '0.0.0.0:5002',
+      configService.get('GRPC_BIND', '0.0.0.0:5002'), // TODO: Fix default values
     );
 
     this.grpcDefinitions = loadGrpcServiceDefinition(
