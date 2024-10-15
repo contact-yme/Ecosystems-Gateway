@@ -1,5 +1,5 @@
 
 
-## Please check:
+## Please do and check:
 
-  - [_] Bump version in `package.json` and tag it. Consider bumping minor (v0.X.2 -> v0.X+1.0) if the API changes. 
+  - [ ] Bump version in `package.json` and with a tag. Please consider if the API or it's usage changes and bump accordingly.
