@@ -437,6 +437,7 @@ export class PontusxService implements OnModuleInit {
         method: file.method,
       };
       if (file.headers !== undefined) {
+        this.logger.debug(`Setting file headers: ${file.headers}`);
         urlFile.headers = file.headers;
       }
       serviceBuilder.addFile(urlFile);
@@ -540,6 +541,7 @@ export class PontusxService implements OnModuleInit {
   async getComputeToDataResult(
     jobId: string,
     return_type: ComputeToDataResultType,
+    jobIndex: number,
   ): Promise<GetComputeToDataResultResponse> {
     switch (return_type) {
       case ComputeToDataResultType.C2D_DATA:
@@ -569,10 +571,20 @@ export class PontusxService implements OnModuleInit {
         }
         return { state: ComputeToDataResponseState.FINISHED, data: cached };
       case ComputeToDataResultType.C2D_URI:
-        let resp = await this.nautilus.getComputeResult({
-          jobId: jobId,
-          providerUri: this.getSelectedNetworkConfig().providerUri,
-        });
+        let resp: string;
+        if (jobIndex == 0) {
+          resp = await this.nautilus.getComputeResult({
+            jobId: jobId,
+            providerUri: this.getSelectedNetworkConfig().providerUri,
+          });
+        } else {
+          resp = await this.nautilus.getComputeResult({
+            jobId: jobId,
+            providerUri: this.getSelectedNetworkConfig().providerUri,
+            resultIndex: jobIndex,
+          });
+        }
+        this.logger.debug(`Response is ${resp}`);
         return { state: ComputeToDataResponseState.FINISHED, data: resp };
       default:
         throw new NotFoundException(`Requested method not found`);

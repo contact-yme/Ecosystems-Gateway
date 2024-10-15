@@ -76,6 +76,7 @@ describe('Grpc Controller', () => {
                   {
                     url: '',
                     method: '',
+                    headers: {},
                   },
                 ],
                 pricing: {

@@ -159,10 +159,12 @@ export class GrpcController {
   async getComputeToDataResult(
     data: CreateComputeToDataResultRequest,
   ): Promise<GetComputeToDataResultResponse> {
+    this.logger.debug('grpc method GetComputeToDataResult called');
     try {
       return await this.pontusxService.getComputeToDataResult(
         data.jobId,
         data.computeToDataReturnType,
+        data.jobIndex,
       );
     } catch (err) {
       throw new RpcException({
