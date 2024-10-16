@@ -48,6 +48,7 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import axios, { AxiosResponse } from 'axios';
 import { Mutex } from 'async-mutex';
+import { capitalize } from './utility';
 
 @Injectable()
 export class PontusxService implements OnModuleInit {
@@ -58,7 +59,7 @@ export class PontusxService implements OnModuleInit {
   private readonly wallet: Wallet;
   private readonly provider: providers.JsonRpcProvider;
   private nautilus: Nautilus;
-  private logLevel: LogLevel = LogLevel.Warn;
+  private nautilusLogLevel: LogLevel;
   // there should only be one action with one private key at a time on the pontus-x network
   private mutex: Mutex;
 
@@ -98,7 +99,16 @@ export class PontusxService implements OnModuleInit {
       this.wallet,
       this.getSelectedNetworkConfig(),
     );
-    Nautilus.setLogLevel(this.logLevel);
+    // some ugly conversion so there is no need to capitalize the env variable
+    const logLevel = this.configService.get('NAUTILUS_LOG_LEVEL', 'Log');
+    const logLevelEnum: LogLevel =
+      LogLevel[capitalize(logLevel) as keyof typeof LogLevel];
+    if (!logLevelEnum) {
+      this.logger.warn(
+        'Log level for Nautilus not recognised. Needs to be __one__ out of none, error, warn, log, verbose.',
+      );
+    }
+    Nautilus.setLogLevel(logLevelEnum);
   }
 
   getSelectedNetwork() {
@@ -110,7 +120,7 @@ export class PontusxService implements OnModuleInit {
   }
 
   setLogLevel(level: LogLevel) {
-    this.logLevel = level;
+    this.nautilusLogLevel = level;
   }
 
   async publishAsset(offering: PontusxOffering) {

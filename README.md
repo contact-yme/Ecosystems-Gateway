@@ -24,19 +24,46 @@ npm install
 
 See the example `.env.example` for enviroments variables that can be set.
 
+### General 
+
 |Key|Value|Description|
 |---|---|---|
-|REDIS_ADDRESS|'ip:port'|default: `127.0.0.1:6379`|
-|NETWORK|PONTUSXTEST, PONTUSXDEV, MUMBAI||
-|PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format, only used for the Pontus-X Network configuration|
-|CES_URL|<https://ces-development.lab.gaia-x.eu/credentials-events>|Is used for the CredentialEventService|
+|REDIS_ADDRESS|'ip:port'|The address of the redis instance to cache job results. Defaults to `127.0.0.1:6379`|
+|GRPC_BIND|'ip:port'|Address the gRPC server listens on. Defaults to `0.0.0.0:5002`|
 |ENABLE_GRPC_REFLECTION|true/false|Enables the gRPC reflection for automated rpc discovery|
-|GRPC_BIND|'ip:port'|Address gRPC service listens on, default: `0.0.0.0:5002`|
-|ENABLE_GRPC_GATEWAY|true/false|Enables the gRPC<->HTTP Gateway, default: false|
-|GRPC_GATEWAY_BIND|'ip:port'|Address the gRPC<->HTTP Gateway listens on, default: `0.0.0.0:3000`|
+|ENABLE_GRPC_GATEWAY|true/false|Enables the gRPC<->HTTP Gateway. Defaults to false|
+|GRPC_GATEWAY_BIND|'ip:port'|Address the gRPC<->HTTP Gateway listens on. Default: `0.0.0.0:3000`|
+|NESTJS_LOG_LEVELS| Comma seperated list of log, error, warn, debug, verbose, fatal|Default is 'log'. See [NestJS documentation](https://docs.nestjs.com/techniques/logger) for more info.|
 
-Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X) and `CES_URL` for the CredentialEventService as well as
-XFSC_CAT_HOST_SD_ENDPOINT, XFSC_CAT_TOKEN_ENDPOINT, XFSC_USERNAME, XFSC_PASSWORD for the XFSC catalogue.
+### Pontus-X
+
+|Key|Value|Description|
+|---|---|---|
+|NETWORK|PONTUSXTEST, PONTUSXDEV||
+|PRIVATE_KEY|ECDSA Private Key|Insert any ECDSA Private Key in DER Format of your wallet|
+|NAUTILUS_LOG_LEVEL|One out of none, error, warn, log, verbose|Defaults to log|
+
+Mandatory are the values `NETWORK`, `PRIVATE_KEY` (for Pontus-X).
+
+### CES (Gaia-X's Credential Event Service)
+
+|Key|Value|Description|
+|---|---|---|
+|CES_URL|<https://ces-development.lab.gaia-x.eu/credentials-events>|Is used for the CredentialEventService|
+
+
+### XFSC Catalog
+
+The XFSC Catalog uses OAuth2.0 password flow. You need to configure client/secret and username/password.
+
+|Key|Value|Description|
+|---|---|---|
+|XFSC_CAT_HOST_SD_ENDPOINT||self-description endpoint of the XFCS Catalog|
+|XFSC_CAT_TOKEN_ENDPOINT||OIDC Token Endpoint.|
+|CLIENT_SECRET|||
+|CLIENT_ID|||
+|XFSC_USERNAME|||
+|XFSC_PASSWORD|||
 
 ## Running the app
 

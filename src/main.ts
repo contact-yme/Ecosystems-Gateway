@@ -3,11 +3,15 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import { Logger, LogLevel } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // log level needs to be set on app creation
+  const logLevelsEnv = process.env.NESTJS_LOG_LEVELS || 'log';
+  const logger = logLevelsEnv.split(',') as LogLevel[];
+
+  const app = await NestFactory.create(AppModule, { logger });
   const LOGGER = new Logger('main');
 
   const configService = app.get<ConfigService>(ConfigService);
