@@ -112,3 +112,23 @@ path\to\protoc.exe --plugin=protoc-gen-ts_proto=.\node_modules\.bin\protoc-gen-t
 ### Development Setup
 
 If you plan to run this in the development environment, please take a look at the [local development core services](https://gitlab.euprogigant.kube.a1.digital/sebastian.waldbauer/local-development-core-services). After you followed the core services setup, you should be able to run the docker-compose.yml in this repository without any problems. Take a look into the docker-compose.yml to check needed changes.
+
+
+## License
+
+```
+Copyright (C) 2025 PTW | TU Darmstadt, Posedio GmbH, Brinkhaus GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
