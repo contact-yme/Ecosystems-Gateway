@@ -22,7 +22,7 @@ jobs:
     container:
       image: node:18-alpine
     steps:
-      - name: Checkout code (with submodules)
+      - name: Checkout code
         uses: actions/checkout@v3
       - name: Use Node.js 18
         uses: actions/setup-node@v3
@@ -39,7 +39,7 @@ jobs:
     container:
       image: node:18-alpine
     steps:
-      - name: Checkout code (with submodules)
+      - name: Checkout code
         uses: actions/checkout@v3
       - name: Use Node.js 18
         uses: actions/setup-node@v3
@@ -48,7 +48,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Upload `dist/` artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/**
@@ -60,7 +60,7 @@ jobs:
     needs: test
     if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')) }}
     steps:
-      - name: Checkout code (with submodules)
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Log in to GitHub Container Registry
