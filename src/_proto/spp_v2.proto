@@ -1,0 +1,544 @@
+/*
+Copyright 2021-2022 Stefan Dumss, MIVP TU Wien
+2023-2024 Fabian Gast, PTW TU Darmstadt
+*/
+
+syntax = "proto3";
+
+package eupg.serviceofferingpublisher;
+
+import "google/protobuf/struct.proto";
+
+option go_package = "serviceofferingpublisher/pb";
+
+
+//service definition for publisher
+service serviceofferingPublisher{
+    rpc CreateOffering(CreateOfferingRequest) returns (CreateOfferingResponse){}
+    rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateOfferingResponse){}
+    rpc GetOffering(GetOfferingRequest) returns (GetOfferingResponse) {}
+    rpc UpdateOfferingLifecycle(UpdateOfferingLifecycleRequest) returns (UpdateOfferingLifecycleResponse){}
+
+    rpc RunComputeToDataJob(CreateComputeToDataRequest) returns (ComputeToDataResponse){}
+    rpc GetComputeToDataResult(CreateComputeToDataResultRequest) returns (GetComputeToDataResultResponse){}
+}
+
+/*
+---------------------------------------------- CreateOffering ----------------------------------------------
+*/
+// Create message to publish a Offering with the given information to different ecosystems
+// At the moment Pontus-X and XFSC are supported
+message CreateOfferingRequest {
+    reserved 1 to 5;
+
+    message Offering {
+        oneof EcosystemOffering {
+            PontusxOffering pontusxOffering = 1;
+            XfscOffering xfscOffering = 2;
+        }
+    }
+    repeated Offering offerings = 10;
+}
+
+// Message for publication into the Cross Federation Services Catalogue
+message XfscOffering {
+    //String containing the Gaia-X conformant Verifiable Presentation as JSON-LD for the Service Offering
+    string VP = 1;
+}
+
+// Message for publication into the Pontus-X ecosystem
+message PontusxOffering {
+    // The main information about the asset to publish
+    Metadata metadata = 1;
+
+    // Additional information regarding the offering
+    // Exclusively used for terms & conditions and link to Gaia-X VPs
+    AdditionalInformation additionalInformation = 2;
+
+    // Services that are exposed by the asset to interact with it
+    // Cardinality: 1..n -> At least one service has to be passed for publishing
+    repeated Service services = 3;
+}
+
+
+// Response to CreateOfferingRequest
+message CreateOfferingResponse {
+    // List of identifier of the successfully published offering(s) 
+    // example: did:op:123 in Pontus-X ecosystem
+    repeated string id = 1;
+
+    // Debug information
+    google.protobuf.Struct DebugInformation = 3;
+}
+
+
+/*
+---------------------------------------------- UpdateOffering ----------------------------------------------
+*/
+// Update message for an already published Offering
+// TODO only hash of VP for XFSC
+message UpdateOfferingRequest {
+    reserved 1 to 5, 7;
+
+    message UpdateOffering {
+        oneof EcosystemOffering {
+            PontusxUpdateOffering pontusxUpdateOffering = 1;
+            XfscUpdateOffering xfscUpdateOffering = 2;
+        }
+
+        // Optional information about the published asset
+        // If this Information is set, it is used to publish the offering to the Credential Event Service
+        optional PublishInfo publishInfo = 6;
+    }
+    repeated UpdateOffering offerings = 10;
+}
+
+message XfscUpdateOffering {
+    // String containing the hash of the original Verifiable Presentation published to the catalogue
+    string hash = 1;
+
+    // String containing the Gaia-X conformant Verifiable Presentation as JSON-LD for the Service Offering
+    string VP = 2;
+}
+
+message PontusxUpdateOffering {    
+    // Decentralised identifier for the already published offering
+    // example: did:op:1234
+    string did = 1;
+
+    // The main information about the asset to publish
+    optional Metadata metadata = 2;
+
+    // Additional information regarding the offering
+    // Exclusively used for terms & conditions and link to Gaia-X VPs
+    optional AdditionalInformation additionalInformation = 3;
+
+    // Updated Services that are exposed by the asset to interact with it
+    message UpdateService {
+        Service service = 3;
+
+        // Optional index of the service of the asset that is to be updated according to the information in the service field above
+        // If no index is given the first service [index = 0] is updated
+        optional int32 index = 9;
+    }
+    repeated UpdateService updateServices = 4;
+}
+
+// Publish info used in UpdateOfferingRequest
+// Used for additionally publishing Offering to Credential Event Service
+message PublishInfo{
+    // The source where to find the published offering
+    // example: https://www.pontus-x.eu/asset/did:op:ac74139fa102d32f326ccdab3727a95299f1c2b6add9158385439e5b06810833
+    string source = 1;
+
+    // The data that is submitted to the credential event service
+    // At the moment: Has to be a (Compliance) VC issued by the Gaia-X compliance engine
+    string data = 2;
+}
+
+
+// Response to UpdateOfferingRequest
+message UpdateOfferingResponse{
+    // List of identifier of the successfully updated offering(s) 
+    // example: did:op:123 in Pontus-X ecosystem
+    repeated string id = 1;
+
+    // Locations of the offering which where published to the Credential Event Service
+    repeated string locations = 4;
+
+    google.protobuf.Struct DebugInformation = 3;
+}
+
+
+/*
+---------------------------------------------- UpdateOfferingLifecycle ----------------------------------------------
+*/
+// Update message for changing the LifecycleState of an already published offering
+message UpdateOfferingLifecycleRequest {
+    reserved 1, 2;
+
+    message UpdateOfferingLifecycle {
+        oneof EcosystemOffering {
+            PontusxUpdateOfferingLifecycle pontusxUpdateOfferingLifecycle = 1;
+            XfscUpdateOfferingLifecycle xfscUpdateOfferingLifecycle = 2;
+        }
+    }
+    repeated UpdateOfferingLifecycle offerings = 10;
+}
+
+message PontusxUpdateOfferingLifecycle {
+    // Decentralised identifier for the already published offering
+    // example: did:op:1234
+    string did = 1;
+
+    // Pontus-X lifecycle state to which the offering should be changed
+    PontusxLifecycleStates to = 2;
+}
+
+message XfscUpdateOfferingLifecycle {
+    // String containing the hash of the original Verifiable Presentation published to the catalogue
+    string hash = 1;
+
+    // Possible lifecycle states of asset in the XFSC ecosystem
+    enum XfscLifecycleStates{
+        // Fully functional asset
+        // Discoverable in Portal
+        // Default value meaning nothing has to be changed
+        ACTIVE = 0;
+
+        // Publisher has explicitly revoked access or ownership rights to the asset
+        // Asset will stay in the catalogue but an expiration date will be added
+        REVOKED_BY_PUBLISHER = 3;
+
+        // Asset will be completely deleted from the catalogue
+        DELETED = 4;
+    }
+    // XFSC lifecycle state to which the offering should be changed
+    XfscLifecycleStates to = 2;
+}
+
+
+message UpdateOfferingLifecycleResponse {
+    // List of identifier of the successfully changed offering(s) 
+    // example: did:op:123 in Pontus-X ecosystem
+    repeated string id = 1;
+
+    google.protobuf.Struct DebugInformation = 2;
+}
+
+/*
+---------------------------------------------- GetOffering ----------------------------------------------
+*/
+message GetOfferingRequest {
+    message Offering {
+        oneof EcosystemOffering {
+            PontusxGetOffering pontusxOffering = 1;
+            XfscGetOffering xfscOffering = 2;
+        }
+    }
+    repeated Offering offerings = 10;
+}
+
+message GetOfferingResponse {
+    repeated string offerings = 1;
+
+    // Debug information
+    google.protobuf.Struct DebugInformation = 3;
+}
+
+message XfscGetOffering {
+    string did = 1;
+    string issuer = 2;
+    string name = 3;
+}
+
+message PontusxGetOffering {
+    string did = 1;
+}
+
+/*
+---------------------------------------------- Compute2Data (Pontus-X) ----------------------------------------------
+*/
+
+message CreateComputeToDataRequest {
+    string did = 1;
+    string algorithm = 2;
+    map<string, string> user_data = 3;
+}
+
+message ComputeToDataResponse {
+    repeated string jobId = 1;
+}
+
+enum ComputeToDataResultType {
+    C2D_DATA = 0;
+    C2D_URI = 1;
+}
+
+// The compute to data result request can be used to get the results from a job.
+// With the jobindex a specific result files (ordered by name 0-n) can be fetched
+// By default only the first result file will be returned
+message CreateComputeToDataResultRequest {
+    string jobId = 1;
+    optional int32 jobIndex = 3;
+    ComputeToDataResultType compute_to_data_return_type = 2;
+}
+
+enum ComputeToDataResponseState {
+    QUEUED = 0;
+    IN_PROGRESS = 1;
+    FINISHED = 2;
+}
+
+// The result can either be a URL or a full data, see CreateComputeToDataResultRequest
+message GetComputeToDataResultResponse {
+    ComputeToDataResponseState state = 1;
+    string data = 2;
+}
+
+
+/*
+---------------------------------------------- Pontus-X related ----------------------------------------------
+*/
+// Main metadata information for the asset used in CreateOfferingRequest and UpdateOfferingRequest 
+// in the Pontus-X Ecosystem (Ocean Protocol)
+message Metadata {
+    // type of the asset
+    // Can be either 'dataset' or 'algorithm'
+    string type = 1;
+
+    // Descriptive name or title of the asset
+    // This information is displayed in the portal
+    string name = 2;
+
+    // Details of what the resource is. For a dataset, this attribute explains what the data represents and what it can be used for.
+    // This information is displayed in the portal
+    // Supports markdown
+    string description = 3;
+
+    // Name of the entity generating this data
+    string author = 4;
+
+    // Short name referencing the license of the asset
+    // example: CC-BY, Public Domain
+    string licence = 5;
+
+    // Optional keywords or tags used to describe the content of the offering
+    repeated string tags = 6;
+
+    // Information about asset of type algorithm
+    // Only optional for dataset -> Non-optional for algorithm
+    optional AlgorithmMetadata algorithm = 7;
+}
+
+message AlgorithmMetadata {
+    // Language used to implement the software, e.g. "python"
+    optional string language = 1;
+
+    // Version of the software preferably in SemVer notation, e.g. 1.0.0.
+    optional string version = 2;
+
+    // Optional consumer parameters similar as in Service
+    // Implemented here to gain access to user input at algorithm runtime
+    repeated ConsumerParameter consumerParameters = 3;
+
+    // Information about the Docker image for running the algorithm
+    Container container = 4;
+}
+
+message Container {
+    // The command to execute, or script to run inside the Docker image, e.g. "node $ALGO"
+    // $ALGO is a macro that gets replaced inside the compute job, depending where your algorithm code is downloaded
+    string entrypoint = 1;
+    
+    // The Docker image name the algorithm will run with
+    // e.g. "node"
+    string image = 2;
+
+    // The Docker image tag that you are going to use
+    // e.g. "latest"
+    string tag = 3;
+
+    // Digest of the Docker image (e.g: sha256:xxxx)
+    string checksum = 4;
+}
+
+// Services define the access for an asset
+message Service {
+    optional string name = 1;
+
+    optional string description = 2;
+
+    // Type of service: access or compute
+    string type = 3;
+
+    // Information about the pricing model and amount for consumption
+    Pricing pricing = 10;
+    
+    // Files that contain the data related to the asset/service
+    // At least one file is required for publication
+    repeated Files files = 4;
+
+    // Describing how long the service can be used after consumption is initiated.
+    // Expressed in seconds; where 0 represents no time limit
+    optional uint32 timeout = 5;
+
+    // Name for the access token that is generated for consuming the asset/service
+    // Important for following access token transactions in the explorer
+    optional string tokenName = 6;
+
+    // Corresponding Symbol (Abbreviation) for the access token that is generated for consuming the asset/service
+    // Important for following access token transactions in the explorer
+    optional string tokenSymbol = 7;
+
+    // URL (schema + host) of the Provider responsible for provisioning of the data service
+    // If no value is given the standard provider given in the network config is used (i.e. deltaDAO provider)
+    optional string serviceEndpoint = 11;
+
+    // Compute options for a compute asset/service
+    // Only optional if the offering is of type 'access' and not 'compute'
+    optional ComputeOptions computeOptions = 8;
+
+    // Optional message that defines required consumer input before consuming the asset/service
+    repeated ConsumerParameter consumerParameters = 9;
+}
+
+// Information about the price for the asset for consumption in the ecosystem
+message Pricing {
+    enum PricingType {
+        FREE = 0;
+        FIXED_OCEAN = 1;
+        FIXED_EUROE = 2;
+    }    
+    // Definition if the asset is free or has to be payed with a fixed currency
+    PricingType pricingType = 1;
+
+    // The actual amount of currency (according to Pricing Type) that has to be payed
+    optional uint32 fixedRate = 2;
+}
+
+// Information about a file related to a offering used in Main
+// At the moment only files that are accessible over a Static URL (HTTP) are accepted
+// (possible alternatives: Arweave, GraphQL, IPFS, Smart Contract)
+message Files{
+    // Reserved field numbers to avoid issues with previous versions
+    reserved 2, 3, 5;
+
+    // File URL
+    string url = 1;
+
+    // HTTP Method used to access the file 
+    // example: 'GET'
+    string method = 4;
+
+    // Optional headers field e.g. for basic access control
+    map<string, string> headers = 6;
+}
+
+message ComputeOptions {
+    // If true, any passed raw text will be allowed to run. Useful for an algorithm drag & drop use case, but increases risk of data escape through malicious user input.
+    // Optional because default value in connector is false
+    optional bool allowRawAlgorithm = 1;
+
+    // If true, the algorithm job will have network access.
+    // Optional because default value in connector is false
+    optional bool allowNetworkAccess = 2;
+
+    // Algorithm that is allowed/trusted by the publisher to be used on asset/service
+    //If not defined, then any published algorithm is allowed. If empty array, then no algorithm is allowed.
+    repeated TrustedAlgorihm trustedAlgorithms = 3;
+
+    // Define publishers with their wallet address (0x...) from which all published algorithms are allowed
+    // If not defined, then any published algorithm is allowed. If empty array, then no algorithm is allowed.
+    repeated string trustedPublishers = 4;
+}
+
+message TrustedAlgorihm {
+    // Decentralised identifier of the already published algorithm
+    // example did:op:456
+    string did = 1;
+
+    // Hash of trusted algorithm's files
+    // Can be created over Ocean Provider FileInfoEndpoint with parameter withChecksum = True
+    // If the algorithm has multiple files, filesChecksum is a concatenated string of all files checksums
+    // Optional because this is already handled by nautilus
+    optional string filesChecksum = 2;
+
+    // Hash of algorithm's image details (entrypoint and image checksum)
+    // Produced by: sha256(algorithm_ddo.metadata.algorithm.container.entrypoint + algorithm_ddo.metadata.algorithm.container.checksum)
+    optional string containerSectionChecksum = 3;
+}
+
+// Additional information about the asset used in CreateOfferingRequest and UpdateOfferingRequest
+// Taylored for Pontus-X Ecosystem and workaround for Gaia-X Framework implementation (normally customizable)
+message AdditionalInformation{
+    reserved 1, 2, 3;
+    
+    // Boolean to indicate if the publisher specifies it's own terms and conditions for consumption of the asset
+    bool termsAndConditions = 4;
+
+    // Information in the context of Gaia-X compliance including the link to the Self-Description of the offering (VP)
+    gaiaX gaiaXInformation = 5;
+}
+
+// Information related to Gaia-X compliance used in AdditionalInformation
+message gaiaX{
+    // Identifier if the asset contains personally identifiable information
+    bool containsPII = 1;
+
+    // Terms and conditions additionally set by the publisher of the asset
+    // Should only be passed if boolean in AdditionalInformation is true
+    repeated Terms termsAndConditions = 2;
+    
+    // Endpoint to the Gaia-X compliant Self-Description (VP) of the offering
+    message ServiceSelfDescription{
+        // Static URL of the self-description
+        string url = 1;
+
+        // Optional identifier if the self-description has been verified against a Gaia-X Compliance Service
+        // Mainly used by the deltaDAO portal
+        optional bool isVerified = 2;
+    }
+    ServiceSelfDescription serviceSD = 3;
+}
+
+// Static URL to Terms and Conditions defined by the publisher of the asset used in gaiaX
+message Terms{
+    string url = 1;
+}
+
+// Additional input parameter that the asset needs before downloading or running a Compute-to-Data job at algorithm runtime
+message ConsumerParameter {
+    // The parameter name (this is sent as HTTP param or key towards algo)
+    string name = 1;
+
+    // The field type (text, number, boolean, select)
+    string type = 2;
+
+    // The field label which is displayed
+    string label = 3;
+
+    // Boolean which indicates if customer input for this field is mandatory
+    bool required = 4;
+
+    string description = 5;
+    
+    // The field default value. Has to match the transmitted type transmitted as string
+    string default = 6;
+
+    // For select types, a list of options as JSON objects containing a single key-value-pair
+    // The key represents the option name, and the value is the option value
+    // e.g. {"nodejs": "I love NodeJS"}
+    repeated google.protobuf.Struct options = 10;
+}
+
+// Possible lifecycle states of asset in the pontus-x ecosystem
+enum PontusxLifecycleStates{
+    // Fully functional asset
+    // Discoverable in Portal and Ordering allowed
+    // Listed under the owner's profile
+    ACTIVE = 0;
+
+    // This state indicates that the asset is usually deprecated or outdated
+    // Discoverable, but not orderable
+    // Not listed under the owner's profile
+    END_OF_LIFE = 1;
+
+    // This state indicates that another asset has deprecated the current asset
+    // Not discoverable and not orderable
+    // Not listed under the owner's profile
+    DEPRECATED = 2;
+
+    // Publisher has explicitly revoked access or ownership rights to the asset
+    // Not discoverable and not orderable
+    REVOKED_BY_PUBLISHER = 3;
+
+    // Users can view the asset and gather information, but they cannot place orders at that moment
+    // Discoverable, but not orderable
+    // Listed under the owner's profile.
+    ORDERING_DISABLED_TEMPORARILY = 4;
+
+    // Not discoverable, but orderable
+    // Listed under the owner's profile
+    ASSET_UNLISTED = 5;
+}
