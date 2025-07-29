@@ -1,6 +1,3 @@
-[submodule "src/_proto"]
-	path = src/_proto
-	url = https://gitlab.euprogigant.kube.a1.digital/euprogigant-project/gaia-x/serviceoffering-publisher-proto.git
 [submodule "external/xfsc"]
 	path = external/xfsc
 	url = https://gitlab.euprogigant.kube.a1.digital/sebastian.waldbauer/fc-service.git
