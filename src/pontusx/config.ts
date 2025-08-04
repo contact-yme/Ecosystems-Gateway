@@ -13,7 +13,8 @@ export const NETWORK_CONFIGS: {
     network: 'pontusxtest',
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.test.pontus-x.eu',
-    providerUri: 'https://provider.test.pontus-x.eu',
+    providerUri:
+      process.env.PROVIDER_URL || 'https://provider.test.pontus-x.eu',
     subgraphUri: 'https://subgraph.test.pontus-x.eu',
     explorerUri: 'https://explorer.pontus-x.eu/testnet/pontusx',
     oceanTokenAddress: '0x5B190F9E2E721f8c811E4d584383E3d57b865C69',
@@ -27,21 +28,25 @@ export const NETWORK_CONFIGS: {
     gasFeeMultiplier: 1.1,
     nftFactoryAddress: '0x2C4d542ff791890D9290Eec89C9348A4891A6Fd2',
     opfCommunityFeeCollector: '0xACC8d1B2a0007951fb4ed622ACB1C4fcCAbe778D',
-    providerAddress: '0x9546d39CE3E48BC942f0be4AA9652cBe0Aff3592',
+    providerAddress:
+      process.env.PROVIDER_ADDRESS ||
+      '0x9546d39CE3E48BC942f0be4AA9652cBe0Aff3592',
   },
   [Network.PONTUSXDEV]: {
     chainId: 32456,
     network: 'pontusxdev',
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.dev.pontus-x.eu',
-    providerUri: 'https://provider.dev.pontus-x.eu',
+    providerUri: process.env.PROVIDER_URL || 'https://provider.dev.pontus-x.eu',
     subgraphUri: 'https://subgraph.dev.pontus-x.eu',
     oceanTokenAddress: '0xdF171F74a8d3f4e2A789A566Dce9Fa4945196112',
     oceanTokenSymbol: 'OCEAN',
     fixedRateExchangeAddress: '0x8372715D834d286c9aECE1AcD51Da5755B32D505',
     dispenserAddress: '0x5461b629E01f72E0A468931A36e039Eea394f9eA',
     nftFactoryAddress: '0xFdC4a5DEaCDfc6D82F66e894539461a269900E13',
-    providerAddress: '0x68C24FA5b2319C81b34f248d1f928601D2E5246B',
+    providerAddress:
+      process.env.PROVIDER_ADDRESS ||
+      '0x68C24FA5b2319C81b34f248d1f928601D2E5246B',
   },
 };
 
