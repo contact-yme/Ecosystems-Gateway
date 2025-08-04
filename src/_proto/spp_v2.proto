@@ -58,6 +58,8 @@ message PontusxOffering {
     // Services that are exposed by the asset to interact with it
     // Cardinality: 1..n -> At least one service has to be passed for publishing
     repeated Service services = 3;
+    // Allowlist & Denylist of Credentials for the offering
+    CredentialLists credentials = 4;
 }
 
 
@@ -122,6 +124,8 @@ message PontusxUpdateOffering {
         optional int32 index = 9;
     }
     repeated UpdateService updateServices = 4;
+    // Allowlist & Denylist of Credentials for the offering
+    CredentialLists credentials = 5;
 }
 
 // Publish info used in UpdateOfferingRequest
@@ -541,4 +545,12 @@ enum PontusxLifecycleStates{
     // Not discoverable, but orderable
     // Listed under the owner's profile
     ASSET_UNLISTED = 5;
+}
+
+// Message for credential allow- and denylists in PontusX
+message CredentialLists {
+    // List of allowed credentials
+    repeated string allow = 1;
+    // List of denied credentials
+    repeated string deny = 2;
 }

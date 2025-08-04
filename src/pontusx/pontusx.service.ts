@@ -26,6 +26,7 @@ import {
   LifecycleStates,
   ComputeConfig,
   MetadataConfig,
+  CredentialListTypes,
 } from '@deltadao/nautilus';
 import { ConsumerParameter } from '@oceanprotocol/lib';
 import { type Asset } from '@oceanprotocol/lib';
@@ -262,6 +263,22 @@ export class PontusxService implements OnModuleInit {
       .addTags(offering.metadata.tags)
       .setOwner(owner)
       .addAdditionalInformation(offering.additionalInformation);
+
+    if (offering.credentials) {
+      // nautilus does not allow empty arrays or undefined to be given here. Only call the function if there is something to add.
+      if (offering.credentials.allow) {
+        assetBuilder.addCredentialAddresses(
+          CredentialListTypes.ALLOW,
+          offering.credentials.allow,
+        );
+      }
+      if (offering.credentials.deny) {
+        assetBuilder.addCredentialAddresses(
+          CredentialListTypes.DENY,
+          offering.credentials.deny,
+        );
+      }
+    }
 
     if (assetType === 'algorithm') {
       if (offering.metadata.algorithm !== undefined) {
