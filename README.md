@@ -6,11 +6,11 @@ A service to push Gaia-X Verifiable Credentials (VC's) to [Pontus-X](https://por
 
 It offers a gRPC API described in [here](./src/_proto/spp_v2.proto).
 
-While the REST API is currently __not__ supported, you there is a Http-gRPC gateway you can use.
+While the REST API is currently __not__ supported, there is a Http-gRPC gateway you can use.
 
 ### Quickstart
 
-The recommended way to run this setup, is to use the [Local Development Common Layer](https://gitlab.euprogigant.kube.a1.digital/sebastian.waldbauer/local-development-core-services).
+The recommended way to run this setup, is to use docker with the provided docker-compose.yml.
 
 *Optional* If you enable gRPC Reflection, you can use Postman or any other graphical user-interface that supports gRPC Reflection to auto discover gRPC methods. This is useful in development environments and highly recommended.
 
