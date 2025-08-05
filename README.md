@@ -34,6 +34,8 @@ See the example `.env.example` for enviroments variables that can be set.
 |ENABLE_GRPC_GATEWAY|true/false|Enables the gRPC<->HTTP Gateway. Defaults to false|
 |GRPC_GATEWAY_BIND|'ip:port'|Address the gRPC<->HTTP Gateway listens on. Default: `0.0.0.0:3000`|
 |NESTJS_LOG_LEVELS| Comma seperated list of log, error, warn, debug, verbose, fatal|Default is 'log'. See [NestJS documentation](https://docs.nestjs.com/techniques/logger) for more info.|
+|PROVIDER_URL|https://domain.tld|URL of custom Ocean Provider|
+|PROVIDER_ADDRESS|0x...|Public ETH-Address of custom Ocean Provider|
 
 ### Pontus-X
 

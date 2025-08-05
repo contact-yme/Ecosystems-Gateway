@@ -8,6 +8,8 @@ services:
       - PRIVATE_KEY=0x... # Create your own via https://gchq.github.io/CyberChef/#recipe=Generate_ECDSA_Key_Pair('P-256','DER')
       - NETWORK=PONTUSXDEV
       - REDIS_ADDRESS=redis-pub:6379
+      - PROVIDER_URL=https://provider.dev.pontus-x.eu
+      - PROVIDER_ADDRESS=0x68C24FA5b2319C81b34f248d1f928601D2E5246B
     ports:
       - '5002:5002'
       - '5001:5001'
