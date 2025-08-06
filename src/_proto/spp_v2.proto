@@ -59,7 +59,7 @@ message PontusxOffering {
     // Cardinality: 1..n -> At least one service has to be passed for publishing
     repeated Service services = 3;
     // Allowlist & Denylist of Credentials for the offering
-    CredentialLists credentials = 4;
+    optional CredentialLists credentials = 4;
 }
 
 
@@ -125,7 +125,7 @@ message PontusxUpdateOffering {
     }
     repeated UpdateService updateServices = 4;
     // Allowlist & Denylist of Credentials for the offering
-    CredentialLists credentials = 5;
+    optional CredentialLists credentials = 5;
 }
 
 // Publish info used in UpdateOfferingRequest

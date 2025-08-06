@@ -67,7 +67,7 @@ describe('Grpc Controller', () => {
               author: '',
               licence: '',
               tags: [],
-              description: '',
+              description: ''
             },
             services: [
               {
@@ -85,6 +85,10 @@ describe('Grpc Controller', () => {
                 consumerParameters: [],
               },
             ],
+            credentials: {
+              allow: [],
+              deny: []
+            },
             additionalInformation: undefined,
           },
         },
