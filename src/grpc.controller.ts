@@ -15,6 +15,8 @@ import {
   CreateComputeToDataResultRequest,
   CreateComputeToDataRequest,
   ComputeToDataResponse,
+  AccessOfferingRequest,
+  AccessOfferingResponse,
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
@@ -26,7 +28,7 @@ export class GrpcController {
   constructor(
     private readonly pontusxService: PontusxService,
     private readonly xfscService: XfscService,
-  ) {}
+  ) { }
 
   @GrpcMethod('serviceofferingPublisher')
   async createOffering(
@@ -209,6 +211,34 @@ export class GrpcController {
         code: GrpcStatusCode.INTERNAL,
         message: 'Seems like an error occurred',
       });
+    }
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async accessOffering(
+    data: AccessOfferingRequest,
+  ): Promise<AccessOfferingResponse> {
+    this.logger.debug('grpc method AccessOffering called');
+    this.logger.debug(data);
+
+    let result: string;
+
+    if (data.offering.pontusxOffering !== undefined) {
+      result = await this.pontusxService.accessOffering(
+        data.offering.pontusxOffering.did,
+        data.offering.pontusxOffering.serviceId ?? undefined,
+        data.offering.pontusxOffering.fileIndex ?? 0,
+        data.offering.pontusxOffering.userData ?? undefined
+      );
+    } else {
+      // TODO 
+    }
+
+    if (result) {
+      return {
+        did: data.offering.pontusxOffering.did,
+        accessUrl: result
+      };
     }
   }
 

@@ -494,6 +494,15 @@ export class PontusxService implements OnModuleInit {
     return await this.nautilus.getAquariusAsset(did);
   }
 
+  async accessOffering(did:string, serviceId:string, fileIndex:number, userData:{ [key: string]: string }) : Promise<string> {
+    return await this.nautilus.access({
+      assetDid: did, 
+      serviceId: serviceId,
+      fileIndex: fileIndex,
+      userdata: userData
+    })
+  }
+
   async requestComputeToData(
     did: string,
     algo: string,

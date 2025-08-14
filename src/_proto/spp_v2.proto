@@ -14,11 +14,16 @@ option go_package = "serviceofferingpublisher/pb";
 
 //service definition for publisher
 service serviceofferingPublisher{
+    // Publication-Endpoints
     rpc CreateOffering(CreateOfferingRequest) returns (CreateOfferingResponse){}
     rpc UpdateOffering(UpdateOfferingRequest) returns (UpdateOfferingResponse){}
-    rpc GetOffering(GetOfferingRequest) returns (GetOfferingResponse) {}
     rpc UpdateOfferingLifecycle(UpdateOfferingLifecycleRequest) returns (UpdateOfferingLifecycleResponse){}
 
+    // Consumer Endpoints
+    rpc GetOffering(GetOfferingRequest) returns (GetOfferingResponse) {}
+    rpc AccessOffering(AccessOfferingRequest) returns (AccessOfferingResponse) {}
+
+    // C2D-Endpoints
     rpc RunComputeToDataJob(CreateComputeToDataRequest) returns (ComputeToDataResponse){}
     rpc GetComputeToDataResult(CreateComputeToDataResultRequest) returns (GetComputeToDataResultResponse){}
 }
@@ -238,6 +243,38 @@ message XfscGetOffering {
 
 message PontusxGetOffering {
     string did = 1;
+}
+
+/*
+---------------------------------------------- AccessOffering ----------------------------------------------
+*/
+message AccessOfferingRequest {
+    message Offering {
+        oneof EcosystemOffering {
+            PontusxAccessOffering pontusxOffering = 1;
+            XfscAccessOffering xfscOffering = 2;
+        }
+    }
+    Offering offering = 10;
+}
+
+message AccessOfferingResponse {
+    string did = 1;
+    string access_url = 2;
+}
+
+message XfscAccessOffering {
+    string did = 1;
+    string issuer = 2;
+    string name = 3;
+}
+
+// From https://nautilus.delta-dao.com/docs/api/nautilus/access
+message PontusxAccessOffering {
+    string did = 1;
+    optional string serviceId = 2;
+    optional int32 fileIndex = 3;
+    map<string, string> user_data = 4; // optional
 }
 
 /*
