@@ -21,6 +21,7 @@ service serviceofferingPublisher{
 
     // Consumer Endpoints
     rpc GetOffering(GetOfferingRequest) returns (GetOfferingResponse) {}
+    rpc QueryOfferings(QueryOfferingsRequest) returns (QueryOfferingsResponse) {}
     rpc AccessOffering(AccessOfferingRequest) returns (AccessOfferingResponse) {}
 
     // C2D-Endpoints
@@ -246,7 +247,45 @@ message PontusxGetOffering {
 }
 
 /*
----------------------------------------------- AccessOffering ----------------------------------------------
+---------------------------------------------- QueryOffering ----------------------------------------------
+*/
+
+message QueryOfferingsRequest {
+    message Query {
+        oneof EcosystemQuery {
+            PontusxQueryOfferings pontusxQuery = 1;
+            XfscQueryOfferings xfscQuery = 2;
+        }
+    }
+    Query query = 10;
+}
+
+message QueryOfferingsResponse {
+    repeated string offerings = 1;
+    int32 total = 2;
+}
+
+message XfscQueryOfferings {
+    string did = 1;
+    string issuer = 2;
+    string name = 3;
+    // TODO
+}
+
+message PontusxQueryOfferings {
+    // All Parameters are optional by default
+    string did = 1;
+    string name = 2;
+    string description = 3;
+    string author = 4;
+    string metadata_type = 5; // default "dataset"
+    string service_type = 6;  // default "access"
+    int32 page = 7;          // default = 0  
+    int32 page_size = 8;     // default = 50
+}
+
+/*
+---------------------------------------------- AccessOffering ---------------------------------------------
 */
 message AccessOfferingRequest {
     message Offering {
@@ -272,9 +311,9 @@ message XfscAccessOffering {
 // From https://nautilus.delta-dao.com/docs/api/nautilus/access
 message PontusxAccessOffering {
     string did = 1;
-    optional string serviceId = 2;
-    optional int32 fileIndex = 3;
-    map<string, string> user_data = 4; // optional
+    string serviceId = 2;               // optional 
+    int32 fileIndex = 3;                // optional 
+    map<string, string> user_data = 4;  // optional
 }
 
 /*

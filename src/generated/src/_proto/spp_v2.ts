@@ -424,7 +424,44 @@ export interface PontusxGetOffering {
   did: string;
 }
 
-/** ---------------------------------------------- AccessOffering ---------------------------------------------- */
+export interface QueryOfferingsRequest {
+  query: QueryOfferingsRequest_Query | undefined;
+}
+
+export interface QueryOfferingsRequest_Query {
+  pontusxQuery?: PontusxQueryOfferings | undefined;
+  xfscQuery?: XfscQueryOfferings | undefined;
+}
+
+export interface QueryOfferingsResponse {
+  offerings: string[];
+  total: number;
+}
+
+export interface XfscQueryOfferings {
+  did: string;
+  issuer: string;
+  /** TODO */
+  name: string;
+}
+
+export interface PontusxQueryOfferings {
+  /** All Parameters are optional by default */
+  did: string;
+  name: string;
+  description: string;
+  author: string;
+  /** default "dataset" */
+  metadataType: string;
+  /** default "access" */
+  serviceType: string;
+  /** default = 0 */
+  page: number;
+  /** default = 50 */
+  pageSize: number;
+}
+
+/** ---------------------------------------------- AccessOffering --------------------------------------------- */
 export interface AccessOfferingRequest {
   offering: AccessOfferingRequest_Offering | undefined;
 }
@@ -448,10 +485,10 @@ export interface XfscAccessOffering {
 /** From https://nautilus.delta-dao.com/docs/api/nautilus/access */
 export interface PontusxAccessOffering {
   did: string;
-  serviceId?: string | undefined;
-  fileIndex?:
-    | number
-    | undefined;
+  /** optional */
+  serviceId: string;
+  /** optional */
+  fileIndex: number;
   /** optional */
   userData: { [key: string]: string };
 }
@@ -2604,6 +2641,488 @@ export const PontusxGetOffering: MessageFns<PontusxGetOffering> = {
   },
 };
 
+function createBaseQueryOfferingsRequest(): QueryOfferingsRequest {
+  return { query: undefined };
+}
+
+export const QueryOfferingsRequest: MessageFns<QueryOfferingsRequest> = {
+  encode(message: QueryOfferingsRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.query !== undefined) {
+      QueryOfferingsRequest_Query.encode(message.query, writer.uint32(82).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryOfferingsRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryOfferingsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 10: {
+          if (tag !== 82) {
+            break;
+          }
+
+          message.query = QueryOfferingsRequest_Query.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryOfferingsRequest {
+    return { query: isSet(object.query) ? QueryOfferingsRequest_Query.fromJSON(object.query) : undefined };
+  },
+
+  toJSON(message: QueryOfferingsRequest): unknown {
+    const obj: any = {};
+    if (message.query !== undefined) {
+      obj.query = QueryOfferingsRequest_Query.toJSON(message.query);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryOfferingsRequest>, I>>(base?: I): QueryOfferingsRequest {
+    return QueryOfferingsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryOfferingsRequest>, I>>(object: I): QueryOfferingsRequest {
+    const message = createBaseQueryOfferingsRequest();
+    message.query = (object.query !== undefined && object.query !== null)
+      ? QueryOfferingsRequest_Query.fromPartial(object.query)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryOfferingsRequest_Query(): QueryOfferingsRequest_Query {
+  return { pontusxQuery: undefined, xfscQuery: undefined };
+}
+
+export const QueryOfferingsRequest_Query: MessageFns<QueryOfferingsRequest_Query> = {
+  encode(message: QueryOfferingsRequest_Query, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.pontusxQuery !== undefined) {
+      PontusxQueryOfferings.encode(message.pontusxQuery, writer.uint32(10).fork()).join();
+    }
+    if (message.xfscQuery !== undefined) {
+      XfscQueryOfferings.encode(message.xfscQuery, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryOfferingsRequest_Query {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryOfferingsRequest_Query();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.pontusxQuery = PontusxQueryOfferings.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.xfscQuery = XfscQueryOfferings.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryOfferingsRequest_Query {
+    return {
+      pontusxQuery: isSet(object.pontusxQuery) ? PontusxQueryOfferings.fromJSON(object.pontusxQuery) : undefined,
+      xfscQuery: isSet(object.xfscQuery) ? XfscQueryOfferings.fromJSON(object.xfscQuery) : undefined,
+    };
+  },
+
+  toJSON(message: QueryOfferingsRequest_Query): unknown {
+    const obj: any = {};
+    if (message.pontusxQuery !== undefined) {
+      obj.pontusxQuery = PontusxQueryOfferings.toJSON(message.pontusxQuery);
+    }
+    if (message.xfscQuery !== undefined) {
+      obj.xfscQuery = XfscQueryOfferings.toJSON(message.xfscQuery);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryOfferingsRequest_Query>, I>>(base?: I): QueryOfferingsRequest_Query {
+    return QueryOfferingsRequest_Query.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryOfferingsRequest_Query>, I>>(object: I): QueryOfferingsRequest_Query {
+    const message = createBaseQueryOfferingsRequest_Query();
+    message.pontusxQuery = (object.pontusxQuery !== undefined && object.pontusxQuery !== null)
+      ? PontusxQueryOfferings.fromPartial(object.pontusxQuery)
+      : undefined;
+    message.xfscQuery = (object.xfscQuery !== undefined && object.xfscQuery !== null)
+      ? XfscQueryOfferings.fromPartial(object.xfscQuery)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryOfferingsResponse(): QueryOfferingsResponse {
+  return { offerings: [], total: 0 };
+}
+
+export const QueryOfferingsResponse: MessageFns<QueryOfferingsResponse> = {
+  encode(message: QueryOfferingsResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.offerings) {
+      writer.uint32(10).string(v!);
+    }
+    if (message.total !== 0) {
+      writer.uint32(16).int32(message.total);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryOfferingsResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryOfferingsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.offerings.push(reader.string());
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.total = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryOfferingsResponse {
+    return {
+      offerings: globalThis.Array.isArray(object?.offerings)
+        ? object.offerings.map((e: any) => globalThis.String(e))
+        : [],
+      total: isSet(object.total) ? globalThis.Number(object.total) : 0,
+    };
+  },
+
+  toJSON(message: QueryOfferingsResponse): unknown {
+    const obj: any = {};
+    if (message.offerings?.length) {
+      obj.offerings = message.offerings;
+    }
+    if (message.total !== 0) {
+      obj.total = Math.round(message.total);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryOfferingsResponse>, I>>(base?: I): QueryOfferingsResponse {
+    return QueryOfferingsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryOfferingsResponse>, I>>(object: I): QueryOfferingsResponse {
+    const message = createBaseQueryOfferingsResponse();
+    message.offerings = object.offerings?.map((e) => e) || [];
+    message.total = object.total ?? 0;
+    return message;
+  },
+};
+
+function createBaseXfscQueryOfferings(): XfscQueryOfferings {
+  return { did: "", issuer: "", name: "" };
+}
+
+export const XfscQueryOfferings: MessageFns<XfscQueryOfferings> = {
+  encode(message: XfscQueryOfferings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.issuer !== "") {
+      writer.uint32(18).string(message.issuer);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): XfscQueryOfferings {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseXfscQueryOfferings();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.issuer = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): XfscQueryOfferings {
+    return {
+      did: isSet(object.did) ? globalThis.String(object.did) : "",
+      issuer: isSet(object.issuer) ? globalThis.String(object.issuer) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+    };
+  },
+
+  toJSON(message: XfscQueryOfferings): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.issuer !== "") {
+      obj.issuer = message.issuer;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<XfscQueryOfferings>, I>>(base?: I): XfscQueryOfferings {
+    return XfscQueryOfferings.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<XfscQueryOfferings>, I>>(object: I): XfscQueryOfferings {
+    const message = createBaseXfscQueryOfferings();
+    message.did = object.did ?? "";
+    message.issuer = object.issuer ?? "";
+    message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBasePontusxQueryOfferings(): PontusxQueryOfferings {
+  return { did: "", name: "", description: "", author: "", metadataType: "", serviceType: "", page: 0, pageSize: 0 };
+}
+
+export const PontusxQueryOfferings: MessageFns<PontusxQueryOfferings> = {
+  encode(message: PontusxQueryOfferings, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.did !== "") {
+      writer.uint32(10).string(message.did);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.description !== "") {
+      writer.uint32(26).string(message.description);
+    }
+    if (message.author !== "") {
+      writer.uint32(34).string(message.author);
+    }
+    if (message.metadataType !== "") {
+      writer.uint32(42).string(message.metadataType);
+    }
+    if (message.serviceType !== "") {
+      writer.uint32(50).string(message.serviceType);
+    }
+    if (message.page !== 0) {
+      writer.uint32(56).int32(message.page);
+    }
+    if (message.pageSize !== 0) {
+      writer.uint32(64).int32(message.pageSize);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PontusxQueryOfferings {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePontusxQueryOfferings();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.did = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.author = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.metadataType = reader.string();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.serviceType = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.page = reader.int32();
+          continue;
+        }
+        case 8: {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.pageSize = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PontusxQueryOfferings {
+    return {
+      did: isSet(object.did) ? globalThis.String(object.did) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      description: isSet(object.description) ? globalThis.String(object.description) : "",
+      author: isSet(object.author) ? globalThis.String(object.author) : "",
+      metadataType: isSet(object.metadataType) ? globalThis.String(object.metadataType) : "",
+      serviceType: isSet(object.serviceType) ? globalThis.String(object.serviceType) : "",
+      page: isSet(object.page) ? globalThis.Number(object.page) : 0,
+      pageSize: isSet(object.pageSize) ? globalThis.Number(object.pageSize) : 0,
+    };
+  },
+
+  toJSON(message: PontusxQueryOfferings): unknown {
+    const obj: any = {};
+    if (message.did !== "") {
+      obj.did = message.did;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.description !== "") {
+      obj.description = message.description;
+    }
+    if (message.author !== "") {
+      obj.author = message.author;
+    }
+    if (message.metadataType !== "") {
+      obj.metadataType = message.metadataType;
+    }
+    if (message.serviceType !== "") {
+      obj.serviceType = message.serviceType;
+    }
+    if (message.page !== 0) {
+      obj.page = Math.round(message.page);
+    }
+    if (message.pageSize !== 0) {
+      obj.pageSize = Math.round(message.pageSize);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PontusxQueryOfferings>, I>>(base?: I): PontusxQueryOfferings {
+    return PontusxQueryOfferings.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PontusxQueryOfferings>, I>>(object: I): PontusxQueryOfferings {
+    const message = createBasePontusxQueryOfferings();
+    message.did = object.did ?? "";
+    message.name = object.name ?? "";
+    message.description = object.description ?? "";
+    message.author = object.author ?? "";
+    message.metadataType = object.metadataType ?? "";
+    message.serviceType = object.serviceType ?? "";
+    message.page = object.page ?? 0;
+    message.pageSize = object.pageSize ?? 0;
+    return message;
+  },
+};
+
 function createBaseAccessOfferingRequest(): AccessOfferingRequest {
   return { offering: undefined };
 }
@@ -2917,7 +3436,7 @@ export const XfscAccessOffering: MessageFns<XfscAccessOffering> = {
 };
 
 function createBasePontusxAccessOffering(): PontusxAccessOffering {
-  return { did: "", serviceId: undefined, fileIndex: undefined, userData: {} };
+  return { did: "", serviceId: "", fileIndex: 0, userData: {} };
 }
 
 export const PontusxAccessOffering: MessageFns<PontusxAccessOffering> = {
@@ -2925,10 +3444,10 @@ export const PontusxAccessOffering: MessageFns<PontusxAccessOffering> = {
     if (message.did !== "") {
       writer.uint32(10).string(message.did);
     }
-    if (message.serviceId !== undefined) {
+    if (message.serviceId !== "") {
       writer.uint32(18).string(message.serviceId);
     }
-    if (message.fileIndex !== undefined) {
+    if (message.fileIndex !== 0) {
       writer.uint32(24).int32(message.fileIndex);
     }
     Object.entries(message.userData).forEach(([key, value]) => {
@@ -2991,8 +3510,8 @@ export const PontusxAccessOffering: MessageFns<PontusxAccessOffering> = {
   fromJSON(object: any): PontusxAccessOffering {
     return {
       did: isSet(object.did) ? globalThis.String(object.did) : "",
-      serviceId: isSet(object.serviceId) ? globalThis.String(object.serviceId) : undefined,
-      fileIndex: isSet(object.fileIndex) ? globalThis.Number(object.fileIndex) : undefined,
+      serviceId: isSet(object.serviceId) ? globalThis.String(object.serviceId) : "",
+      fileIndex: isSet(object.fileIndex) ? globalThis.Number(object.fileIndex) : 0,
       userData: isObject(object.userData)
         ? Object.entries(object.userData).reduce<{ [key: string]: string }>((acc, [key, value]) => {
           acc[key] = String(value);
@@ -3007,10 +3526,10 @@ export const PontusxAccessOffering: MessageFns<PontusxAccessOffering> = {
     if (message.did !== "") {
       obj.did = message.did;
     }
-    if (message.serviceId !== undefined) {
+    if (message.serviceId !== "") {
       obj.serviceId = message.serviceId;
     }
-    if (message.fileIndex !== undefined) {
+    if (message.fileIndex !== 0) {
       obj.fileIndex = Math.round(message.fileIndex);
     }
     if (message.userData) {
@@ -3031,8 +3550,8 @@ export const PontusxAccessOffering: MessageFns<PontusxAccessOffering> = {
   fromPartial<I extends Exact<DeepPartial<PontusxAccessOffering>, I>>(object: I): PontusxAccessOffering {
     const message = createBasePontusxAccessOffering();
     message.did = object.did ?? "";
-    message.serviceId = object.serviceId ?? undefined;
-    message.fileIndex = object.fileIndex ?? undefined;
+    message.serviceId = object.serviceId ?? "";
+    message.fileIndex = object.fileIndex ?? 0;
     message.userData = Object.entries(object.userData ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
       if (value !== undefined) {
         acc[key] = globalThis.String(value);
@@ -5181,6 +5700,7 @@ export interface serviceofferingPublisher {
   UpdateOfferingLifecycle(request: UpdateOfferingLifecycleRequest): Promise<UpdateOfferingLifecycleResponse>;
   /** Consumer Endpoints */
   GetOffering(request: GetOfferingRequest): Promise<GetOfferingResponse>;
+  QueryOfferings(request: QueryOfferingsRequest): Promise<QueryOfferingsResponse>;
   AccessOffering(request: AccessOfferingRequest): Promise<AccessOfferingResponse>;
   /** C2D-Endpoints */
   RunComputeToDataJob(request: CreateComputeToDataRequest): Promise<ComputeToDataResponse>;
@@ -5198,6 +5718,7 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     this.UpdateOffering = this.UpdateOffering.bind(this);
     this.UpdateOfferingLifecycle = this.UpdateOfferingLifecycle.bind(this);
     this.GetOffering = this.GetOffering.bind(this);
+    this.QueryOfferings = this.QueryOfferings.bind(this);
     this.AccessOffering = this.AccessOffering.bind(this);
     this.RunComputeToDataJob = this.RunComputeToDataJob.bind(this);
     this.GetComputeToDataResult = this.GetComputeToDataResult.bind(this);
@@ -5224,6 +5745,12 @@ export class serviceofferingPublisherClientImpl implements serviceofferingPublis
     const data = GetOfferingRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "GetOffering", data);
     return promise.then((data) => GetOfferingResponse.decode(new BinaryReader(data)));
+  }
+
+  QueryOfferings(request: QueryOfferingsRequest): Promise<QueryOfferingsResponse> {
+    const data = QueryOfferingsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "QueryOfferings", data);
+    return promise.then((data) => QueryOfferingsResponse.decode(new BinaryReader(data)));
   }
 
   AccessOffering(request: AccessOfferingRequest): Promise<AccessOfferingResponse> {

@@ -494,9 +494,153 @@ export class PontusxService implements OnModuleInit {
     return await this.nautilus.getAquariusAsset(did);
   }
 
-  async accessOffering(did:string, serviceId:string, fileIndex:number, userData:{ [key: string]: string }) : Promise<string> {
+  buildQueryPayload(
+    did: string,
+    name: string,
+    description: string,
+    author: string,
+    metadata_type: string,
+    service_type: string,
+    page: number,
+    page_size: number
+  ) {
+    const attribute_queries = [];
+    if (did)
+      attribute_queries.push(
+        {
+          query_string: {
+            query: did.replace("did:op:", "*"),
+            fields: [
+              "id",
+              "datatokens.address",
+              "datatokens.name",
+              "datatokens.symbol",
+            ],
+          }
+        }
+      );
+    if (name)
+      attribute_queries.push(
+        {
+          query_string: {
+            query: name,
+            fields: [
+              "datatokens.name",
+              "metadata.name^10",
+            ],
+          }
+        }
+      );
+    if (description)
+      attribute_queries.push(
+        {
+          query_string: {
+            query: description,
+            fields: [
+              "metadata.description",
+              "metadata.tags",
+            ],
+          }
+        }
+      );
+    if (author)
+      attribute_queries.push(
+        {
+          query_string: {
+            query: author,
+            fields: [
+              "nft.owner",
+              "metadata.author",
+            ],
+          }
+        }
+      );
+
+
+    if (attribute_queries.length === 0)
+      attribute_queries.push({ match_all: {} });
+
+    if (!page_size)
+      page_size = 50;
+    if (!metadata_type)
+      metadata_type = "dataset";
+    if (!service_type)
+      metadata_type = "access";
+
+    const payload = {
+      from: page_size * page,
+      size: page_size,
+      query: {
+        bool: {
+          must: [{ bool: { should: attribute_queries } }],
+          filter: [
+            { terms: { chainId: [32456, 32457] } },
+            { terms: { _index: ["v510"] } },
+            { term: { "purgatory.state": false } },
+            {
+              bool: {
+                must_not: [
+                  { term: { "nft.state": 5 } },
+                  { term: { "price.type": "pool" } },
+                ]
+              }
+            },
+            {
+              term: { "metadata.type": metadata_type }
+            },
+            { term: { "services.type": service_type } },
+          ],
+        }
+      },
+      sort: { "nft.created": "desc" },
+    };
+    return payload;
+  }
+
+  // inspired by @deltadao\nautilus\utils\aquarius.ts
+  async queryOfferings(
+    did: string,
+    name: string,
+    description: string,
+    author: string,
+    metadata_type: string,
+    service_type: string,
+    page: number,
+    page_size: number
+  ): Promise<[Asset[], number]> {
+    const apiPath = '/api/aquarius/assets/query'
+
+    const metadataCacheUri = this.getSelectedNetworkConfig().metadataCacheUri
+
+    if (!metadataCacheUri) {
+      throw new Error('[aquarius] No metadata cache URI provided')
+    }
+
+    const queryPayload = this.buildQueryPayload(did, name, description, author, metadata_type, service_type, page, page_size);
+
+    const assets: Asset[] = [];
+    let total = 0;
+    const fullAquariusUrl = new URL(apiPath, metadataCacheUri).href;
+    const response: AxiosResponse<any> = await axios.post(
+      fullAquariusUrl,
+      queryPayload
+    );
+
+    if (response?.status === 200 && response?.data?.hits) {
+      for (const hit of response.data.hits.hits) {
+        const asset: Asset = hit._source
+        if (asset?.id) {
+          assets.push(asset)
+        }
+      }
+      total = response.data.hits.total.value
+    }
+    return [assets, total]
+  }
+
+  async accessOffering(did: string, serviceId: string, fileIndex: number, userData: { [key: string]: string }): Promise<string> {
     return await this.nautilus.access({
-      assetDid: did, 
+      assetDid: did,
       serviceId: serviceId,
       fileIndex: fileIndex,
       userdata: userData

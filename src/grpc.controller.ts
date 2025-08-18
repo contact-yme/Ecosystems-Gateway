@@ -17,6 +17,9 @@ import {
   ComputeToDataResponse,
   AccessOfferingRequest,
   AccessOfferingResponse,
+  QueryOfferingsRequest,
+  QueryOfferingsResponse,
+  PontusxQueryOfferings,
 } from './generated/src/_proto/spp_v2';
 import { status as GrpcStatusCode } from '@grpc/grpc-js';
 import { LifecycleStates } from '@deltadao/nautilus';
@@ -211,6 +214,57 @@ export class GrpcController {
         code: GrpcStatusCode.INTERNAL,
         message: 'Seems like an error occurred',
       });
+    }
+  }
+
+  getQueryDefaults(query: PontusxQueryOfferings): PontusxQueryOfferings {
+    query.did = query.did ?? ""
+    query.name = query.name ?? ""
+    query.description = query.description ?? ""
+    query.author = query.author ?? ""
+    query.metadataType = query.metadataType ?? "dataset"
+    query.serviceType = query.serviceType ?? "access"
+    query.page = query.page ?? 0
+    query.pageSize = query.pageSize ?? 50
+    return query
+  }
+
+  @GrpcMethod('serviceofferingPublisher')
+  async queryOfferings(
+    data: QueryOfferingsRequest,
+  ): Promise<QueryOfferingsResponse> {
+    this.logger.debug('grpc method QueryOfferings called');
+    this.logger.debug(data);
+
+    const result: string[] = [];
+    let resultTotal: number = 0
+
+    if (data.query.pontusxQuery !== undefined) {
+      const query = this.getQueryDefaults(data.query.pontusxQuery)
+      const queryResult = await this.pontusxService.queryOfferings(
+        query.did,
+        query.name,
+        query.description,
+        query.author,
+        query.metadataType,
+        query.serviceType,
+        query.page,
+        query.pageSize
+      );
+      const resultOfferings = queryResult[0];
+      for (let asset of resultOfferings) {
+        result.push(JSON.stringify(asset))
+      }
+      resultTotal = queryResult[1];
+    } else {
+      // TODO XFSC
+    }
+
+    if (result) {
+      return {
+        offerings: result,
+        total: resultTotal
+      };
     }
   }
 
