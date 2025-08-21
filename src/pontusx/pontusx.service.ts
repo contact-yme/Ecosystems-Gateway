@@ -40,6 +40,7 @@ import {
   ComputeToDataResponse,
   GetComputeToDataResultResponse,
   ComputeToDataResponseState,
+  Pricing_PricingType,
 } from '../generated/src/_proto/spp_v2';
 import { CredentialEventServiceService } from '../credential-event-service/credential-event-service.service';
 import { RpcException } from '@nestjs/microservices';
@@ -439,6 +440,10 @@ export class PontusxService implements OnModuleInit {
         }
       }
     }
+    if (!service.pricing) 
+        service.pricing = { pricingType: Pricing_PricingType.FREE };
+    else if (!service.pricing.hasOwnProperty('pricingType'))
+        service.pricing.pricingType = Pricing_PricingType.FREE;
     let pricing =
       this.pricingConfig[
         pricing_PricingTypeToJSON(service.pricing.pricingType)
